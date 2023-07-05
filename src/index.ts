@@ -183,18 +183,12 @@ export async function activate(context: vscode.ExtensionContext) {
           return
         let i = character
         let c
-        while ((c = lineText[--i]) !== ' ' && c) {
-          if (/[><\/]/.test(c))
-            return
+        while (!/[\s\/"><]/.test((c = lineText[--i])) && c)
           _text = `${c}${_text}`
-        }
 
         let j = character
-        while (!/[\s\/"]/.test((c = lineText[++j])) && c) {
-          if (/[><\/]/.test(c))
-            return
+        while (!/[\s\/"><]/.test((c = lineText[++j])) && c)
           _text = `${_text}${c}`
-        }
 
         if (_text.includes('="')) {
           const texts = _text.split('="')
