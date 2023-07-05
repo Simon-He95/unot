@@ -4,7 +4,7 @@
 <p align="center"> English | <a href="./README_zh.md">简体中文</a></p>
 
 
-UnoT is short for unocss tools that is to provide a better development experience using unocss in vscode. It integrated [tounocss](https://github.com/Simon-He95/tounocss), [unocss to css](https://github.com/Simon-He95/unocss-to-css), [vscode uno magic](https://github.com/Simon-He95/vscode-uno-magic)
+UnoT is short for unocss tools that is to provide a better development experience using unocss in vscode. It integrated [tounocss](https://github.com/Simon-He95/tounocss)、 [unocss to css](https://github.com/Simon-He95/unocss-to-css)、 [vscode uno magic](https://github.com/Simon-He95/vscode-uno-magic)
 
 ![demo](/assets/demo.gif)
 
