@@ -6,6 +6,8 @@
 
 UnoT is short for unocss tools that is to provide a better development experience using unocss in vscode. It integrated [tounocss](https://github.com/Simon-He95/tounocss), [unocss to css](https://github.com/Simon-He95/unocss-to-css), [vscode uno magic](https://github.com/Simon-He95/vscode-uno-magic)
 
+![demo](/assets/demo.gif)
+
 ## Reminder
 If you use the unocss official plugin like me and it doesn’t work, you can use command+shift+p to turn on switch UnoToCss, which is turned on by default
 If unocss itself can take effect, it can be closed if it may conflict with unocss
