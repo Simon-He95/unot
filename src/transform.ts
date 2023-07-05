@@ -61,7 +61,7 @@ export const rules: any = [
   [/([\s])border-box(\s|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s])content-box(\s|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
   [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|$)/g, (_: string, v: string, v1: string) => `-[${v.replace(/\s*/g, '')}]${v1}`],
-  [/-\[?\s*(calc\([^\)]*\))(\s*)\]?(\s|$)/g, (_: string, v: string, v1 = '') => `-[${v.replace(/\s*/g, '')}]${v1}`],
+  [/-\[?\s*(calc\([^\)]*\))\]?(\s|$)/g, (_: string, v: string, v1 = '') => `-[${v.replace(/\s*/g, '')}]${v1}`],
   [/-(\#[^\s\"]+)(\s|$)/g, (_: string, v1: string, v2: string) => `-[${v1}]${v2}`],
   [/-([0-9]+(?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|$)/g, (_: string, v1: string, v2 = '') => `-[${v1}]${v2}`],
   [/([\s!])x-hidden(\s|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-x-hidden${v2}`],

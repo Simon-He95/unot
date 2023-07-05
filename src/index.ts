@@ -5,7 +5,7 @@ import { findUp } from 'find-up'
 import { rules, transform } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache1, addCacheReact, addCacheVue, cacheMap, getMultipedUnocssText, hasFile, highlight, transformUnocssBack, unoToCssDecorationType } from './utils'
+import { LRUCache1, addCacheReact, addCacheVue, cacheMap, getMultipedUnocssText, hasFile, highlight, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
 
 const toUnocssMap = new LRUCache1(5000)
 
@@ -21,7 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
   let unoToCssToggle = true
   const styleReg = /style="([^"]+)"/
   const document = activeTextEditor.document
-  const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('UnoT')
+  const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'] } = getConfiguration('UnoT')
   const process = new CssToUnocssProcess()
   const LANS = ['html', 'vue', 'svelte', 'solid', 'swan', 'react', 'js', 'ts', 'tsx', 'jsx', 'wxml', 'axml', 'css', 'wxss', 'acss', 'less', 'scss', 'sass', 'stylus', 'wxss', 'acss']
   const md = new vscode.MarkdownString()
@@ -29,20 +29,6 @@ export async function activate(context: vscode.ExtensionContext) {
   md.supportHtml = true
   let copyClass = ''
   let copyAttr = ''
-  // style
-  const style = {
-    dark: Object.assign({
-      textDecoration: 'underline',
-      backgroundColor: 'rgba(144, 238, 144, 0.5)',
-      color: 'black',
-    }, dark),
-    light: Object.assign({
-      textDecoration: 'underline',
-      backgroundColor: 'rgba(255, 165, 0, 0.5)',
-      color: '#ffffff',
-      borderRadius: '6px',
-    }, light),
-  }
   const toUnocssDecorationType = vscode.window.createTextEditorDecorationType(style)
   // 注册ToUnocss命令
   context.subscriptions.push(registerCommand('UnoT.ToUnocss', async () => {
@@ -174,7 +160,7 @@ export async function activate(context: vscode.ExtensionContext) {
       if (!editor)
         return
       // 移除样式
-      vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
+      resetDecorationType()
       const selection = editor.selection
       const wordRange = new vscode.Range(selection.start, selection.end)
       let selectedText = editor.document.getText(wordRange)
@@ -302,7 +288,10 @@ export async function activate(context: vscode.ExtensionContext) {
   }))
 
   // 监听编辑器选择内容变化的事件
-  context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(() => vscode.window.activeTextEditor?.setDecorations(toUnocssDecorationType, [])))
+  context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(() => {
+    vscode.window.activeTextEditor?.setDecorations(toUnocssDecorationType, [])
+    vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
+  }))
 
   if (document) {
     const languageId = document.languageId
@@ -322,7 +311,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   function setStyle1(editor: vscode.TextEditor, realRangeMap: any[], selectedUnocssText: string) {
     // 增加decorationType样式
-    editor.edit(() => editor.setDecorations(unoToCssDecorationType, realRangeMap.map((item: any) => item.range)))
+    editor.edit(() => editor.setDecorations(toUnocssDecorationType, realRangeMap.map((item: any) => item.range)))
 
     md.value = ''
     copyAttr = selectedUnocssText

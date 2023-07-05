@@ -59,7 +59,7 @@
       },
       {
         "command": "UnoT.switchToCss",
-        "title": "switch tounocss"
+        "title": "switch UnoToCss"
       }
     ],
     "keybindings": [

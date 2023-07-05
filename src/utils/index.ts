@@ -4,6 +4,7 @@ import { createGenerator } from '@unocss/core'
 import presetUno from '@unocss/preset-uno'
 import presetAttributify from '@unocss/preset-attributify'
 import fg from 'fast-glob'
+import { getPosition } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 
@@ -93,7 +94,7 @@ export async function hasFile(source: string | string[]) {
   }))
 }
 
-const style = {
+export const style = {
   dark: Object.assign({
     textDecoration: 'underline dashed #fff',
   }),
@@ -148,8 +149,6 @@ export async function getShortcuts() {
     return configCacheMap
   })
 }
-
-// 监听unoConfig变化
 
 async function findShortcuts(unoUri: string) {
   const content = await fsp.readFile(unoUri, 'utf-8')
@@ -352,17 +351,20 @@ export function highlight(realRangeMap: vscode.Range[]) {
   editor.edit(() => editor.setDecorations(unoToCssDecorationType, realRangeMap))
 }
 
-export function getPosition(content: string, pos: number) {
-  const contents = content.split('\n')
-  let num = 0
-  for (let i = 0; i < contents.length; i++) {
-    const len = contents[i].length
-    if ((num <= pos) && (pos <= (num + len))) {
-      return {
-        line: i,
-        character: pos - num,
-      }
-    }
-    num += contents[i].length + (i === 0 ? 0 : 1)
-  }
+// export function getPosition(content: string, pos: number) {
+//   const contents = content.split('\n')
+//   let num = 0
+//   for (let i = 0; i < contents.length; i++) {
+//     const len = contents[i].length
+//     if ((num <= pos) && (pos <= (num + len))) {
+//       return {
+//         line: i,
+//         character: pos - num,
+//       }
+//     }
+//     num += contents[i].length + (i === 0 ? 0 : 1)
+//   }
+// }
+export function resetDecorationType() {
+  return vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
 }
