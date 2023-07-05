@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import * as vscode from 'vscode'
-import { addEventListener, copyText, createBottomBar, createCompletionItem, getConfiguration, message, registerCommand, registerCompletionItemProvider } from '@vscode-use/utils'
+import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { rules, transform } from './transform'
 import { getUnoCompletions } from './search'
@@ -18,6 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
 
+  let unoToCssToggle = true
   const styleReg = /style="([^"]+)"/
   const document = activeTextEditor.document
   const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('UnoT')
@@ -48,10 +49,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const textEditor = vscode.window.activeTextEditor!
     const doc = textEditor.document
     const fileName = doc.fileName
-    const start = new vscode.Position(0, 0)
-    const end = new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length)
     // 获取全部文本区域
-    const selection = new vscode.Range(start, end)
+    const selection = createRange([0, 0], [doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length])
     const text = doc.getText(selection)
     // 替换文件内容
     const newSelection = await process.convertAll(text, fileName)
@@ -67,11 +66,9 @@ export async function activate(context: vscode.ExtensionContext) {
     const doc = textEditor.document
     let selection: vscode.Selection | vscode.Range = textEditor.selection
     // 获取选中区域
-    if (selection.isEmpty) {
-      const start = new vscode.Position(0, 0)
-      const end = new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length)
-      selection = new vscode.Range(start, end)
-    }
+    if (selection.isEmpty)
+      selection = createRange([0, 0], [doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length])
+
     const text = doc.getText(selection)
     const newSelection = await process.convert(text)
     if (!newSelection)
@@ -115,10 +112,8 @@ export async function activate(context: vscode.ExtensionContext) {
           const index = styleMatch.index!
           realRangeMap.push({
             content: styleMatch[0],
-            range: new vscode.Range(
-              new vscode.Position(line, index!),
-              new vscode.Position(line, index! + styleMatch[1].length),
-            ),
+            range: createRange([line, index!], [line, index! + styleMatch[1].length]),
+
           })
         }
         else {
@@ -133,10 +128,7 @@ export async function activate(context: vscode.ExtensionContext) {
               word = match[0]
               realRangeMap.push({
                 content: match[0],
-                range: new vscode.Range(
-                  new vscode.Position(line, index!),
-                  new vscode.Position(line, index! + match[0].length),
-                ),
+                range: createRange([line, index!], [line, index! + match[0].length]),
               })
               break
             }
@@ -160,9 +152,22 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   }))
 
+  context.subscriptions.push(registerCommand('UnoT.switchToCss', () => {
+    createSelect([
+      'open',
+      'close',
+    ]).then((r) => {
+      unoToCssToggle = r === 'open'
+    })
+  }))
+
   // unocss to css hover事件
   context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
     provideHover(document, position) {
+      // 开关如果选择使用官方的unocss插件，可以选择关闭
+      if (!unoToCssToggle)
+        return
+
       if (!document)
         return
       const editor = vscode.window.activeTextEditor
@@ -194,16 +199,30 @@ export async function activate(context: vscode.ExtensionContext) {
           const texts = _text.split('="')
           if (/class(Name)?/.test(texts[0])) {
             _text = texts[1]
-            realRangeMap.push(new vscode.Range(new vscode.Position(line, j - texts[1].length), new vscode.Position(line, j)))
+            realRangeMap.push(createRange(
+              [line, j - texts[1].length],
+              [line, j],
+            ))
           }
           else if (texts[1] === '~') {
             _text = texts[0]
-            realRangeMap.push(new vscode.Range(new vscode.Position(line, j - texts[1].length), new vscode.Position(line, j)))
-            realRangeMap.push(new vscode.Range(new vscode.Position(line, i + 1), new vscode.Position(line, i + 1 + texts[0].length)))
+
+            realRangeMap.push(createRange(
+              [line, j - texts[1].length],
+              [line, j],
+            ))
+            realRangeMap.push(createRange(
+              [line, i + 1],
+              [line, i + 1 + texts[0].length],
+            ))
           }
           else {
             _text = texts.join('-')
-            realRangeMap.push(new vscode.Range(new vscode.Position(line, j - texts[1].length), new vscode.Position(line, j)))
+
+            realRangeMap.push(createRange(
+              [line, j - texts[1].length],
+              [line, j],
+            ))
           }
         }
         else {
@@ -221,14 +240,26 @@ export async function activate(context: vscode.ExtensionContext) {
                   _text = `${temp.slice(0, -1).join('-')}-${match[1]}-${temp.slice(-1)[0]}`
                 }
                 else { _text = `${match[1]}-${_text}` }
-                realRangeMap.push(new vscode.Range(new vscode.Position(line, index), new vscode.Position(line, index + match[1].length)))
+
+                realRangeMap.push(createRange(
+                  [line, index],
+                  [line, index + match[1].length],
+                ))
               }
-              realRangeMap.push(new vscode.Range(new vscode.Position(line, i + 1), new vscode.Position(line, j)))
+
+              realRangeMap.push(createRange(
+                [line, i + 1],
+                [line, j],
+              ))
               break
             }
           }
-          if (!isFind)
-            realRangeMap.push(new vscode.Range(new vscode.Position(line, i + 1), new vscode.Position(line, j)))
+          if (!isFind) {
+            realRangeMap.push(createRange(
+              [line, i + 1],
+              [line, j],
+            ))
+          }
         }
 
         selectedText = _text
@@ -248,7 +279,10 @@ export async function activate(context: vscode.ExtensionContext) {
         while (selectedText.slice(offsetRight)[0] === ' ')
           offsetRight--
         offsetRight++
-        realRangeMap.push(new vscode.Range(new vscode.Position(line, pos + offsetLeft), new vscode.Position(line, pos + selectedText.length + offsetRight)))
+        realRangeMap.push(createRange(
+          [line, pos + offsetLeft],
+          [line, pos + selectedText.length + offsetRight],
+        ))
         selectedText = selectedText.trim()
       }
 
