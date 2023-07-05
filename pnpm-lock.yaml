@@ -64,6 +64,9 @@ devDependencies:
   rimraf:
     specifier: ^4.4.1
     version: 4.4.1
+  transform-to-unocss:
+    specifier: ^0.0.64
+    version: 0.0.64
   tsup:
     specifier: ^6.7.0
     version: 6.7.0(typescript@5.0.3)
@@ -4185,6 +4188,13 @@ packages:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
     dependencies:
       punycode: 2.1.1
+    dev: true
+
+  /transform-to-unocss@0.0.64:
+    resolution: {integrity: sha512-XCu/F7hsjVDRGBK9oqfufpgLSy+qDEkoxKqFM051MHE4CcKvYDkiQ7X7TiwLgjSq5o0gDCrDwe+c1Szjl3aaoQ==}
+    hasBin: true
+    dependencies:
+      fast-glob: 3.2.12
     dev: true
 
   /tree-kill@1.2.2:

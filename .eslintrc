@@ -2,6 +2,7 @@
   "extends": "@antfu",
   "rules":{
     "no-eval": "off",
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
+    "no-cond-assign":"off"
   }
 }

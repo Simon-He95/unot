@@ -1,20 +1,20 @@
 {
   "publisher": "simonhe",
-  "name": "all-might",
-  "displayName": "all-might",
+  "name": "unot",
+  "displayName": "UnoT",
   "version": "0.0.0",
   "packageManager": "pnpm@8.1.1",
-  "description": "all-might",
+  "description": "Unocss Tools",
   "author": "Simon He <https://github.com/Simon-He95>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Simon-He95",
-  "homepage": "https://github.com/Simon-He95/all-might#readme",
+  "homepage": "https://github.com/Simon-He95/unot#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Simon-He95/all-might"
+    "url": "https://github.com/Simon-He95/unot"
   },
   "bugs": {
-    "url": "https://github.com/Simon-He95/all-might/issues"
+    "url": "https://github.com/Simon-He95/unot/issues"
   },
   "sponsor": {
     "url": "https://github.com/Simon-He95/sponsor"
@@ -33,6 +33,42 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "contributes": {
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorFocus && editorLangId !== typescript",
+          "command": "UnoT.ToUnocss",
+          "group": "6_px"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "UnoT.InlineStyleToUnocss",
+          "group": "6_px"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "UnoT.ToUnocss",
+        "title": "page -> Unocss"
+      },
+      {
+        "command": "UnoT.InlineStyleToUnocss",
+        "title": "style -> Unocss"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "UnoT.ToUnocss",
+        "key": "cmd+Alt+p"
+      },
+      {
+        "command": "UnoT.InlineStyleToUnocss",
+        "key": "Alt+shift+p"
+      }
+    ]
+  },
   "scripts": {
     "dev": "pnpm build --watch",
     "test": "vitest",
@@ -66,6 +102,7 @@
     "pnpm": "^8.1.1",
     "prettier": "^2.8.8",
     "rimraf": "^4.4.1",
+    "transform-to-unocss": "^0.0.64",
     "tsup": "^6.7.0",
     "typescript": "^5.0.3",
     "vitest": "^0.29.8",
