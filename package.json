@@ -99,6 +99,7 @@
     "@unocss/transformer-directives": "^0.53.3",
     "@unocss/transformer-variant-group": "^0.53.3",
     "@vscode-use/utils": "^0.0.28",
+    "@vue/compiler-sfc": "^3.3.4",
     "bumpp": "^9.1.0",
     "eslint": "^8.37.0",
     "esno": "^0.16.3",

@@ -5,7 +5,7 @@ import { findUp } from 'find-up'
 import { rules, transform } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache1, addCacheReact, addCacheVue, cacheMap, getMultipedUnocssText, hasFile, highlight, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
+import { LRUCache1, addCacheReact, addCacheVue, cacheMap, getMultipedUnocssText, hasFile, highlight, parser, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
 
 const toUnocssMap = new LRUCache1(5000)
 
@@ -13,11 +13,9 @@ export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditor = vscode.window.activeTextEditor
   if (!activeTextEditor)
     return
-
   const pkgs = await hasFile(['**/package.json'])
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
-
   let unoToCssToggle = true
   const styleReg = /style="([^"]+)"/
   const document = activeTextEditor.document
@@ -435,15 +433,20 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!completions.length) {
           getUnoCompletions(filepath).then((res: any) => {
             completions = res
-            unoCompletionsMap = completions.map(([content, detail]: any) => createCompletionItem({ content, detail }))
+            unoCompletionsMap = completions.map(([content, detail]: any) => createCompletionItem({ content, detail, type: undefined }))
           })
         }
         hasUnoConfig = filepath
       })
   }
-
   // 如果是unocss环境下,给出一些预设提醒
-  context.subscriptions.push(registerCompletionItemProvider(['javascript', 'javascriptreact', 'svelte', 'solid', 'typescriptreact', 'html', 'vue', 'css'], () => hasUnoConfig && unoCompletionsMap, ['"', '\'', ' ']))
+  context.subscriptions.push(registerCompletionItemProvider(['javascript', 'javascriptreact', 'svelte', 'solid', 'typescriptreact', 'html', 'vue', 'css'], (document, position) => {
+    if (!hasUnoConfig)
+      return
+    const data = parser(document.getText(), position)
+    if (data?.type === 'props' || data === true)
+      return unoCompletionsMap
+  }, ['"', '\'', ' ']))
 }
 
 export function deactivate() {
