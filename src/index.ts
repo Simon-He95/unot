@@ -375,6 +375,9 @@ export async function activate(context: vscode.ExtensionContext) {
       return
 
     fs.promises.writeFile(url, newText, 'utf-8').then(() => {
+      if (!beforeActivePosition)
+        return
+
       const beforeLineText = activeTextEditor.document.lineAt(beforeActivePosition.line).text
       const currentLineText = newText.split('\n')[beforeActivePosition.line]
       // 光标在class之后并且当前行与新当前行发生差异时需要偏移
