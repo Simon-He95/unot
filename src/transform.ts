@@ -68,7 +68,6 @@ export const rules: any = [
   [/([\s!])y-hidden(\s|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-y-hidden${v2}`],
   [/([\s!])justify-center(\s|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center${v2}`],
   [/([\s!])align-center(\s|$)/, (_: string, v1: string, v2: string) => `${v1}items-center${v2}`],
-  [/([\s!])hidden(\s|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-hidden${v2}`],
   [/([\s])eclipse(\s|$)/, (_: string, v1: string, v2: string) => `${v1}whitespace-nowrap overflow-hidden text-ellipsis${v2}`],
   [/([\s])font-?(100|200|300|400|500|600|700|800|900)(\s|$)/, (_: string, prefix: string, v1: string, v2: string) => `${prefix}font-${fontMap[v1]}${v2}`],
   [/([\s])pointer-none(\s|$)/, (_: string, v1: string, v2: string) => `${v1}pointer-events-none${v2}`],

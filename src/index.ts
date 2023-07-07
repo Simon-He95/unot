@@ -1,6 +1,5 @@
-import fs from 'node:fs'
 import * as vscode from 'vscode'
-import { addEventListener, updateText, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider } from '@vscode-use/utils'
+import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { rules, transform } from './transform'
 import { getUnoCompletions } from './search'
@@ -362,7 +361,6 @@ export async function activate(context: vscode.ExtensionContext) {
   })
 
   context.subscriptions.push(addEventListener('text-save', (document: vscode.TextDocument) => {
-    const url = vscode.window.activeTextEditor!.document.uri.fsPath
     const activeTextEditor = vscode.window.activeTextEditor
     if (!isOpen || !hasUnoConfig || !activeTextEditor)
       return
@@ -424,7 +422,27 @@ export async function activate(context: vscode.ExtensionContext) {
       updateUnoStatus()
     }))
   }
-
+  const customMap = [
+    ['flex-center', 'justify-center align-center'],
+    ['pointer', 'cursor-pointer'],
+    ['maxw', 'max-w'],
+    ['minw', 'min-w'],
+    ['maxh', 'max-h'],
+    ['minh', 'min-h'],
+    ['position-center', 'left-0 right-0 top-0 bottom-0'],
+    ['col', 'flex-col'],
+    ['pointer-none', 'pointer-events-none'],
+    ['eclipse', 'whitespace-nowrap overflow-hidden text-ellipsis'],
+    ['x-hidden', 'overflow-x-hidden'],
+    ['y-hidden', 'overflow-y-hidden'],
+    ['translatex', 'translate-x'],
+    ['translatey', 'translate-y'],
+    ['dashed', 'border-dashed'],
+    ['dotted', 'border-dotted'],
+    ['double', 'border-double'],
+    ['contain', 'bg-contain'],
+    ['cover', 'bg-cover'],
+  ]
   function updateUnoStatus(cwd = currentFolder.uri.fsPath.replace(/\\/g, '/')) {
     if (activeTextEditorUri && !prefix.includes(activeTextEditorUri.split('.').slice(-1)[0])) {
       hasUnoConfig = undefined
@@ -437,7 +455,11 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!completions.length) {
           getUnoCompletions(filepath).then((res: any) => {
             completions = res
-            unoCompletionsMap = completions.map(([content, detail]: any) => createCompletionItem({ content, detail, type: undefined }))
+
+            unoCompletionsMap = completions
+              .map(([content, detail]: any) => createCompletionItem({ content, detail, type: undefined }))
+              .concat(customMap
+                .map(([content, detail]) => createCompletionItem({ content, detail, type: undefined })))
           })
         }
         hasUnoConfig = filepath
