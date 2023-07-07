@@ -89,6 +89,28 @@ const suppleMore = [
   ...shadow,
 ]
 
+const customMap = [
+  ['flex-center', 'justify-center items-center'],
+  ['pointer', 'cursor-pointer'],
+  ['maxw', 'max-w'],
+  ['minw', 'min-w'],
+  ['maxh', 'max-h'],
+  ['minh', 'min-h'],
+  ['position-center', 'left-0 right-0 top-0 bottom-0'],
+  ['col', 'flex-col'],
+  ['pointer-none', 'pointer-events-none'],
+  ['eclipse', 'whitespace-nowrap overflow-hidden text-ellipsis'],
+  ['x-hidden', 'overflow-x-hidden'],
+  ['y-hidden', 'overflow-y-hidden'],
+  ['translatex', 'translate-x'],
+  ['translatey', 'translate-y'],
+  ['dashed', 'border-dashed'],
+  ['dotted', 'border-dotted'],
+  ['double', 'border-double'],
+  ['contain', 'bg-contain'],
+  ['cover', 'bg-cover'],
+]
+
 export async function getUnoCompletions(unoUri: string) {
   const uno = createGenerator({}, await getConfig(unoUri))
   const ac = createAutocomplete(uno)
@@ -113,10 +135,17 @@ export async function getUnoCompletions(unoUri: string) {
     return matched
   }
   const completions = await enumerateAutocomplete()
-  return Promise.all([...completions, ...suppleMore].map(async (item) => {
-    const generate = await uno.generate(new Set([item]), { preflights: false, minify: true })
-    const css = await formatCSS(generate.css)
-    return [item, css]
+  return Promise.all([...completions, ...suppleMore, ...customMap].map(async (item) => {
+    const isArray = Array.isArray(item)
+    let css
+    if (isArray) {
+      css = (await Promise.all(item[1].split(' ').map(async (item: string) => {
+        const result = await uno.generate(new Set([item]), { preflights: false, minify: true })
+        return result.css
+      }))).join('\n')
+    }
+    else { css = (await uno.generate(new Set([isArray ? item[1] : item]), { preflights: false, minify: true })).css }
+    return [isArray ? item[0] : item, await formatCSS(css)]
   }))
 }
 

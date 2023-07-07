@@ -86,6 +86,8 @@ export async function activate(context: vscode.ExtensionContext) {
       if (!selectedText) {
         const range = document.getWordRangeAtPosition(position) as any
         let word = document.getText(range)
+        if (!word)
+          return
         const line = range.c.c
         const lineNumber = position.line
         const lineText = document.lineAt(lineNumber).text
@@ -381,6 +383,8 @@ export async function activate(context: vscode.ExtensionContext) {
       return
 
     const beforeLineText = activeTextEditor.document.lineAt(beforeActivePosition.line).text
+    if (!beforeLineText)
+      return
     const currentLineText = newText.split('\n')[beforeActivePosition.line]
     // 光标在class之后并且当前行与新当前行发生差异时需要偏移
     const match = beforeLineText.match(/(class(Name)?=")([^"]*)"/)
@@ -422,27 +426,7 @@ export async function activate(context: vscode.ExtensionContext) {
       updateUnoStatus()
     }))
   }
-  const customMap = [
-    ['flex-center', 'justify-center align-center'],
-    ['pointer', 'cursor-pointer'],
-    ['maxw', 'max-w'],
-    ['minw', 'min-w'],
-    ['maxh', 'max-h'],
-    ['minh', 'min-h'],
-    ['position-center', 'left-0 right-0 top-0 bottom-0'],
-    ['col', 'flex-col'],
-    ['pointer-none', 'pointer-events-none'],
-    ['eclipse', 'whitespace-nowrap overflow-hidden text-ellipsis'],
-    ['x-hidden', 'overflow-x-hidden'],
-    ['y-hidden', 'overflow-y-hidden'],
-    ['translatex', 'translate-x'],
-    ['translatey', 'translate-y'],
-    ['dashed', 'border-dashed'],
-    ['dotted', 'border-dotted'],
-    ['double', 'border-double'],
-    ['contain', 'bg-contain'],
-    ['cover', 'bg-cover'],
-  ]
+
   function updateUnoStatus(cwd = currentFolder.uri.fsPath.replace(/\\/g, '/')) {
     if (activeTextEditorUri && !prefix.includes(activeTextEditorUri.split('.').slice(-1)[0])) {
       hasUnoConfig = undefined
@@ -458,8 +442,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
             unoCompletionsMap = completions
               .map(([content, detail]: any) => createCompletionItem({ content, detail, type: undefined }))
-              .concat(customMap
-                .map(([content, detail]) => createCompletionItem({ content, detail, type: undefined })))
           })
         }
         hasUnoConfig = filepath
