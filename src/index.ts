@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import * as vscode from 'vscode'
-import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider } from '@vscode-use/utils'
+import { addEventListener, updateText, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { rules, transform } from './transform'
 import { getUnoCompletions } from './search'
@@ -374,36 +374,37 @@ export async function activate(context: vscode.ExtensionContext) {
     if (newText === text)
       return
 
-    fs.promises.writeFile(url, newText, 'utf-8').then(() => {
-      if (!beforeActivePosition)
-        return
-
-      const beforeLineText = activeTextEditor.document.lineAt(beforeActivePosition.line).text
-      const currentLineText = newText.split('\n')[beforeActivePosition.line]
-      // 光标在class之后并且当前行与新当前行发生差异时需要偏移
-      const match = beforeLineText.match(/(class(Name)?=")([^"]*)"/)
-      const isAfterClass = match
-        ? (match.index! + match[1].length - 1 < beforeActivePosition.character)
-        : (currentLineText !== beforeLineText)
-      const isInClass = match
-        ? ((match.index! + match[1].length - 1 < beforeActivePosition.character) && (match.index! + match[1].length + match[3].length >= beforeActivePosition.character))
-        : (currentLineText !== beforeLineText)
-      let newPosition = isAfterClass
-        ? beforeActivePosition.character + currentLineText.length - beforeLineText.length
-        : beforeActivePosition.character
-      if (isInClass) {
-        while ((newPosition > 0) && (currentLineText[newPosition] !== undefined && currentLineText[newPosition] !== ' ' && currentLineText[newPosition] !== '"' && currentLineText[newPosition - 1] !== ' ' && currentLineText[newPosition - 1] !== '"' && currentLineText[newPosition + 1] !== '"' && currentLineText[newPosition + 1] !== ' '))
-          newPosition--
-      }
-
-      const newCursorPosition = new vscode.Position(
-        beforeActivePosition.line,
-        newPosition,
-      )
-      setTimeout(() => {
-        activeTextEditor.selection = new vscode.Selection(newCursorPosition, newCursorPosition)
-      }, 100)
+    const endPosition = new vscode.Position(text.split('\n').length, text.split('\n').slice(-1)[0].length)
+    updateText((edit) => {
+      edit.replace(new vscode.Range(new vscode.Position(0, 0), endPosition), newText)
     })
+
+    if (!beforeActivePosition)
+      return
+
+    const beforeLineText = activeTextEditor.document.lineAt(beforeActivePosition.line).text
+    const currentLineText = newText.split('\n')[beforeActivePosition.line]
+    // 光标在class之后并且当前行与新当前行发生差异时需要偏移
+    const match = beforeLineText.match(/(class(Name)?=")([^"]*)"/)
+    const isAfterClass = match
+      ? (match.index! + match[1].length - 1 < beforeActivePosition.character)
+      : (currentLineText !== beforeLineText)
+    const isInClass = match
+      ? ((match.index! + match[1].length - 1 < beforeActivePosition.character) && (match.index! + match[1].length + match[3].length >= beforeActivePosition.character))
+      : (currentLineText !== beforeLineText)
+    let newPosition = isAfterClass
+      ? beforeActivePosition.character + currentLineText.length - beforeLineText.length
+      : beforeActivePosition.character
+    if (isInClass) {
+      while ((newPosition > 0) && (currentLineText[newPosition] !== undefined && currentLineText[newPosition] !== ' ' && currentLineText[newPosition] !== '"' && currentLineText[newPosition - 1] !== ' ' && currentLineText[newPosition - 1] !== '"' && currentLineText[newPosition + 1] !== '"' && currentLineText[newPosition + 1] !== ' '))
+        newPosition--
+    }
+
+    const newCursorPosition = new vscode.Position(
+      beforeActivePosition.line,
+      newPosition,
+    )
+    activeTextEditor.selection = new vscode.Selection(newCursorPosition, newCursorPosition)
   }))
 
   context.subscriptions.push(addEventListener('activeText-change', () =>
