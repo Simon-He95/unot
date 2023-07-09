@@ -8,6 +8,7 @@ import { getPosition } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
+import type { DictStr, colorObject } from 'windicss/types/interfaces'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
 export function getCssType(filename: string) {
@@ -207,7 +208,10 @@ export async function addCacheVue(content: string) {
   if (!match)
     return
   const template = match[1]
-  const { line } = getPosition(content, match.index!)!
+  const pos = getPosition(content, match.index!)!
+  if (!pos)
+    return
+  const { line } = pos
   const realRangeMap = []
   let _attrs: any[] = []
   for (const match of template.matchAll(/<[^\s]+\s([^>\/]+)[\/>]/g)) {
@@ -216,7 +220,11 @@ export async function addCacheVue(content: string) {
     // 只考虑单独的属性
     let attributeStr = match[1].trim().replace(/\s+/g, ' ').replace(/\s(['"])/g, '$1').replace(/="\s/g, '="')
     // class
-    const { line: outLine } = getPosition(template, match.index!)!
+    const pos = getPosition(template, match.index!)!
+    if (!pos)
+      return
+
+    const { line: outLine } = pos
     const offset = match[0].indexOf(match[1]) + match.index! - 1
     attributeStr = attributeStr.replace(/class="([^"]*)"/, (_, attr, i) => {
       let pos = i + 6
@@ -428,4 +436,32 @@ function isInPosition(loc: any, position: vscode.Position) {
   if (line + 1 > endLine)
     return
   return true
+}
+
+export function flatColors(colors: colorObject, head?: string): DictStr {
+  let flatten: { [key: string]: string } = {}
+  for (const [key, value] of Object.entries(colors)) {
+    if (typeof value === 'string')
+      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}` : key] = value
+    else if (typeof value === 'function')
+      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}` : key] = 'currentColor'
+    else
+      flatten = { ...flatten, ...flatColors(value, head ? `${head}-${key}` : key) }
+  }
+  return flatten
+}
+
+export function hex2RGB(hex: string): number[] | undefined {
+  const RGB_HEX = /^#?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/i
+  const [, short, long] = String(hex).match(RGB_HEX) || []
+
+  if (long) {
+    const value = Number.parseInt(long, 16)
+    return [value >> 16, (value >> 8) & 0xFF, value & 0xFF]
+  }
+  else if (short) {
+    return Array.from(short, s => Number.parseInt(s, 16)).map(
+      n => (n << 4) | n,
+    )
+  }
 }

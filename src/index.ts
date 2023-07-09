@@ -1,10 +1,12 @@
 import * as vscode from 'vscode'
 import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
+import { Processor } from 'windicss/lib'
+import type { colorObject } from 'windicss/types/interfaces'
 import { rules, transform } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache1, addCacheReact, addCacheVue, cacheMap, getMultipedUnocssText, hasFile, highlight, parser, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
+import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, highlight, parser, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
 
 const toUnocssMap = new LRUCache1(5000)
 
@@ -15,6 +17,10 @@ export async function activate(context: vscode.ExtensionContext) {
   const pkgs = await hasFile(['**/package.json'])
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
+  const processor = new Processor() as Processor
+  const colors = flatColors(
+    processor.theme('colors', {}) as colorObject,
+  )
   let unoToCssToggle = true
   const styleReg = /style="([^"]+)"/
   const document = activeTextEditor.document
@@ -439,9 +445,22 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!completions.length) {
           getUnoCompletions(filepath).then((res: any) => {
             completions = res
-
             unoCompletionsMap = completions
-              .map(([content, detail]: any) => createCompletionItem({ content, detail, type: undefined }))
+              .map(([content, detail, colorInfo]: any) => {
+                if (colorInfo) {
+                  const { color, opacity } = colorInfo
+                  let documentation = colors[color]
+                  if (opacity) {
+                    const rgb = hex2RGB(documentation)
+                    documentation = `rgba(${rgb?.join(',')},${opacity / 100})`
+                  }
+                  return createCompletionItem({ content, detail, type: vscode.CompletionItemKind.Color, documentation })
+                }
+                if (content.startsWith('animate'))
+                  return createCompletionItem({ content, detail, type: vscode.CompletionItemKind.Unit })
+
+                return createCompletionItem({ content, detail, type: vscode.CompletionItemKind.Enum })
+              })
           })
         }
         hasUnoConfig = filepath

@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^0.53.3
     version: 0.53.4
   '@vscode-use/utils':
-    specifier: ^0.0.28
-    version: 0.0.28
+    specifier: ^0.0.31
+    version: 0.0.31
   '@vue/compiler-sfc':
     specifier: ^3.3.4
     version: 3.3.4
@@ -82,6 +82,9 @@ devDependencies:
   vsce:
     specifier: ^2.15.0
     version: 2.15.0
+  windicss:
+    specifier: ^3.5.6
+    version: 3.5.6
 
 packages:
 
@@ -857,8 +860,8 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@vscode-use/utils@0.0.28:
-    resolution: {integrity: sha512-jrEB6ePD2HTpjs7PBGSkWRfg1q4ZbYBWxyycpE7FgPhLU4HXY1gjEGG3MRRdVvHorH8FvXsXmmTSf5FVzRORJA==}
+  /@vscode-use/utils@0.0.31:
+    resolution: {integrity: sha512-I0T4171r6YLFv/N989o3d8GDVJ+BFegxNGc0OMZP2fpn1ZhxcLDI6j3wreKZiN037GoYJrppkfNuEfAJIpcjXw==}
     engines: {vscode: ^1.77.0}
     dev: true
 
@@ -4714,6 +4717,12 @@ packages:
     resolution: {integrity: sha512-eDMORYaPNZ4sQIuuYPDHdQvf4gyCF9rEEV/yPxGfwPkRodwEgiMUUXTx/dex+Me0wxx53S+NgUHaP7y3MGlDmg==}
     dependencies:
       string-width: 1.0.2
+    dev: true
+
+  /windicss@3.5.6:
+    resolution: {integrity: sha512-P1mzPEjgFMZLX0ZqfFht4fhV/FX8DTG7ERG1fBLiWvd34pTLVReS5CVsewKn9PApSgXnVfPWwvq+qUsRwpnwFA==}
+    engines: {node: '>= 12'}
+    hasBin: true
     dev: true
 
   /word-wrap@1.2.3:

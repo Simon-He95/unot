@@ -10,7 +10,7 @@ const eightWay = ['scroll-p', 'scroll-m']
 const common = ['top', 'bottom', 'left', 'right', 'pt', 'pb', 'pl', 'pr', 'mt', 'mb', 'ml', 'mr', 'translate', 'translate-x', 'translate-y', 'aspect', 'columns', 'basis', 'order', 'grid-cols', 'col-span', 'grid-rows', 'row-span', 'gap', 'gap-x', 'gap-y', 'line-clamp', 'lh', 'leading', 'transition', 'rotate', 'indent', 'border', ...['t', 'l', 'r', 'b', 's', 'e', 'x', 'y'].map(v => `border-${v}`), 'outline', 'ring', 'ring-offset', 'opacity', 'border-spacing', 'scale', 'skew', 'skew-x', 'skew-y', ...eightWay]
 
 const hundredCommon = ['font', 'brightness', 'contrast', 'hue-rotate', 'saturate', 'backdrop-brightness', 'backdrop-contrast', 'backdrop-hue-rotate', 'backdrop-opacity', 'backdrop-saturate', 'delay', 'duration']
-const colors = ['amber', 'black', 'blue', 'bluegray', 'coolgray', 'cyan', 'dark', 'emerald', 'fuchsia', 'gray', 'green', 'indigo', 'light', 'lightblue', 'lime', 'neutral', 'orange', 'pink', 'purple', 'red', 'rose', 'sky', 'slate', 'stone', 'teal', 'truegray', 'violet', 'warmgray', 'white', 'yellow', 'zinc']
+const colors = ['current', 'amber', 'black', 'blue', 'blue-gray', 'cool-gray', 'cyan', 'dark', 'emerald', 'fuchsia', 'gray', 'green', 'indigo', 'light', 'light-blue', 'lime', 'neutral', 'orange', 'pink', 'purple', 'red', 'rose', 'sky', 'slate', 'stone', 'teal', 'true-gray', 'violet', 'warm-gray', 'white', 'yellow', 'zinc']
 const colorCommon = ['bg', 'text', 'border', 'outline', 'ring', 'ring-offset', 'accent', 'caret', 'fill', 'stroke']
 const aspect = ['aspect-square', 'aspect-video', 'aspect-a']
 const grid = [
@@ -64,11 +64,26 @@ const suppleMore = [
   ...colorCommon.reduce((result, item) => {
     Array(9).fill(0).forEach((_, i) => {
       colors.forEach((color) => {
-        result.push(`${item}-${color}-${i + 1}00`)
-        for (let j = 0; j < 100; j += 10)
-          result.push(`${item}-${color}-${i + 1}00:${j}`)
-        if (i === 0)
-          result.push(`${item}-${color}`)
+        if (!['black', 'white', 'current'].includes(color)) {
+          result.push({
+            value: `${item}-${color}-${i + 1}00`,
+            color: `${color}-${i + 1}00`,
+          })
+          for (let j = 0; j < 100; j += 10) {
+            result.push({
+              value: `${item}-${color}-${i + 1}00:${j}`,
+              color: `${color}-${i + 1}00`,
+              opacity: j,
+            })
+          }
+        }
+
+        if (i === 0 && ['black', 'white', 'current'].includes(color)) {
+          result.push({
+            value: `${item}-${color}`,
+            color,
+          })
+        }
       })
     })
     return result
@@ -137,6 +152,11 @@ export async function getUnoCompletions(unoUri: string) {
   const completions = await enumerateAutocomplete()
   return Promise.all([...completions, ...suppleMore, ...customMap].map(async (item) => {
     const isArray = Array.isArray(item)
+    let color
+    if (!isArray && (typeof item === 'object')) {
+      color = item
+      item = item.value
+    }
     let css
     if (isArray) {
       css = (await Promise.all(item[1].split(' ').map(async (item: string) => {
@@ -144,8 +164,14 @@ export async function getUnoCompletions(unoUri: string) {
         return result.css
       }))).join('\n')
     }
-    else { css = (await uno.generate(new Set([isArray ? item[1] : item]), { preflights: false, minify: true })).css }
-    return [isArray ? item[0] : item, await formatCSS(css)]
+    else {
+      css = (await uno.generate(new Set([isArray ? item[1] : item]), { preflights: false, minify: true })).css
+    }
+    return [
+      isArray ? item[0] : item,
+      await formatCSS(css),
+      color,
+    ]
   }))
 }
 
