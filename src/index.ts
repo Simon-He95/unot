@@ -471,8 +471,13 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!hasUnoConfig)
       return
     const data = parser(document.getText(), position)
-    if (data?.type === 'props' || data === true)
+    if (data?.isJSX) {
+      if (data?.propName === 'className')
+        return unoCompletionsMap
+    }
+    else if (data?.type === 'props' || data === true) {
       return unoCompletionsMap
+    }
   }, ['"', '\'', ' ']))
 }
 

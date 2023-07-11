@@ -8,6 +8,7 @@ import { getPosition } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
+import { parse as tsParser } from '@typescript-eslint/typescript-estree'
 import type { DictStr, colorObject } from 'windicss/types/interfaces'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
@@ -374,7 +375,8 @@ export function parser(code: string, position: vscode.Position) {
     return
   if (suffix === 'vue')
     return transformVue(code, position)
-
+  if (/jsx|tsx/.test(suffix))
+    return parserJSX(code, position)
   return true
 }
 
@@ -467,5 +469,54 @@ export function hex2RGB(hex: string): number[] | undefined {
     return Array.from(short, s => Number.parseInt(s, 16)).map(
       n => (n << 4) | n,
     )
+  }
+}
+
+export function parserJSX(code: string, position: vscode.Position) {
+  const ast = tsParser(code, { jsx: true, loc: true })
+  return jsxDfs(ast.body, position)
+}
+
+function jsxDfs(children: any, position: vscode.Position) {
+  for (const child of children) {
+    let { loc, type, openingElement, body: children, argument } = child
+    if (!isInPosition(loc, position))
+      continue
+    if (openingElement && openingElement.attributes.length) {
+      for (const prop of openingElement.attributes) {
+        if (isInPosition(prop.loc, position)) {
+          return {
+            tag: openingElement.name.name,
+            propName: prop.name.name,
+            props: openingElement.attributes,
+            type: 'props',
+            isJSX: true,
+          }
+        }
+      }
+    }
+    if (type === 'ReturnStatement')
+      children = argument
+    else if (type === 'JSXElement')
+      children = child.children
+    if (children && !Array.isArray(children))
+      children = [children]
+
+    if (children && children.length) {
+      const result = jsxDfs(children, position) as any
+      if (result)
+        return result
+    }
+    if (type === 'JSXElement') {
+      return {
+        type: 'props',
+        tag: openingElement.name.name,
+        isJSX: true,
+      }
+    }
+    return {
+      type: 'text',
+      isJSX: true,
+    }
   }
 }
