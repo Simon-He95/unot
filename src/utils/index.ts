@@ -479,7 +479,7 @@ export function parserJSX(code: string, position: vscode.Position) {
 
 function jsxDfs(children: any, position: vscode.Position) {
   for (const child of children) {
-    let { loc, type, openingElement, body: children, argument } = child
+    let { loc, type, openingElement, body: children, argument, declarations, init } = child
     if (!isInPosition(loc, position))
       continue
     if (openingElement && openingElement.attributes.length) {
@@ -490,12 +490,16 @@ function jsxDfs(children: any, position: vscode.Position) {
             propName: prop.name.name,
             props: openingElement.attributes,
             type: 'props',
-            isJSX: true,
           }
         }
       }
     }
-    if (type === 'ReturnStatement')
+
+    if (type === 'VariableDeclaration')
+      children = declarations
+    else if (type === 'VariableDeclarator')
+      children = init
+    else if (type === 'ReturnStatement')
       children = argument
     else if (type === 'JSXElement')
       children = child.children
@@ -511,12 +515,10 @@ function jsxDfs(children: any, position: vscode.Position) {
       return {
         type: 'props',
         tag: openingElement.name.name,
-        isJSX: true,
       }
     }
     return {
       type: 'text',
-      isJSX: true,
     }
   }
 }
