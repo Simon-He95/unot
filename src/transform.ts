@@ -32,7 +32,7 @@ const textMap: any = {
   96: '8xl',
   128: '9xl',
 }
-
+let classData: string[] = []
 const COMMON_REG = /(!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
 export const rules: any = [
   [/([\s])maxh([^\s]+)/, (_: string, v1: string, v2: string) => `${v1}max-h${v2}`],
@@ -73,7 +73,7 @@ export const rules: any = [
   [/([\s])pointer-none(\s|$)/, (_: string, v1: string, v2: string) => `${v1}pointer-events-none${v2}`],
   [/([\s])pointer(\s|$)/, (_: string, v1: string, v2: string) => `${v1}cursor-pointer${v2}`],
   [/([\s])flex-center(\s|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center items-center${v2}`],
-  [/([\s])col(\s|$)/, (_: string, v1: string, v2: string) => `${v1}flex-col${v2}`],
+  [/([\s])col(\s|$)/, (_: string, v1: string, v2: string) => `${v1}${classData.includes('flex') ? '' : 'flex '}flex-col${v2}`],
   [/([\s])position-center(\s|$)/, (_: string, v1: string, v2: string) => `${v1}left-0 right-0 top-0 bottom-0${v2}`],
   [/([\s])dashed(\s|$)/, (_: string, v1: string, v2: string) => `${v1}border-dashed${v2}`],
   [/([\s])dotted(\s|$)/, (_: string, v1: string, v2: string) => `${v1}border-dotted${v2}`],
@@ -88,6 +88,7 @@ export function transform(content: string) {
     const [reg, callback] = cur
     return result.replace(/class(Name)?="([^"]*)"/g, (_: string, name = '', value: string) => {
       const v = ` ${value}`
+      classData = value.split(' ')
       const newClass = v.replace(reg, callback).slice(1)
       return `class${name}="${newClass}"`
     },
