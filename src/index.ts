@@ -217,7 +217,9 @@ export async function activate(context: vscode.ExtensionContext) {
           }
         }
         else {
+          _text = _text.replace(/[\[\]\(\)]/g, v => `\\${v}`)
           const newReg = new RegExp(`(\\w+)="[^"]*${_text}[^"]*"`, 'g')
+
           let isFind = false
           for (const match of lineText.matchAll(newReg)) {
             if (!match)
@@ -276,7 +278,7 @@ export async function activate(context: vscode.ExtensionContext) {
         ))
         selectedText = selectedText.trim()
       }
-
+      selectedText = selectedText.replace(/\\/g, '')
       if (cacheMap.has(selectedText)) {
         const cacheText = cacheMap.get(selectedText)
         return setStyle2(realRangeMap, cacheText)
