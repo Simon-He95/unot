@@ -451,19 +451,21 @@ export async function activate(context: vscode.ExtensionContext) {
               ...['class', 'className', 'id', 'style'].map(item => createCompletionItem({ content: item, snippet: `${item}="$1"`, type: 5 })),
               ...completions
                 .map(([content, detail, colorInfo]: any) => {
+                  const documentation = new vscode.MarkdownString()
+                  documentation.appendCodeblock(detail, 'css')
+
                   if (colorInfo) {
                     const { color, opacity } = colorInfo
-                    let documentation = colors[color]
                     if (opacity) {
-                      const rgb = hex2RGB(documentation)
-                      documentation = `rgba(${rgb?.join(',')},${opacity / 100})`
+                      const rgb = hex2RGB(colors[color])
+                      return createCompletionItem({ content, detail: `rgba(${rgb?.join(',')},${opacity / 100})`, type: vscode.CompletionItemKind.Color, documentation })
                     }
-                    return createCompletionItem({ content, detail, type: vscode.CompletionItemKind.Color, documentation })
+                    return createCompletionItem({ content, detail: colors[color], type: vscode.CompletionItemKind.Color, documentation })
                   }
                   if (content.startsWith('animate'))
-                    return createCompletionItem({ content, detail, type: vscode.CompletionItemKind.Unit })
+                    return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Unit })
 
-                  return createCompletionItem({ content, detail, type: vscode.CompletionItemKind.Enum })
+                  return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Enum })
                 })]
           })
         }

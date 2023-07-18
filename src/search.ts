@@ -105,7 +105,7 @@ const suppleMore = [
 ]
 
 const customMap = [
-  ['flex-center', 'justify-center items-center'],
+  ['flex-center', 'flex justify-center items-center'],
   ['pointer', 'cursor-pointer'],
   ['maxw', 'max-w'],
   ['minw', 'min-w'],
