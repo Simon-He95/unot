@@ -346,12 +346,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditorUri = vscode.window.activeTextEditor?.document?.uri?.path
   let completions: vscode.CompletionItem[] = []
   let unoCompletionsMap: any
-  if (currentFolder)
-    await updateUnoStatus(vscode.window.activeTextEditor?.document.uri.fsPath)
-  if (presets.length)
-    rules.unshift(...presets)
-  let isOpen = true
-  // 如果在class或者className中才处理成-[]
   const statusBarItem = createBottomBar({
     text: 'uno-magic off 😞',
     command: {
@@ -361,9 +355,11 @@ export async function activate(context: vscode.ExtensionContext) {
     position: 'left',
     offset: 500,
   })
-
-  if (hasUnoConfig)
-    statusBarItem.show()
+  if (currentFolder)
+    await updateUnoStatus(vscode.window.activeTextEditor?.document.uri.fsPath)
+  if (presets.length)
+    rules.unshift(...presets)
+  let isOpen = true
 
   registerCommand('unomagic.changeStatus', () => {
     isOpen = !isOpen
@@ -470,6 +466,7 @@ export async function activate(context: vscode.ExtensionContext) {
           })
         }
         hasUnoConfig = filepath
+        statusBarItem.show()
       })
   }
   // 如果是unocss环境下,给出一些预设提醒
