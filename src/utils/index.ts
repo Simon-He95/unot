@@ -365,7 +365,7 @@ export function resetDecorationType() {
   return vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
 }
 
-let isInTemplate = falst
+let isInTemplate = false
 // 引入vue-parser只在template中才处理一些逻辑
 export function parser(code: string, position: vscode.Position) {
   const entry = vscode.window.activeTextEditor?.document.uri.fsPath
