@@ -365,6 +365,7 @@ export function resetDecorationType() {
   return vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
 }
 
+let isInTemplate = falst
 // 引入vue-parser只在template中才处理一些逻辑
 export function parser(code: string, position: vscode.Position) {
   const entry = vscode.window.activeTextEditor?.document.uri.fsPath
@@ -373,6 +374,8 @@ export function parser(code: string, position: vscode.Position) {
   const suffix = entry.slice(entry.lastIndexOf('.') + 1)
   if (!suffix)
     return
+  isInTemplate = false
+
   if (suffix === 'vue')
     return transformVue(code, position)
   if (/jsx|tsx/.test(suffix))
@@ -424,6 +427,7 @@ function dfs(children: any, position: vscode.Position) {
     }
     return {
       type: 'text',
+      isInTemplate: true,
     }
   }
 }
@@ -494,6 +498,8 @@ function jsxDfs(children: any, position: vscode.Position) {
         }
       }
     }
+    if (type === 'JSXElement' || (type === 'ReturnStatement' && argument.type === 'JSXElement'))
+      isInTemplate = true
 
     if (type === 'VariableDeclaration')
       children = declarations
@@ -519,6 +525,7 @@ function jsxDfs(children: any, position: vscode.Position) {
     }
     return {
       type: 'text',
+      isInTemplate,
     }
   }
 }
