@@ -48,9 +48,10 @@ const stroke_width = ['stroke-0', 'stroke-1', 'stroke-2']
 const will_change = ['will-change-auto', 'will-change-scroll', 'will-change-contents', 'will-change-transform']
 const timing_function = ['ease-linear', 'ease-in', 'ease-out', 'ease-in-out']
 const shadow = ['shadow', 'shadow-sm', 'shadow-md', 'shadow-lg', 'shadow-xl', 'shadow-2xl', 'shadow-inner', 'shadow-non']
-
+const fit = ['w', 'h', 'object'].map(item => `${item}-fit`)
 const suppleMore = [
   'container',
+  ...fit,
   ...line_height,
   ...common.reduce((result, item) => {
     result.push(...Array(10).fill(0).map((_, i) => `${item}-${i}`))
