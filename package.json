@@ -36,14 +36,14 @@
   "contributes": {
     "submenus": [
       {
-        "id": "submenuId",
+        "id": "unot",
         "label": "unot"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "submenu": "submenuId",
+          "submenu": "unot",
           "group": "6_px"
         }
       ],
