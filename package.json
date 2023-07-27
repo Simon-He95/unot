@@ -47,10 +47,10 @@
           "group": "6_px"
         }
       ],
-      "submenuId": [
+      "unot": [
         {
           "command": "UnoT.ToUnocss",
-          "when": "editorFocus && editorLangId !== typescript && !editorHasSelection"
+          "when": "editorFocus && !editorHasSelection && (editorLangId == javascript || editorLangId == typescript || editorLangId == vue)"
         },
         {
           "command": "UnoT.InlineStyleToUnocss",
