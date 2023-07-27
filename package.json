@@ -34,17 +34,27 @@
     "onStartupFinished"
   ],
   "contributes": {
+    "submenus": [
+      {
+        "id": "submenuId",
+        "label": "unot"
+      }
+    ],
     "menus": {
       "editor/context": [
         {
-          "when": "editorFocus && editorLangId !== typescript",
-          "command": "UnoT.ToUnocss",
+          "submenu": "submenuId",
           "group": "6_px"
+        }
+      ],
+      "submenuId": [
+        {
+          "command": "UnoT.ToUnocss",
+          "when": "editorFocus && editorLangId !== typescript && !editorHasSelection"
         },
         {
-          "when": "editorHasSelection",
           "command": "UnoT.InlineStyleToUnocss",
-          "group": "6_px"
+          "when": "editorHasSelection"
         }
       ]
     },
@@ -60,16 +70,6 @@
       {
         "command": "UnoT.switchToCss",
         "title": "switch UnoToCss"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "UnoT.ToUnocss",
-        "key": "cmd+Alt+p"
-      },
-      {
-        "command": "UnoT.InlineStyleToUnocss",
-        "key": "Alt+shift+p"
       }
     ]
   },
