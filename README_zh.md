@@ -12,7 +12,8 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
 如果本身unocss可以生效，可能会与unocss产生冲突的话可以进行关闭
 
 ## 💡 影响
-- 会将class(Name)?中的 `w-calc(100% - 20px)` -> `w-[calc(100%-20px)]` [🔎详情](https://github.com/Simon-He95/vscode-uno-magic)
+- text-\[red,hover:pink,2xl,lg:hover:3xl\] -> text-red hover:text-pink text-2xl lg:hover:text-3xl
+- 会将class(Name)?中的 `w-calc(100% - 20px)` -> `w-[calc(100%-20px)]`; [🔎详情](https://github.com/Simon-He95/vscode-uno-magic)
 - 提供unocss语法的代码选择 [🔎详情](https://github.com/Simon-He95/vscode-uno-magic)
 - 提供css转换成unocss，style内容hover显示对应unocss语法 [🔎详情](https://github.com/Simon-He95/tounocss)
 - 提供unocss hover显示对应css代码 [🔎详情](https://github.com/Simon-He95/unocss-to-css)

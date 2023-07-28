@@ -87,7 +87,31 @@ export function transform(content: string) {
   return rules.reduce((result: string, cur: [string | RegExp, string]) => {
     const [reg, callback] = cur
     return result.replace(/class(Name)?="([^"]*)"/g, (_: string, name = '', value: string) => {
-      const v = ` ${value}`
+      let v = ` ${value}`
+      // 替换掉rgba内容排除掉
+      let count = 0
+      let temp = `__unot_split__${count}`
+      const map: any = {}
+      v = v.replace(/rgba?\([^)]+\)/g, (v) => {
+        temp = `__unot_split__${count++}`
+        map[temp] = v
+        return temp
+      })
+
+      const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9\:]+,[\(\),\w0-9\:]+)+)\](\s|'|$)/)
+
+      if (matcher && matcher[3].includes(',')) {
+        v = `${matcher[1]}${matcher[3].split(',').map((item) => {
+          if (item.includes(':')) {
+            const items = item.split(':')
+            return `${items.slice(0, -1).join(':')}:${matcher[2]}-${items.slice(-1)[0]}`
+          }
+          return `${matcher[2]}-${item}`
+        }).join(' ')}`
+      }
+      Object.keys(map).forEach((key) => {
+        v = v.replace(key, map[key])
+      })
       classData = value.split(' ').map(item => item.replace(/['\[\]]/g, ''))
       const newClass = v.replace(reg, callback).slice(1)
       return `class${name}="${newClass}"`

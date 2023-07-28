@@ -13,6 +13,7 @@ If you use the unocss official plugin like me and it doesn’t work, you can use
 If unocss itself can take effect, it can be closed if it may conflict with unocss
 
 ## 💡 Effects
+- text-\[red,hover:pink,2xl,lg:hover:3xl\] -> text-red hover:text-pink text-2xl lg:hover:text-3xl
 - class or className content like `w-calc(100% - 20px)` -> `w-[calc(100%-20px)]` [🔎detail](https://github.com/Simon-He95/vscode-uno-magic)
 - Provides code selection for unocss syntax [🔎detail](https://github.com/Simon-He95/vscode-uno-magic)
 - Provides css conversion to unocss, and style content hover displays corresponding unocss syntax [🔎detail](https://github.com/Simon-He95/tounocss)

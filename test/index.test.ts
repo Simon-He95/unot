@@ -11,7 +11,7 @@ describe('should', () => {
   it('exported', () => {
     expect(transform(`class=" 
     xxmax-w
-    maxw-1
+    max-w-1
      xx-col flex-col-x"`)).toMatchInlineSnapshot(`
        "class=\\" 
            xxmax-w
@@ -20,10 +20,14 @@ describe('should', () => {
      `)
   })
   it('exported', () => {
-    expect(transform('class="bg-rgba(1,1,1,1)"')).toMatchInlineSnapshot('"class=\\"bg-[rgba(1,1,1,1)]\\""')
+    expect(transform('class="bg-[rgba(1,1,1,1)]"')).toMatchInlineSnapshot('"class=\\"bg-[rgba(1,1,1,1)]\\""')
   })
 
-  it('expxxxorted', () => {
+  it('exported', () => {
     expect(transform('class=" w-[calc(100%-20px)] "')).toMatchInlineSnapshot('"class=\\" w-[calc(100%-20px)] \\""')
+  })
+  it('exported', () => {
+    expect(
+      transform('class="text-[rgba(1,1,1,1),hover:pink,2xl,lg:hover:3xl]"')).toMatchInlineSnapshot('"class=\\"text-[rgba(1,1,1,1)] hover:text-pink text-2xl lg:hover:text-3xl\\""')
   })
 })
