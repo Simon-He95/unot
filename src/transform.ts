@@ -99,8 +99,7 @@ export function transform(content: string) {
         return temp
       })
 
-      const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9\:]+,[\(\),\w0-9\:]+)+)\](\s|'|$)/)
-
+      const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9%\s\*\/\+\-\:]+,[\(\),\w0-9%\s\*\/\+\-\:]+)+)\](\s|'|$)/)
       if (matcher && matcher[3].includes(',')) {
         try {
           v = `${matcher[1]}${matcher[3].split(',').map((item) => {
