@@ -20,7 +20,10 @@ describe('should', () => {
      `)
   })
   it('exported', () => {
-    expect(transform('class="bg-[rgba(1,1,1,1)]"')).toMatchInlineSnapshot('"class=\\"bg-[rgba(1,1,1,1)]\\""')
+    expect(transform('class="bg-hsl(150 , 30% , 60% , 0.8)"')).toMatchInlineSnapshot('"class=\\"bg-[hsl(150,30%,60%,0.8)]\\""')
+  })
+  it('exported', () => {
+    expect(transform('class="bg-rgba(150 30% 60% / 0.8)"')).toMatchInlineSnapshot('"class=\\"bg-[rgba(150,30%,60%,0.8)]\\""')
   })
 
   it('exported', () => {
