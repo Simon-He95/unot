@@ -102,13 +102,23 @@ export function transform(content: string) {
       const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9\:]+,[\(\),\w0-9\:]+)+)\](\s|'|$)/)
 
       if (matcher && matcher[3].includes(',')) {
-        v = `${matcher[1]}${matcher[3].split(',').map((item) => {
-          if (item.includes(':')) {
-            const items = item.split(':')
-            return `${items.slice(0, -1).join(':')}:${matcher[2]}-${items.slice(-1)[0]}`
-          }
-          return `${matcher[2]}-${item}`
-        }).join(' ')}`
+        try {
+          v = `${matcher[1]}${matcher[3].split(',').map((item) => {
+            if (item.includes('rgb') && !/rgba?\([^)]+\)/.test(item))
+              throw new Error('match error')
+            if (item.includes('calc') && !/calc\([^)]+\)/.test(item))
+              throw new Error('match error')
+
+            if (item.includes(':')) {
+              const items = item.split(':')
+              return `${items.slice(0, -1).join(':')}:${matcher[2]}-${items.slice(-1)[0]}`
+            }
+            return `${matcher[2]}-${item}`
+          }).join(' ')}`
+        }
+        catch (error) {
+          return _
+        }
       }
       Object.keys(map).forEach((key) => {
         v = v.replace(key, map[key])
