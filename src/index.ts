@@ -379,6 +379,7 @@ export async function activate(context: vscode.ExtensionContext) {
       return
 
     const endPosition = new vscode.Position(text.split('\n').length, text.split('\n').slice(-1)[0].length)
+    const defaultRange = activeTextEditor.visibleRanges[0]
     updateText((edit) => {
       edit.replace(new vscode.Range(new vscode.Position(0, 0), endPosition), newText)
     })
@@ -410,7 +411,12 @@ export async function activate(context: vscode.ExtensionContext) {
       beforeActivePosition.line,
       newPosition,
     )
-    activeTextEditor.selection = new vscode.Selection(newCursorPosition, newCursorPosition)
+    vscode.workspace.applyEdit(new vscode.WorkspaceEdit()).then(() => {
+      // 文件已更新，可以继续执行您的逻辑
+      activeTextEditor.selection = new vscode.Selection(newCursorPosition, newCursorPosition)
+      // 恢复视图状态
+      activeTextEditor.revealRange(defaultRange, vscode.TextEditorRevealType.Default)
+    })
   }))
 
   context.subscriptions.push(addEventListener('activeText-change', () =>
