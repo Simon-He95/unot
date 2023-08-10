@@ -3,10 +3,10 @@ import { addEventListener, copyText, createBottomBar, createCompletionItem, crea
 import { findUp } from 'find-up'
 import { Processor } from 'windicss/lib'
 import type { colorObject } from 'windicss/types/interfaces'
-import { rules, transform } from './transform'
+import { rules, transformClassAttr } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, highlight, parser, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
+import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, highlight, parser, parserAst, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
 
 const toUnocssMap = new LRUCache1(5000)
 
@@ -370,53 +370,19 @@ export async function activate(context: vscode.ExtensionContext) {
     const activeTextEditor = vscode.window.activeTextEditor
     if (!isOpen || !hasUnoConfig || !activeTextEditor)
       return
-    const beforeActivePosition = activeTextEditor.selection.active
     // 对文档保存后的内容进行处理
     const text = document.getText()
-    const newText = transform(text)
-
-    if (newText === text)
+    const classAttr = parserAst(text)
+    if (!classAttr)
       return
-
-    const endPosition = new vscode.Position(text.split('\n').length, text.split('\n').slice(-1)[0].length)
-    const defaultRange = activeTextEditor.visibleRanges[0]
-    updateText((edit) => {
-      edit.replace(new vscode.Range(new vscode.Position(0, 0), endPosition), newText)
-    })
-
-    if (!beforeActivePosition)
-      return
-
-    const beforeLineText = activeTextEditor.document.lineAt(beforeActivePosition.line).text
-    if (!beforeLineText)
-      return
-    const currentLineText = newText.split('\n')[beforeActivePosition.line]
-    // 光标在class之后并且当前行与新当前行发生差异时需要偏移
-    const match = beforeLineText.match(/(class(Name)?=")([^"]*)"/)
-    const isAfterClass = match
-      ? (match.index! + match[1].length - 1 < beforeActivePosition.character)
-      : (currentLineText !== beforeLineText)
-    const isInClass = match
-      ? ((match.index! + match[1].length - 1 < beforeActivePosition.character) && (match.index! + match[1].length + match[3].length >= beforeActivePosition.character))
-      : (currentLineText !== beforeLineText)
-    let newPosition = isAfterClass
-      ? beforeActivePosition.character + currentLineText.length - beforeLineText.length
-      : beforeActivePosition.character
-    if (isInClass) {
-      while ((newPosition > 0) && (currentLineText[newPosition] !== undefined && currentLineText[newPosition] !== ' ' && currentLineText[newPosition] !== '"' && currentLineText[newPosition - 1] !== ' ' && currentLineText[newPosition - 1] !== '"' && currentLineText[newPosition + 1] !== '"' && currentLineText[newPosition + 1] !== ' '))
-        newPosition--
+    const changeList = transformClassAttr(classAttr as any)
+    if (changeList.length) {
+      updateText((edit) => {
+        changeList.forEach((change: any) => {
+          edit.replace(new vscode.Range(new vscode.Position(change.start.line - 1, change.start.column), new vscode.Position(change.end.line - 1, change.end.column - 1)), change.content)
+        })
+      })
     }
-
-    const newCursorPosition = new vscode.Position(
-      beforeActivePosition.line,
-      newPosition,
-    )
-    vscode.workspace.applyEdit(new vscode.WorkspaceEdit()).then(() => {
-      // 文件已更新，可以继续执行您的逻辑
-      activeTextEditor.selection = new vscode.Selection(newCursorPosition, newCursorPosition)
-      // 恢复视图状态
-      activeTextEditor.revealRange(defaultRange, vscode.TextEditorRevealType.Default)
-    })
   }))
 
   context.subscriptions.push(addEventListener('activeText-change', () =>

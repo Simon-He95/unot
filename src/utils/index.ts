@@ -529,3 +529,77 @@ function jsxDfs(children: any, position: vscode.Position) {
     }
   }
 }
+
+export function parserAst(code: string) {
+  const entry = vscode.window.activeTextEditor?.document.uri.fsPath
+  if (!entry)
+    return
+  const suffix = entry.slice(entry.lastIndexOf('.') + 1)
+  if (!suffix)
+    return
+  if (suffix === 'vue')
+    return transformVueAst(code)
+  if (/ts|js|jsx|tsx/.test(suffix))
+    return parserJSXAst(code)
+}
+
+export function transformVueAst(code: string) {
+  const {
+    descriptor: { template },
+    errors,
+  } = parse(code)
+  if (errors.length || !template)
+    return
+
+  // 在template中
+  const { ast } = template
+  return jsxAstDfs(ast.children)
+}
+function jsxAstDfs(children: any, result: any[] = []) {
+  for (const child of children) {
+    const { props, children } = child
+    if (props && props.length) {
+      for (const prop of props) {
+        if (prop.name === 'class') {
+          prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
+          result.push({
+            content: prop.value.content,
+            line: prop.value.loc.start.line,
+            charater: prop.value.loc.start.column,
+            start: prop.value.loc.start,
+            end: prop.value.loc.end,
+          })
+        }
+      }
+    }
+    if (children && children.length)
+      dfsAst(children, result) as any
+  }
+  return result
+}
+function dfsAst(children: any, result: any[] = []) {
+  for (const child of children) {
+    const { props, children } = child
+    if (props && props.length) {
+      for (const prop of props) {
+        if (prop.name === 'class') {
+          prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
+          result.push({
+            content: prop.value.content,
+            line: prop.value.loc.start.line,
+            charater: prop.value.loc.start.column,
+            start: prop.value.loc.start,
+            end: prop.value.loc.end,
+          })
+        }
+      }
+    }
+    if (children && children.length)
+      dfsAst(children, result) as any
+  }
+  return result
+}
+export function parserJSXAst(code: string) {
+  const ast = tsParser(code, { jsx: true, loc: true })
+  return jsxAstDfs(ast.body)
+}

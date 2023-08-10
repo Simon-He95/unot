@@ -1,3 +1,5 @@
+import type { Attr, ChangeList } from './type'
+
 const fontMap: any = {
   100: 'thin',
   200: 'extralight',
@@ -128,4 +130,63 @@ export function transform(content: string) {
     },
     )
   }, content)
+}
+
+export function transformClass(attr: string) {
+  return rules.reduce((result: string, cur: [string | RegExp, string]) => {
+    const [reg, callback] = cur
+    let v = ` ${result}`
+    // 替换掉rgba内容排除掉
+    let count = 0
+    let temp = `__tailwind_magic_split__${count}`
+    const map: any = {}
+    v = v.replace(/rgba?\([^)]+\)/g, (v) => {
+      temp = `__tailwind_magic_split__${count++}`
+      map[temp] = v
+      return temp
+    })
+
+    const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9%\s\*\/\+\-\:]+,[\(\),\w0-9%\s\*\/\+\-\:]+)+)\](\s|'|$)/)
+    if (matcher && matcher[3].includes(',')) {
+      try {
+        v = `${matcher[1]}${matcher[3].split(',').map((item) => {
+          if (item.includes('rgb') && !/rgba?\([^)]+\)/.test(item))
+            throw new Error('match error')
+          if (item.includes('calc') && !/calc\([^)]+\)/.test(item))
+            throw new Error('match error')
+
+          if (item.includes(':')) {
+            const items = item.split(':')
+            return `${items.slice(0, -1).join(':')}:${matcher[2]}-${items.slice(-1)[0]}`
+          }
+          return `${matcher[2]}-${item}`
+        }).join(' ')}`
+      }
+      catch (error) {
+        return result
+      }
+    }
+    Object.keys(map).forEach((key) => {
+      v = v.replace(key, map[key])
+    })
+    classData = result.split(' ')
+    const newClass = v.replace(reg, callback).slice(1)
+
+    return newClass
+  }, attr)
+}
+export function transformClassAttr(attrs: Attr[]) {
+  const changeList: ChangeList[] = []
+  attrs.forEach((attr) => {
+    const { content, start, end } = attr
+    const newAttr = transformClass(content)
+    if (content !== newAttr) {
+      changeList.push({
+        content: newAttr,
+        start,
+        end,
+      })
+    }
+  })
+  return changeList
 }
