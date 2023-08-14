@@ -150,6 +150,15 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   }))
 
+  // 监听编辑器选择内容变化的事件
+  context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(() => {
+    const languageId = document.languageId
+    if (languageId === 'vue')
+      addCacheVue(document.getText() as string)
+    else if (languageId === 'typescriptreact')
+      addCacheReact(document!.getText() as string)
+  }))
+
   // unocss to css hover事件
   context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
     provideHover(document, position) {
