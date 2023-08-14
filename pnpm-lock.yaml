@@ -1,90 +1,97 @@
 lockfileVersion: '6.0'
 
-devDependencies:
-  '@antfu/eslint-config':
-    specifier: ^0.38.4
-    version: 0.38.4(eslint@8.37.0)(typescript@5.0.3)
-  '@types/node':
-    specifier: ^18.15.11
-    version: 18.15.11
-  '@types/prettier':
-    specifier: ^2.7.3
-    version: 2.7.3
-  '@types/vscode':
-    specifier: ^1.77.0
-    version: 1.77.0
-  '@unocss/autocomplete':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/core':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/preset-attributify':
-    specifier: ^0.53.4
-    version: 0.53.4
-  '@unocss/preset-icons':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/preset-uno':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/preset-web-fonts':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/preset-wind':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/transformer-directives':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@unocss/transformer-variant-group':
-    specifier: ^0.53.3
-    version: 0.53.4
-  '@vscode-use/utils':
-    specifier: ^0.0.31
-    version: 0.0.31
-  '@vue/compiler-sfc':
-    specifier: ^3.3.4
-    version: 3.3.4
-  bumpp:
-    specifier: ^9.1.0
-    version: 9.1.0
-  eslint:
-    specifier: ^8.37.0
-    version: 8.37.0
-  esno:
-    specifier: ^0.16.3
-    version: 0.16.3
-  find-up:
-    specifier: ^6.3.0
-    version: 6.3.0
-  pnpm:
-    specifier: ^8.1.1
-    version: 8.1.1
-  prettier:
-    specifier: ^2.8.8
-    version: 2.8.8
-  rimraf:
-    specifier: ^4.4.1
-    version: 4.4.1
-  transform-to-unocss:
-    specifier: ^0.0.64
-    version: 0.0.64
-  tsup:
-    specifier: ^6.7.0
-    version: 6.7.0(typescript@5.0.3)
-  typescript:
-    specifier: ^5.0.3
-    version: 5.0.3
-  vitest:
-    specifier: ^0.29.8
-    version: 0.29.8
-  vsce:
-    specifier: ^2.15.0
-    version: 2.15.0
-  windicss:
-    specifier: ^3.5.6
-    version: 3.5.6
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      '@antfu/eslint-config':
+        specifier: ^0.38.4
+        version: 0.38.4(eslint@8.37.0)(typescript@5.0.3)
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
+      '@types/prettier':
+        specifier: ^2.7.3
+        version: 2.7.3
+      '@types/vscode':
+        specifier: ^1.77.0
+        version: 1.77.0
+      '@unocss/autocomplete':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/core':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/preset-attributify':
+        specifier: ^0.53.4
+        version: 0.53.4
+      '@unocss/preset-icons':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/preset-uno':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/preset-web-fonts':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/preset-wind':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/transformer-directives':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@unocss/transformer-variant-group':
+        specifier: ^0.53.3
+        version: 0.53.4
+      '@vscode-use/utils':
+        specifier: ^0.0.34
+        version: 0.0.34
+      '@vue/compiler-sfc':
+        specifier: ^3.3.4
+        version: 3.3.4
+      bumpp:
+        specifier: ^9.1.0
+        version: 9.1.0
+      eslint:
+        specifier: ^8.37.0
+        version: 8.37.0
+      esno:
+        specifier: ^0.16.3
+        version: 0.16.3
+      find-up:
+        specifier: ^6.3.0
+        version: 6.3.0
+      pnpm:
+        specifier: ^8.1.1
+        version: 8.1.1
+      prettier:
+        specifier: ^2.8.8
+        version: 2.8.8
+      rimraf:
+        specifier: ^4.4.1
+        version: 4.4.1
+      transform-to-unocss:
+        specifier: ^0.0.64
+        version: 0.0.64
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(typescript@5.0.3)
+      typescript:
+        specifier: ^5.0.3
+        version: 5.0.3
+      vitest:
+        specifier: ^0.29.8
+        version: 0.29.8
+      vsce:
+        specifier: ^2.15.0
+        version: 2.15.0
+      windicss:
+        specifier: ^3.5.6
+        version: 3.5.6
 
 packages:
 
@@ -860,8 +867,8 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@vscode-use/utils@0.0.31:
-    resolution: {integrity: sha512-I0T4171r6YLFv/N989o3d8GDVJ+BFegxNGc0OMZP2fpn1ZhxcLDI6j3wreKZiN037GoYJrppkfNuEfAJIpcjXw==}
+  /@vscode-use/utils@0.0.34:
+    resolution: {integrity: sha512-3UEl57osJ94Gqd4JdFbp3MvSjJ9+Beh0Eu9orogT5udd7TMR4xWk8z02palOLyWaylRKddXr7BQy6OGAoYmuBQ==}
     engines: {vscode: ^1.77.0}
     dev: true
 

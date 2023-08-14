@@ -4,11 +4,11 @@ import { createGenerator } from '@unocss/core'
 import presetUno from '@unocss/preset-uno'
 import presetAttributify from '@unocss/preset-attributify'
 import fg from 'fast-glob'
-import { getPosition } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
+import { createRange } from '@vscode-use/utils'
 import type { DictStr, colorObject } from 'windicss/types/interfaces'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
@@ -205,131 +205,91 @@ export class LRUCache2 {
 export const cacheMap = new LRUCache2(5000)
 
 export async function addCacheVue(content: string) {
-  const match = content.match(/[\n\s]<template[^>]*>(.*)<\/template>/s)
-  if (!match)
-    return
-  const template = match[1]
-  const pos = getPosition(content, match.index!)!
-  if (!pos)
-    return
-  const { line } = pos
+  const {
+    descriptor: { template },
+    errors,
+  } = parse(content)
   const realRangeMap = []
-  let _attrs: any[] = []
-  for (const match of template.matchAll(/<[^\s]+\s([^>\/]+)[\/>]/g)) {
-    if (!match)
-      continue
-    // 只考虑单独的属性
-    let attributeStr = match[1].trim().replace(/\s+/g, ' ').replace(/\s(['"])/g, '$1').replace(/="\s/g, '="')
-    // class
-    const pos = getPosition(template, match.index!)!
-    if (!pos)
-      return
+  if (errors.length || !template)
+    return
+  const { ast } = template
+  const attrs = dfs(ast.children)
 
-    const { line: outLine } = pos
-    const offset = match[0].indexOf(match[1]) + match.index! - 1
-    attributeStr = attributeStr.replace(/class="([^"]*)"/, (_, attr, i) => {
-      let pos = i + 6
-      _attrs.push(...attr.split(' ').map((content: string, index: number) => {
-        // pos+=character
-        if (index !== 0)
-          pos += 1
-        return {
-          content,
-          position: [
-            {
-              start: offset + pos,
-              end: pos + content.length + offset,
-              line: line + outLine,
-            },
-          ],
-        }
-      }))
-      return ''
-    })
-
-    attributeStr = attributeStr.replace(/(\w+)="([^"]*)"/g, (_, name, values, i) => {
-      if (name === 'style')
-        return '_'.repeat(_.length)
-      let pos = i + name.length + 2
-      _attrs.push(...values.split(' ').map((v: string, index: any) => {
-        if (index !== 0)
-          pos += 1
-        let content = ''
-        if (v === '~') {
-          content = name
-        }
-        else if (v.includes(':')) {
-          const temp = v.split(':')
-          content = `${temp.slice(0, -1).join('-')}-${name}-${temp.slice(-1)[0]}`
-        }
-        else {
-          content = `${name}-${v}`
-        }
-
-        return {
-          content,
-          position: i === 0
-            ? [
-                {
-                  start: offset + i,
-                  end: offset + i + name.length,
-                  line: line + outLine,
-                },
-                {
-                  start: offset + pos,
-                  end: offset + pos + v.length,
-                  line: line + outLine,
-                },
-              ]
-            : [],
-        }
-      }))
-      return '_'.repeat(_.length)
-    })
-
-    attributeStr.split(' ').forEach(async (attr) => {
-      if (/_+/.test(attr) || !/\w+/.test(attr) || /(\w+)="([^"]*)/.test(attr))
-        return
-      const start = attributeStr.indexOf(attr)
-      _attrs.push({
-        content: attr,
-        position: [
-          {
-            start: offset + start,
-            end: offset + start + attr.length,
-            line: line + outLine,
-          },
-        ],
-      })
-    })
-
-    // todo: 修复初始化的高亮坐标
-    // highlight(realRangeMap.map(({ start, end, line }) =>
-    //   new vscode.Range(new vscode.Position(line, start), new vscode.Position(line, end))
-    // ))
-  }
-  const _map = new Set()
-  // 过滤重复的attr
-  _attrs = _attrs.filter(attr => !cacheMap.has(attr.content)).map((attr) => {
-    if (_map.has(attr.content))
-      return undefined
-    _map.add(attr.content)
-    return attr
-  }).filter(Boolean)
-
-  for (const item of _attrs) {
-    const { content, position } = item
-    if (cacheMap.has(content)) {
-      realRangeMap.push(...position)
+  for (const item of attrs) {
+    if (cacheMap.has(item.source)) {
+      realRangeMap.push(createRange([(item.valueStart ?? item.start).line - 1, (item.valueStart ?? item.start).column], [(item.valueEnd ?? item.end).line - 1, (item.valueEnd ?? item.end).column]))
       continue
     }
-    transformUnocssBack(content).then((transferredCss) => {
-      if (transferredCss) {
-        cacheMap.set(content, transferredCss)
-        realRangeMap.push(...position)
-      }
-    })
+    const transferredCss = await transformUnocssBack(item.source)
+    if (transferredCss) {
+      cacheMap.set(item.source, transferredCss)
+      realRangeMap.push(createRange([(item.valueStart ?? item.start).line - 1, (item.valueStart ?? item.start).column], [(item.valueEnd ?? item.end).line - 1, (item.valueEnd ?? item.end).column]))
+    }
   }
+
+  function dfs(children: any, result: any = []) {
+    for (const child of children) {
+      const { props, children } = child
+      if (props && props.length) {
+        for (const prop of props) {
+          if (prop.value) {
+            const value = prop.value.content.trim().replace(/\s+/g, ' ').split(' ')
+            if (value.length) {
+              value.forEach((v: string) => {
+                let source = ''
+                if (v.includes(':')) {
+                  const temp = v.split(':')
+                  source = `${temp.slice(0, -1).join('-')}-${prop.name}-${temp.slice(-1)[0]}`
+                }
+                else {
+                  source = `${prop.name}-${v}`
+                }
+                const pos = prop.value.content.indexOf(v)
+                result.push({
+                  source,
+                  start: prop.loc.start,
+                  end: prop.loc.end,
+                  valueStart: {
+                    line: prop.value.loc.start.line,
+                    column: prop.value.loc.start.column + pos,
+                    offset: prop.value.loc.start.offset + pos,
+                  },
+                  valueEnd: {
+                    line: prop.value.loc.start.line,
+                    column: prop.value.loc.start.column + pos + v.length,
+                    offset: prop.value.loc.start.offset + pos + v.length,
+                  },
+                })
+              })
+            }
+          }
+          else {
+            result.push({
+              name: prop.name,
+              value: prop.value,
+              source: prop.loc.source,
+              start: {
+                column: prop.loc.start.column - 1,
+                line: prop.loc.start.line,
+                offset: prop.loc.start.offset,
+              },
+              end: {
+                column: prop.loc.end.column - 1,
+                line: prop.loc.end.line,
+                offset: prop.loc.end.offset,
+              },
+              valueStart: prop.value,
+              valueEnd: prop.value,
+            })
+          }
+        }
+      }
+      if (children && children.length)
+        dfs(children, result)
+    }
+    return result
+  }
+  highlight(realRangeMap)
 }
 
 export function addCacheReact(content: string) {

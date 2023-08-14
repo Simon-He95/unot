@@ -6,7 +6,7 @@ import type { colorObject } from 'windicss/types/interfaces'
 import { rules, transformClassAttr } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, highlight, parser, parserAst, resetDecorationType, style, transformUnocssBack, unoToCssDecorationType } from './utils'
+import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, parser, parserAst, resetDecorationType, transformUnocssBack } from './utils'
 
 const toUnocssMap = new LRUCache1(5000)
 
@@ -32,7 +32,6 @@ export async function activate(context: vscode.ExtensionContext) {
   md.supportHtml = true
   let copyClass = ''
   let copyAttr = ''
-  const toUnocssDecorationType = vscode.window.createTextEditorDecorationType(style)
   // 注册ToUnocss命令
   context.subscriptions.push(registerCommand('UnoT.ToUnocss', async () => {
     const textEditor = vscode.window.activeTextEditor!
@@ -84,7 +83,6 @@ export async function activate(context: vscode.ExtensionContext) {
       if (!editor)
         return
       // 移除样式
-      vscode.window.activeTextEditor?.setDecorations(toUnocssDecorationType, [])
       const selection = editor.selection
       const wordRange = new vscode.Range(selection.start, selection.end)
       let selectedText = editor.document.getText(wordRange)
@@ -169,7 +167,6 @@ export async function activate(context: vscode.ExtensionContext) {
       const selection = editor.selection
       const wordRange = new vscode.Range(selection.start, selection.end)
       let selectedText = editor.document.getText(wordRange)
-      const realRangeMap: any = []
       const { line, character } = position
       const allText = document.getText()
       const lineText = allText.split('\n')[line]
@@ -188,70 +185,33 @@ export async function activate(context: vscode.ExtensionContext) {
 
         if (_text.includes('="')) {
           const texts = _text.split('="')
-          if (/class(Name)?/.test(texts[0])) {
+          if (/class(Name)?/.test(texts[0]))
             _text = texts[1]
-            realRangeMap.push(createRange(
-              [line, j - texts[1].length],
-              [line, j],
-            ))
-          }
-          else if (texts[1] === '~') {
+
+          else if (texts[1] === '~')
             _text = texts[0]
 
-            realRangeMap.push(createRange(
-              [line, j - texts[1].length],
-              [line, j],
-            ))
-            realRangeMap.push(createRange(
-              [line, i + 1],
-              [line, i + 1 + texts[0].length],
-            ))
-          }
-          else {
+          else
             _text = texts.join('-')
-
-            realRangeMap.push(createRange(
-              [line, j - texts[1].length],
-              [line, j],
-            ))
-          }
         }
         else {
           _text = _text.replace(/[\[\]\(\)]/g, v => `\\${v}`)
           const newReg = new RegExp(`(\\w+)="[^"]*${_text}[^"]*"`, 'g')
 
-          let isFind = false
           for (const match of lineText.matchAll(newReg)) {
             if (!match)
               continue
             const index = match.index!
             if (index <= character && character <= index + match[0].length) {
-              isFind = true
               if (!/class(Name)?/.test(match[1])) {
                 if (_text.includes(':')) {
                   const temp = _text.split(':')
                   _text = `${temp.slice(0, -1).join('-')}-${match[1]}-${temp.slice(-1)[0]}`
                 }
                 else { _text = `${match[1]}-${_text}` }
-
-                realRangeMap.push(createRange(
-                  [line, index],
-                  [line, index + match[1].length],
-                ))
               }
-
-              realRangeMap.push(createRange(
-                [line, i + 1],
-                [line, j],
-              ))
               break
             }
-          }
-          if (!isFind) {
-            realRangeMap.push(createRange(
-              [line, i + 1],
-              [line, j],
-            ))
           }
         }
 
@@ -264,40 +224,22 @@ export async function activate(context: vscode.ExtensionContext) {
         const pos = lineText.indexOf(selectedText)
         if (pos < 0)
           return
-        let offsetLeft = 0
-
-        while (selectedText[offsetLeft] === ' ')
-          offsetLeft++
-        let offsetRight = -1
-        while (selectedText.slice(offsetRight)[0] === ' ')
-          offsetRight--
-        offsetRight++
-        realRangeMap.push(createRange(
-          [line, pos + offsetLeft],
-          [line, pos + selectedText.length + offsetRight],
-        ))
         selectedText = selectedText.trim()
       }
       selectedText = selectedText.replace(/\\/g, '')
       if (cacheMap.has(selectedText)) {
         const cacheText = cacheMap.get(selectedText)
-        return setStyle2(realRangeMap, cacheText)
+        return setStyle2(cacheText)
       }
       return new Promise((resolve) => {
         transformUnocssBack(selectedText).then((css) => {
           if (!css)
             return resolve(null)
           cacheMap.set(selectedText, css)
-          resolve(setStyle2(realRangeMap, css))
+          resolve(setStyle2(css))
         })
       })
     },
-  }))
-
-  // 监听编辑器选择内容变化的事件
-  context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(() => {
-    vscode.window.activeTextEditor?.setDecorations(toUnocssDecorationType, [])
-    vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
   }))
 
   if (document) {
@@ -318,8 +260,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   function setStyle1(editor: vscode.TextEditor, realRangeMap: any[], selectedUnocssText: string) {
     // 增加decorationType样式
-    editor.edit(() => editor.setDecorations(toUnocssDecorationType, realRangeMap.map((item: any) => item.range)))
-
     md.value = ''
     copyAttr = selectedUnocssText
     const copyIcon = '<img width="12" height="12" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UyOWNkMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTTIwLjk5OCAxMGMtLjAxMi0yLjE3NS0uMTA4LTMuMzUzLS44NzctNC4xMjFDMTkuMjQzIDUgMTcuODI4IDUgMTUgNWgtM2MtMi44MjggMC00LjI0MyAwLTUuMTIxLjg3OUM2IDYuNzU3IDYgOC4xNzIgNiAxMXY1YzAgMi44MjggMCA0LjI0My44NzkgNS4xMjFDNy43NTcgMjIgOS4xNzIgMjIgMTIgMjJoM2MyLjgyOCAwIDQuMjQzIDAgNS4xMjEtLjg3OUMyMSAyMC4yNDMgMjEgMTguODI4IDIxIDE2di0xIi8+PHBhdGggZD0iTTMgMTB2NmEzIDMgMCAwIDAgMyAzTTE4IDVhMyAzIDAgMCAwLTMtM2gtNEM3LjIyOSAyIDUuMzQzIDIgNC4xNzIgMy4xNzJDMy41MTggMy44MjUgMy4yMjkgNC43IDMuMTAyIDYiLz48L2c+PC9zdmc+" />'
@@ -332,9 +272,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return new vscode.Hover(md)
   }
 
-  function setStyle2(realRangeMap: any[], css: string) {
-    // 增加decorationType样式
-    highlight(realRangeMap)
+  function setStyle2(css: string) {
     md.value = ''
     md.appendMarkdown('<a href="https://github.com/Simon-He95/unocss-to-css">Unocss To Css:</a>\n')
     md.appendCodeblock(css, 'css')
@@ -350,7 +288,7 @@ export async function activate(context: vscode.ExtensionContext) {
     text: 'uno-magic off 😞',
     command: {
       title: 'uno-magic',
-      command: 'unomagic.changeStatus',
+      command: 'unotmagic.changeStatus',
     },
     position: 'left',
     offset: 500,
@@ -361,7 +299,7 @@ export async function activate(context: vscode.ExtensionContext) {
     rules.unshift(...presets)
   let isOpen = true
 
-  registerCommand('unomagic.changeStatus', () => {
+  registerCommand('unotmagic.changeStatus', () => {
     isOpen = !isOpen
     statusBarItem.text = `uno-magic ${isOpen ? 'off 😞' : 'on 🤩'}`
   })
