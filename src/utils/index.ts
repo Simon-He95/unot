@@ -8,8 +8,9 @@ import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
-import { createRange } from '@vscode-use/utils'
+import { createRange, createSquare, setStyle } from '@vscode-use/utils'
 import type { DictStr, colorObject } from 'windicss/types/interfaces'
+import { colors } from '../index'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
 export function getCssType(filename: string) {
@@ -204,6 +205,7 @@ export class LRUCache2 {
 
 export const cacheMap = new LRUCache2(5000)
 
+const resetColors: (() => void)[] = []
 export async function addCacheVue(content: string) {
   const {
     descriptor: { template },
@@ -214,15 +216,21 @@ export async function addCacheVue(content: string) {
     return
   const { ast } = template
   const attrs = dfs(ast.children)
+  resetColors.forEach(cb => cb())
+  resetColors.length = 0
 
   for (const item of attrs) {
     if (cacheMap.has(item.source)) {
+      getColors(item.source, item.valueStart ?? item.start)
       realRangeMap.push(createRange([(item.valueStart ?? item.start).line - 1, (item.valueStart ?? item.start).column], [(item.valueEnd ?? item.end).line - 1, (item.valueEnd ?? item.end).column]))
       continue
     }
     const transferredCss = await transformUnocssBack(item.source)
     if (transferredCss) {
       cacheMap.set(item.source, transferredCss)
+      if (transferredCss.includes('rgb'))
+        getColors(item.source, item.valueStart ?? item.start)
+
       realRangeMap.push(createRange([(item.valueStart ?? item.start).line - 1, (item.valueStart ?? item.start).column], [(item.valueEnd ?? item.end).line - 1, (item.valueEnd ?? item.end).column]))
     }
   }
@@ -293,6 +301,33 @@ export async function addCacheVue(content: string) {
     return result
   }
   highlight(realRangeMap)
+}
+
+function getColors(attr: string, position: any) {
+  let color = ''
+  if (/\#\w+/.test(attr)) {
+    attr.replace(/\#\w+/, v => color = v)
+  }
+  else if (/rgba?/.test(attr)) {
+    attr.replace(/rgba?\([^\)]*\)/, v => color = v)
+  }
+  else {
+    Object.keys(colors).find((c) => {
+      if (attr.includes(c)) {
+        color = colors[c]
+        return true
+      }
+      return false
+    })
+    // if (!color)
+    //   color = attr.split('-').slice(-1)[0]
+  }
+  if (!color)
+    return
+  const decorationType = createSquare(color)
+  setStyle(decorationType, createRange([position.line - 1, position.column], [position.line - 1, position.column]))
+
+  resetColors.push(() => setStyle(decorationType))
 }
 
 export function addCacheReact(content: string) {

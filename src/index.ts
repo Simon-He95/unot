@@ -9,7 +9,10 @@ import { CssToUnocssProcess } from './process'
 import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, parser, parserAst, resetDecorationType, transformUnocssBack } from './utils'
 
 const toUnocssMap = new LRUCache1(5000)
-
+const processor = new Processor() as Processor
+export const colors = flatColors(
+  processor.theme('colors', {}) as colorObject,
+)
 export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditor = vscode.window.activeTextEditor
   if (!activeTextEditor)
@@ -17,10 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const pkgs = await hasFile(['**/package.json'])
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
-  const processor = new Processor() as Processor
-  const colors = flatColors(
-    processor.theme('colors', {}) as colorObject,
-  )
+
   let unoToCssToggle = true
   const styleReg = /style="([^"]+)"/
   const document = activeTextEditor.document
