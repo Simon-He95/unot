@@ -112,7 +112,6 @@ export const disposes: any = []
 export async function transformUnocssBack(code: string): Promise<string> {
   // 加载shortcuts
   const shortcuts = await getShortcuts()
-
   return new Promise((resolve) => {
     createGenerator(
       {},
@@ -127,12 +126,17 @@ export async function transformUnocssBack(code: string): Promise<string> {
       .generate(code || '')
       .then((res: any) => {
         const css = res.getLayers()
-        const reg = new RegExp(`${escapeRegExp(code)}([:\\>][\\w\\-\\(\\)]+)?{(.*)}`)
-        const match = css.match(reg)
-        if (!match)
-          return resolve('')
-        const result = match[0].replace(match[2], (match[2] as string).replace(/[:,]/g, v => `${v} `)).replace('{', ' {\n  ').replace(/;/g, ';\n  ').replace('  }', '}')
-        resolve(result)
+        const tag = '/* layer: default */'
+        const index = css.indexOf(tag)
+        if (index < 0) {
+          resolve('')
+          return
+        }
+        const data = css.slice(index + tag.length).trim()
+        if (data) {
+          const result = data.replace(/[:,]/g, (v: string) => `${v} `).replace('{', ' {\n  ').replace(/;/g, ';\n  ').replace('  }', '}')
+          resolve(result)
+        }
       })
   })
 }
@@ -159,10 +163,6 @@ async function findShortcuts(unoUri: string) {
   if (!matcher)
     return []
   return eval(matcher[1])
-}
-
-function escapeRegExp(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\%:\!\&\>]/g, '\\\\\\$&')
 }
 
 export class LRUCache2 {
@@ -241,8 +241,11 @@ export async function addCacheVue(content: string) {
                   const temp = v.split(':')
                   source = `${temp.slice(0, -1).join('-')}-${prop.name}-${temp.slice(-1)[0]}`
                 }
-                else {
+                else if (prop.name !== 'class') {
                   source = `${prop.name}-${v}`
+                }
+                else {
+                  source = v
                 }
                 const pos = prop.value.content.indexOf(v)
                 result.push({
