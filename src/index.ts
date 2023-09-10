@@ -1,29 +1,23 @@
 import * as vscode from 'vscode'
-import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, createSelect, getConfiguration, message, registerCommand, registerCompletionItemProvider, updateText } from '@vscode-use/utils'
+import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, getConfiguration, message, registerCommand, registerCompletionItemProvider, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
-import { Processor } from 'windicss/lib'
-import type { colorObject } from 'windicss/types/interfaces'
 import { rules, transformClassAttr } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache1, addCacheReact, addCacheVue, cacheMap, flatColors, getMultipedUnocssText, hasFile, hex2RGB, parser, parserAst, resetDecorationType, transformUnocssBack } from './utils'
+import { LRUCache, getMultipedUnocssText, hasFile, parser, parserAst, unoToCssDecorationType } from './utils'
 
-const toUnocssMap = new LRUCache1(5000)
-const processor = new Processor() as Processor
-export const colors = flatColors(
-  processor.theme('colors', {}) as colorObject,
-)
+const cacheMap = new LRUCache(5000)
+
 export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditor = vscode.window.activeTextEditor
   if (!activeTextEditor)
     return
+
   const pkgs = await hasFile(['**/package.json'])
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
 
-  let unoToCssToggle = true
   const styleReg = /style="([^"]+)"/
-  const document = activeTextEditor.document
   const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'] } = getConfiguration('UnoT')
   const process = new CssToUnocssProcess()
   const LANS = ['html', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'svelte', 'solid', 'swan', 'react', 'js', 'ts', 'tsx', 'jsx', 'wxml', 'axml', 'css', 'wxss', 'acss', 'less', 'scss', 'sass', 'stylus', 'wxss', 'acss']
@@ -129,145 +123,24 @@ export async function activate(context: vscode.ExtensionContext) {
       // 获取当前选中的文本内容
       if (!selectedText || !/[\w\-]+\s*:[^.]+/.test(selectedText))
         return
-      if (toUnocssMap.has((selectedText)))
-        return setStyle1(editor, realRangeMap, toUnocssMap.get(selectedText))
+      if (cacheMap.has((selectedText)))
+        return setStyle(cacheMap.get(selectedText))
       const selectedUnocssText = getMultipedUnocssText(selectedText)
       if (!selectedUnocssText)
         return
       // 设置缓存
-      toUnocssMap.set(selectedText, selectedUnocssText)
+      cacheMap.set(selectedText, selectedUnocssText)
 
-      return setStyle1(editor, realRangeMap, selectedUnocssText)
+      return setStyle(selectedUnocssText)
     },
   }))
-
-  context.subscriptions.push(registerCommand('UnoT.switchToCss', () => {
-    createSelect([
-      'open',
-      'close',
-    ]).then((r) => {
-      unoToCssToggle = r === 'open'
-    })
+  context.subscriptions.push(vscode.window.onDidChangeTextEditorVisibleRanges(() => {
+    // 移除装饰器
+    if (vscode.window.activeTextEditor)
+      vscode.window.activeTextEditor.setDecorations(unoToCssDecorationType, [])
   }))
-
-  // 监听编辑器选择内容变化的事件
-  context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(() => {
-    const languageId = document.languageId
-    if (languageId === 'vue')
-      addCacheVue(document.getText() as string)
-    else if (languageId === 'typescriptreact')
-      addCacheReact(document!.getText() as string)
-  }))
-
-  // unocss to css hover事件
-  context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
-    provideHover(document, position) {
-      // 开关如果选择使用官方的unocss插件，可以选择关闭
-      if (!unoToCssToggle)
-        return
-
-      if (!document)
-        return
-      const editor = vscode.window.activeTextEditor
-      if (!editor)
-        return
-      // 移除样式
-      resetDecorationType()
-      const selection = editor.selection
-      const wordRange = new vscode.Range(selection.start, selection.end)
-      let selectedText = editor.document.getText(wordRange)
-      const { line, character } = position
-      const allText = document.getText()
-      const lineText = allText.split('\n')[line]
-      if (!selectedText) {
-        let _text = lineText[character]
-        if (!_text || /[><\s\/]/.test(_text))
-          return
-        let i = character
-        let c
-        while (!/[\s\/"><]/.test((c = lineText[--i])) && c)
-          _text = `${c}${_text}`
-
-        let j = character
-        while (!/[\s\/"><]/.test((c = lineText[++j])) && c)
-          _text = `${_text}${c}`
-
-        if (_text.includes('="')) {
-          const texts = _text.split('="')
-          if (/class(Name)?/.test(texts[0]))
-            _text = texts[1]
-
-          else if (texts[1] === '~')
-            _text = texts[0]
-
-          else
-            _text = texts.join('-')
-        }
-        else {
-          _text = _text.replace(/[\[\]\(\)]/g, v => `\\${v}`)
-          const newReg = new RegExp(`(\\w+)="[^"]*${_text}[^"]*"`, 'g')
-
-          for (const match of lineText.matchAll(newReg)) {
-            if (!match)
-              continue
-            const index = match.index!
-            if (index <= character && character <= index + match[0].length) {
-              if (!/class(Name)?/.test(match[1])) {
-                if (_text.includes(':')) {
-                  const temp = _text.split(':')
-                  _text = `${temp.slice(0, -1).join('-')}-${match[1]}-${temp.slice(-1)[0]}`
-                }
-                else { _text = `${match[1]}-${_text}` }
-              }
-              break
-            }
-          }
-        }
-
-        selectedText = _text
-      }
-      else {
-        if (selectedText.trim() === '')
-          return
-
-        const pos = lineText.indexOf(selectedText)
-        if (pos < 0)
-          return
-        selectedText = selectedText.trim()
-      }
-      selectedText = selectedText.replace(/\\/g, '')
-      if (cacheMap.has(selectedText)) {
-        const cacheText = cacheMap.get(selectedText)
-        return setStyle2(cacheText)
-      }
-      return new Promise((resolve) => {
-        transformUnocssBack(selectedText).then((css) => {
-          if (!css)
-            return resolve(null)
-          cacheMap.set(selectedText, css)
-          resolve(setStyle2(css))
-        })
-      })
-    },
-  }))
-
-  if (document) {
-    const languageId = document.languageId
-    if (languageId === 'vue')
-      addCacheVue(document.getText() as string)
-    else if (languageId === 'typescriptreact')
-      addCacheReact(document!.getText() as string)
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => {
-      if (!event.contentChanges.length)
-        return
-      if (languageId === 'vue')
-        return addCacheVue(document.getText() as string)
-      if (languageId === 'typescriptreact')
-        return addCacheReact(document.getText() as string)
-    }))
-  }
-
-  function setStyle1(editor: vscode.TextEditor, realRangeMap: any[], selectedUnocssText: string) {
+  
+  function setStyle(selectedUnocssText: string) {
     // 增加decorationType样式
     md.value = ''
     copyAttr = selectedUnocssText
@@ -278,13 +151,6 @@ export async function activate(context: vscode.ExtensionContext) {
     copyClass = selectedUnocssText.replace(/="([^"]+)"/g, (_, v) => `-${v}`)
     md.appendMarkdown(`\n<a href="command:UnoT.copyClass">class: ${copyIcon} ${copyClass}</a>\n`)
 
-    return new vscode.Hover(md)
-  }
-
-  function setStyle2(css: string) {
-    md.value = ''
-    md.appendMarkdown('<a href="https://github.com/Simon-He95/unocss-to-css">Unocss To Css:</a>\n')
-    md.appendCodeblock(css, 'css')
     return new vscode.Hover(md)
   }
 
@@ -344,6 +210,7 @@ export async function activate(context: vscode.ExtensionContext) {
         statusBarItem.show()
     }),
   ))
+
   if (!hasUnoConfig) {
     context.subscriptions.push(addEventListener('file-create', () => {
       updateUnoStatus()
@@ -362,48 +229,35 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!completions.length) {
           getUnoCompletions(filepath).then((res: any) => {
             completions = res
-            unoCompletionsMap = [
-              ...['class', 'className', 'id', 'style'].map(item => createCompletionItem({ content: item, snippet: `${item}="$1"`, type: 5 })),
-              ...completions
-                .map(([content, detail, colorInfo]: any) => {
-                  const documentation = new vscode.MarkdownString()
-                  documentation.appendCodeblock(detail, 'css')
+            unoCompletionsMap = completions
+              .map(([content, detail]: any) => {
+                const documentation = new vscode.MarkdownString()
+                documentation.appendCodeblock(detail, 'css')
+                if (content.startsWith('animate'))
+                  return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Unit })
 
-                  if (colorInfo) {
-                    const { color, opacity } = colorInfo
-                    if (opacity) {
-                      const rgb = hex2RGB(colors[color])
-                      return createCompletionItem({ content, detail: `rgba(${rgb?.join(',')},${opacity / 100})`, type: vscode.CompletionItemKind.Color, documentation })
-                    }
-                    return createCompletionItem({ content, detail: colors[color], type: vscode.CompletionItemKind.Color, documentation })
-                  }
-                  if (content.startsWith('animate'))
-                    return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Unit })
-
-                  return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Enum })
-                })]
+                return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Enum })
+              })
           })
         }
         hasUnoConfig = filepath
         statusBarItem.show()
       })
   }
+  const commonMap = ['class', 'className', 'id', 'style'].map(item => createCompletionItem({ content: item, snippet: `${item}="$1"`, type: 5 }))
   // 如果是unocss环境下,给出一些预设提醒
   context.subscriptions.push(registerCompletionItemProvider(['javascript', 'javascriptreact', 'svelte', 'solid', 'typescriptreact', 'html', 'vue', 'css'], (document, position) => {
     if (!hasUnoConfig)
       return
     const data = parser(document.getText(), position)
-    if (data?.isJSX) {
-      if (data?.propName === 'className')
-        return unoCompletionsMap
-    }
-    else if (data?.type === 'props' || data === true) {
+
+    if ((data?.type === 'props' && data.prop) || data === true)
       return unoCompletionsMap
-    }
+    else
+      return [...commonMap, ...unoCompletionsMap]
   }, ['"', '\'', ' ']))
 }
 
 export function deactivate() {
-  toUnocssMap.clear()
   cacheMap.clear()
 }

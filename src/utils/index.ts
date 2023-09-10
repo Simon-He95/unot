@@ -1,16 +1,10 @@
 import fsp from 'node:fs/promises'
-import { toUnocss } from 'transform-to-unocss'
-import { createGenerator } from '@unocss/core'
-import presetUno from '@unocss/preset-uno'
-import presetAttributify from '@unocss/preset-attributify'
+import { toUnocss } from 'transform-to-unocss-core'
 import fg from 'fast-glob'
 import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
-import { createRange, createSquare, setStyle } from '@vscode-use/utils'
-import type { DictStr, colorObject } from 'windicss/types/interfaces'
-import { colors } from '../index'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
 export function getCssType(filename: string) {
@@ -35,7 +29,9 @@ export function getMultipedUnocssText(text: string) {
       continue
     if (!isChanged)
       isChanged = newText !== text
-    selectedNewTexts.push(newText)
+    selectedNewTexts.push(isOpen
+      ? newText.replace(/-([0-9\.]+)px/, (_: string, v: string) => `-${+v / 4}`)
+      : newText)
   }
   // 没有存在能够转换的元素
   if (!isChanged)
@@ -44,8 +40,7 @@ export function getMultipedUnocssText(text: string) {
   const selectedUnocssText = selectedNewTexts.join(' ')
   return selectedUnocssText
 }
-
-export class LRUCache1 {
+export class LRUCache {
   private cache
   private maxSize
   constructor(maxSize: number) {
@@ -110,38 +105,6 @@ export const unoToCssDecorationType = vscode.window.createTextEditorDecorationTy
 
 export const disposes: any = []
 
-export async function transformUnocssBack(code: string): Promise<string> {
-  // 加载shortcuts
-  const shortcuts = await getShortcuts()
-  return new Promise((resolve) => {
-    createGenerator(
-      {},
-      {
-        presets: [
-          presetUno(),
-          presetAttributify() as any,
-        ],
-        shortcuts,
-      },
-    )
-      .generate(code || '')
-      .then((res: any) => {
-        const css = res.getLayers()
-        const tag = '/* layer: default */'
-        const index = css.indexOf(tag)
-        if (index < 0) {
-          resolve('')
-          return
-        }
-        const data = css.slice(index + tag.length).trim()
-        if (data) {
-          const result = data.replace(/[:,]/g, (v: string) => `${v} `).replace('{', ' {\n  ').replace(/;/g, ';\n  ').replace('  }', '}')
-          resolve(result)
-        }
-      })
-  })
-}
-
 let configCacheMap: any = null
 const SHORTCUTS_REG = /shortcuts:\s*(\[([\n\s]*[{[][^\}]*[\n\s]*[}\]],?)*[\n\s]*\])/
 
@@ -164,192 +127,6 @@ async function findShortcuts(unoUri: string) {
   if (!matcher)
     return []
   return eval(matcher[1])
-}
-
-export class LRUCache2 {
-  private cache
-  private maxSize
-  constructor(maxSize: number) {
-    this.cache = new Map()
-    this.maxSize = maxSize
-  }
-
-  get(key: any) {
-    // 获取缓存值，并将其从Map中删除再重新插入，保证其成为最新的元素
-    const value = this.cache.get(key)
-    if (value !== undefined) {
-      this.cache.delete(key)
-      this.cache.set(key, value)
-    }
-    return value
-  }
-
-  set(key: any, value: any) {
-    // 如果缓存已满，先删除最旧的元素
-    if (this.cache.size >= this.maxSize) {
-      const oldestKey = this.cache.keys().next().value
-      this.cache.delete(oldestKey)
-    }
-    // 插入新值
-    this.cache.set(key, value)
-  }
-
-  has(key: any) {
-    return this.cache.has(key)
-  }
-
-  clear() {
-    this.cache.clear()
-  }
-}
-
-export const cacheMap = new LRUCache2(5000)
-
-const resetColors: (() => void)[] = []
-export async function addCacheVue(content: string) {
-  const {
-    descriptor: { template },
-    errors,
-  } = parse(content)
-  const realRangeMap = []
-  if (errors.length || !template)
-    return
-  const { ast } = template
-  const attrs = dfs(ast.children)
-  resetColors.forEach(cb => cb())
-  resetColors.length = 0
-
-  for (const item of attrs) {
-    if (cacheMap.has(item.source)) {
-      getColors(item.source, item.valueStart ?? item.start)
-      realRangeMap.push(createRange([(item.valueStart ?? item.start).line - 1, (item.valueStart ?? item.start).column], [(item.valueEnd ?? item.end).line - 1, (item.valueEnd ?? item.end).column]))
-      continue
-    }
-    const transferredCss = await transformUnocssBack(item.source)
-    if (transferredCss) {
-      cacheMap.set(item.source, transferredCss)
-      if (transferredCss.includes('rgb'))
-        getColors(item.source, item.valueStart ?? item.start)
-
-      realRangeMap.push(createRange([(item.valueStart ?? item.start).line - 1, (item.valueStart ?? item.start).column], [(item.valueEnd ?? item.end).line - 1, (item.valueEnd ?? item.end).column]))
-    }
-  }
-
-  function dfs(children: any, result: any = []) {
-    for (const child of children) {
-      const { props, children } = child
-      if (props && props.length) {
-        for (const prop of props) {
-          if (prop.value) {
-            const value = prop.value.content.trim().replace(/\s+/g, ' ').split(' ')
-            if (value.length) {
-              value.forEach((v: string) => {
-                let source = ''
-                if (v.includes(':')) {
-                  const temp = v.split(':')
-                  source = `${temp.slice(0, -1).join('-')}-${prop.name}-${temp.slice(-1)[0]}`
-                }
-                else if (prop.name !== 'class') {
-                  source = `${prop.name}-${v}`
-                }
-                else {
-                  source = v
-                }
-                const pos = prop.value.content.indexOf(v)
-                result.push({
-                  source,
-                  start: prop.loc.start,
-                  end: prop.loc.end,
-                  valueStart: {
-                    line: prop.value.loc.start.line,
-                    column: prop.value.loc.start.column + pos,
-                    offset: prop.value.loc.start.offset + pos,
-                  },
-                  valueEnd: {
-                    line: prop.value.loc.start.line,
-                    column: prop.value.loc.start.column + pos + v.length,
-                    offset: prop.value.loc.start.offset + pos + v.length,
-                  },
-                })
-              })
-            }
-          }
-          else {
-            result.push({
-              name: prop.name,
-              value: prop.value,
-              source: prop.loc.source,
-              start: {
-                column: prop.loc.start.column - 1,
-                line: prop.loc.start.line,
-                offset: prop.loc.start.offset,
-              },
-              end: {
-                column: prop.loc.end.column - 1,
-                line: prop.loc.end.line,
-                offset: prop.loc.end.offset,
-              },
-              valueStart: prop.value,
-              valueEnd: prop.value,
-            })
-          }
-        }
-      }
-      if (children && children.length)
-        dfs(children, result)
-    }
-    return result
-  }
-  highlight(realRangeMap)
-}
-
-function getColors(attr: string, position: any) {
-  let color = ''
-  if (/\#\w+/.test(attr)) {
-    attr.replace(/\#\w+/, v => color = v)
-  }
-  else if (/rgba?/.test(attr)) {
-    attr.replace(/rgba?\([^\)]*\)/, v => color = v)
-  }
-  else {
-    Object.keys(colors).find((c) => {
-      if (attr.includes(c)) {
-        color = colors[c]
-        return true
-      }
-      return false
-    })
-    // if (!color)
-    //   color = attr.split('-').slice(-1)[0]
-  }
-  if (!color)
-    return
-  const decorationType = createSquare(color)
-  setStyle(decorationType, createRange([position.line - 1, position.column], [position.line - 1, position.column]))
-
-  resetColors.push(() => setStyle(decorationType))
-}
-
-export function addCacheReact(content: string) {
-  for (const match of content.matchAll(/className="([^"]+)"/gs)) {
-    if (!match)
-      continue
-    const attributes = match[1].replace(/[\w\-@:]+="[^"]+"/g, '').trim().replace(/\s+/g, ' ')
-    if (!attributes)
-      continue
-    // 过滤缓存已有的属性
-    const attrs = attributes.split(' ').filter(attr =>
-      !cacheMap.has(attr),
-    )
-
-    for (const attr of attrs) {
-      if (cacheMap.has(attr))
-        continue
-      transformUnocssBack(attr).then(r =>
-        r && cacheMap.set(attr, r),
-      )
-    }
-  }
 }
 
 export function highlight(realRangeMap: vscode.Range[]) {
@@ -444,34 +221,6 @@ function isInPosition(loc: any, position: vscode.Position) {
   if (line + 1 > endLine)
     return
   return true
-}
-
-export function flatColors(colors: colorObject, head?: string): DictStr {
-  let flatten: { [key: string]: string } = {}
-  for (const [key, value] of Object.entries(colors)) {
-    if (typeof value === 'string')
-      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}` : key] = value
-    else if (typeof value === 'function')
-      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}` : key] = 'currentColor'
-    else
-      flatten = { ...flatten, ...flatColors(value, head ? `${head}-${key}` : key) }
-  }
-  return flatten
-}
-
-export function hex2RGB(hex: string): number[] | undefined {
-  const RGB_HEX = /^#?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/i
-  const [, short, long] = String(hex).match(RGB_HEX) || []
-
-  if (long) {
-    const value = Number.parseInt(long, 16)
-    return [value >> 16, (value >> 8) & 0xFF, value & 0xFF]
-  }
-  else if (short) {
-    return Array.from(short, s => Number.parseInt(s, 16)).map(
-      n => (n << 4) | n,
-    )
-  }
 }
 
 export function parserJSX(code: string, position: vscode.Position) {

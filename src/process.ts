@@ -22,6 +22,6 @@ export class CssToUnocssProcess {
     if (!code)
       return ''
     const type = getCssType(fileName)
-    return await transfromCode(code, fileName, type as any)
+    return await transfromCode(code, fileName, type)
   }
 }
