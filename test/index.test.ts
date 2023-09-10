@@ -3,10 +3,13 @@ import { transform } from '../src/transform'
 
 describe('should', () => {
   it('exported', () => {
-    expect(transform('class="bg-[rgba(0,0,0)] text-[#fff]"')).toMatchInlineSnapshot('"class=\\"bg-[rgba(0,0,0)] text-[#fff]\\""')
+    expect(transform('class="bg-rgba(0,0,0) text-[#fff]"')).toMatchInlineSnapshot('"class=\\"bg-[rgba(0,0,0)] text-[#fff]\\""')
   })
   it('exported', () => {
-    expect(transform('class="translate-x-[-1px]"')).toMatchInlineSnapshot('"class=\\"translate-x-[-1px]\\""')
+    expect(transform('class="-translatex1px"')).toMatchInlineSnapshot('"class=\\"-translate-x-[1px]\\""')
+  })
+  it('exported', () => {
+    expect(transform('class="maxw100%"')).toMatchInlineSnapshot('"class=\\"max-w-[100%]\\""')
   })
   it('exported', () => {
     expect(transform(`class=" 
@@ -27,7 +30,7 @@ describe('should', () => {
   })
 
   it('exported', () => {
-    expect(transform('class=" w-[calc(100%-20px)] "')).toMatchInlineSnapshot('"class=\\" w-[calc(100%-20px)] \\""')
+    expect(transform('class=" w-calc(100% - 20px) "')).toMatchInlineSnapshot('"class=\\" w-[calc(100%-20px)] \\""')
   })
   it('exported', () => {
     expect(

@@ -139,7 +139,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (vscode.window.activeTextEditor)
       vscode.window.activeTextEditor.setDecorations(unoToCssDecorationType, [])
   }))
-  
+
   function setStyle(selectedUnocssText: string) {
     // 增加decorationType样式
     md.value = ''
