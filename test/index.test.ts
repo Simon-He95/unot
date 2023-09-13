@@ -36,4 +36,8 @@ describe('should', () => {
     expect(
       transform('class="text-[rgba(1,1,1,1),hover:pink,2xl,lg:hover:3xl]"')).toMatchInlineSnapshot('"class=\\"text-[rgba(1,1,1,1)] hover:text-pink text-2xl lg:hover:text-3xl\\""')
   })
+  it('exported', () => {
+    expect(
+      transform('class="-translatex50rem!"')).toMatchInlineSnapshot('"class=\\"-translate-x-[50rem]!\\""')
+  })
 })
