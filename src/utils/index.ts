@@ -155,7 +155,6 @@ export function parser(code: string, position: vscode.Position) {
     return transformVue(code, position)
   if (/jsx|tsx/.test(suffix))
     return parserJSX(code, position)
-  return true
 }
 
 export function transformVue(code: string, position: vscode.Position) {

@@ -251,10 +251,12 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     const data = parser(document.getText(), position)
 
-    if ((data?.type === 'props' && data.prop) || data === true)
-      return unoCompletionsMap
-    else
-      return [...commonMap, ...unoCompletionsMap]
+    if (data?.type === 'props') {
+      if (data.prop && (data.prop.name === 'class' || data.prop.name === 'className'))
+        return unoCompletionsMap
+      else
+        return [...commonMap, ...unoCompletionsMap]
+    }
   }, ['"', '\'', ' ']))
 }
 
