@@ -47,6 +47,9 @@ importers:
       '@unocss/transformer-variant-group':
         specifier: ^0.53.3
         version: 0.53.4
+      '@vscode-use/createwebview':
+        specifier: ^0.0.10
+        version: 0.0.10
       '@vscode-use/utils':
         specifier: ^0.0.35
         version: 0.0.35
@@ -868,6 +871,11 @@ packages:
       diff: 5.1.0
       loupe: 2.3.6
       pretty-format: 27.5.1
+    dev: true
+
+  /@vscode-use/createwebview@0.0.10:
+    resolution: {integrity: sha512-YQeGLuLBMFwxxdHXXWhLtz9bXNu2Va4g7SZ+5gribHZVho0KZm2TkO5I5hOJdBrZIiOaOx2z0BfqSIR+PtGtIA==}
+    engines: {vscode: ^1.77.0}
     dev: true
 
   /@vscode-use/utils@0.0.35:

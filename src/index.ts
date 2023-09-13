@@ -5,6 +5,7 @@ import { rules, transformClassAttr } from './transform'
 import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
 import { LRUCache, getMultipedUnocssText, hasFile, parser, parserAst, unoToCssDecorationType } from './utils'
+import { openDocumentation } from './openDocumentation'
 
 const cacheMap = new LRUCache(5000)
 
@@ -13,6 +14,8 @@ export async function activate(context: vscode.ExtensionContext) {
   if (!activeTextEditor)
     return
 
+  // 注册打开文档事件
+  openDocumentation(context)
   const pkgs = await hasFile(['**/package.json'])
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
@@ -42,6 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
       builder.replace(selection, newSelection)
     })
   }))
+
   // 注册InlineStyleToUnocss命令
   context.subscriptions.push(registerCommand('UnoT.InlineStyleToUnocss', async () => {
     const textEditor = vscode.window.activeTextEditor!

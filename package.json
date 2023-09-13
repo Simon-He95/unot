@@ -55,6 +55,9 @@
         {
           "command": "UnoT.InlineStyleToUnocss",
           "when": "editorHasSelection"
+        },
+        {
+          "command": "UnoT.openDocumentation"
         }
       ]
     },
@@ -68,8 +71,8 @@
         "title": "style -> Unocss"
       },
       {
-        "command": "UnoT.switchToCss",
-        "title": "switch UnoToCss"
+        "command": "UnoT.openDocumentation",
+        "title": "open unocss documentation"
       }
     ]
   },
@@ -98,6 +101,7 @@
     "@unocss/preset-wind": "^0.53.3",
     "@unocss/transformer-directives": "^0.53.3",
     "@unocss/transformer-variant-group": "^0.53.3",
+    "@vscode-use/createwebview": "^0.0.10",
     "@vscode-use/utils": "^0.0.35",
     "@vue/compiler-sfc": "^3.3.4",
     "bumpp": "^9.1.0",
