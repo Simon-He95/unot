@@ -58,6 +58,9 @@
         },
         {
           "command": "UnoT.openDocumentation"
+        },
+        {
+          "command": "UnoT.openPlayground"
         }
       ]
     },
@@ -73,6 +76,10 @@
       {
         "command": "UnoT.openDocumentation",
         "title": "open unocss documentation"
+      },
+      {
+        "command": "UnoT.openPlayground",
+        "title": "open unot playground"
       }
     ]
   },

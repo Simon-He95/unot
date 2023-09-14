@@ -6,6 +6,7 @@ import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
 import { LRUCache, getMultipedUnocssText, hasFile, parser, parserAst, unoToCssDecorationType } from './utils'
 import { openDocumentation } from './openDocumentation'
+import { openPlayground } from './openPlayground'
 
 const cacheMap = new LRUCache(5000)
 export let toRemFlag = false
@@ -17,6 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // 注册打开文档事件
   openDocumentation(context)
+  openPlayground(context)
   const pkgs = await hasFile(['**/package.json'])
   if (!pkgs.some(pkg => pkg.includes('unocss')))
     return
@@ -151,7 +153,7 @@ export async function activate(context: vscode.ExtensionContext) {
     md.value = ''
     copyAttr = selectedUnocssText
     const copyIcon = '<img width="12" height="12" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UyOWNkMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTTIwLjk5OCAxMGMtLjAxMi0yLjE3NS0uMTA4LTMuMzUzLS44NzctNC4xMjFDMTkuMjQzIDUgMTcuODI4IDUgMTUgNWgtM2MtMi44MjggMC00LjI0MyAwLTUuMTIxLjg3OUM2IDYuNzU3IDYgOC4xNzIgNiAxMXY1YzAgMi44MjggMCA0LjI0My44NzkgNS4xMjFDNy43NTcgMjIgOS4xNzIgMjIgMTIgMjJoM2MyLjgyOCAwIDQuMjQzIDAgNS4xMjEtLjg3OUMyMSAyMC4yNDMgMjEgMTguODI4IDIxIDE2di0xIi8+PHBhdGggZD0iTTMgMTB2NmEzIDMgMCAwIDAgMyAzTTE4IDVhMyAzIDAgMCAwLTMtM2gtNEM3LjIyOSAyIDUuMzQzIDIgNC4xNzIgMy4xNzJDMy41MTggMy44MjUgMy4yMjkgNC43IDMuMTAyIDYiLz48L2c+PC9zdmc+" />'
-    md.appendMarkdown('<a href="https://github.com/Simon-He95/tounocss">To Unocss:</a>\n')
+    md.appendMarkdown('<a href="https://github.com/Simon-He95/unot">To Unocss:</a>\n')
     md.appendMarkdown(`\n<a href="command:UnoT.copyAttr">attributify: ${copyIcon} ${selectedUnocssText}</a>\n`)
     md.appendMarkdown('\n')
     copyClass = selectedUnocssText.replace(/="([^"]+)"/g, (_, v) => `-${v}`)
