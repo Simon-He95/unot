@@ -8,6 +8,7 @@ import { LRUCache, getMultipedUnocssText, hasFile, parser, parserAst, unoToCssDe
 import { openDocumentation } from './openDocumentation'
 
 const cacheMap = new LRUCache(5000)
+export let toRemFlag = false
 
 export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditor = vscode.window.activeTextEditor
@@ -127,13 +128,14 @@ export async function activate(context: vscode.ExtensionContext) {
       // 获取当前选中的文本内容
       if (!selectedText || !/[\w\-]+\s*:[^.]+/.test(selectedText))
         return
-      if (cacheMap.has((selectedText)))
-        return setStyle(cacheMap.get(selectedText))
+      const key = `${selectedText}-${toRemFlag}`
+      if (cacheMap.has((key)))
+        return setStyle(cacheMap.get(key))
       const selectedUnocssText = getMultipedUnocssText(selectedText)
       if (!selectedUnocssText)
         return
       // 设置缓存
-      cacheMap.set(selectedText, selectedUnocssText)
+      cacheMap.set(key, selectedUnocssText)
 
       return setStyle(selectedUnocssText)
     },
@@ -172,6 +174,22 @@ export async function activate(context: vscode.ExtensionContext) {
     position: 'left',
     offset: 500,
   })
+
+  const bottomBar = createBottomBar({
+    text: 'to-rem ❌',
+    command: {
+      title: 'unot-toRem',
+      command: 'unotToRem.changeStatus',
+    },
+    position: 'left',
+    offset: 500,
+  })
+  context.subscriptions.push(registerCommand('unotToRem.changeStatus', () => {
+    toRemFlag = !toRemFlag
+    bottomBar.text = `to-rem ${toRemFlag ? '✅' : '❌'}`
+  }))
+  bottomBar.show()
+
   if (currentFolder)
     await updateUnoStatus(vscode.window.activeTextEditor?.document.uri.fsPath)
   if (presets.length)

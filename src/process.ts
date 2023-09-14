@@ -21,7 +21,7 @@ export class CssToUnocssProcess {
   async convertAll(code: string, fileName: string): Promise<string> {
     if (!code)
       return ''
-    const type = getCssType(fileName)
-    return await transfromCode(code, fileName, type)
+    const type = getCssType(fileName) as any
+    return await transfromCode(code, { filepath: fileName, type })
   }
 }

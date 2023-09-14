@@ -5,6 +5,7 @@ import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
+import { toRemFlag } from '../'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
 export function getCssType(filename: string) {
@@ -29,7 +30,7 @@ export function getMultipedUnocssText(text: string) {
       continue
     if (!isChanged)
       isChanged = newText !== text
-    selectedNewTexts.push(isOpen
+    selectedNewTexts.push(toRemFlag
       ? newText.replace(/-([0-9\.]+)px/, (_: string, v: string) => `-${+v / 4}`)
       : newText)
   }
