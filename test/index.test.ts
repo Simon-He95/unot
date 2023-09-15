@@ -40,4 +40,8 @@ describe('should', () => {
     expect(
       transform('class="-translatex50rem!"')).toMatchInlineSnapshot('"class=\\"-translate-x-[50rem]!\\""')
   })
+  it('exported', () => {
+    expect(
+      transform('class="text#fff!"')).toMatchInlineSnapshot('"class=\\"text-[#fff!]\\""')
+  })
 })
