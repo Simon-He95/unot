@@ -44,4 +44,8 @@ describe('should', () => {
     expect(
       transform('class="text#fff!"')).toMatchInlineSnapshot('"class=\\"text-[#fff!]\\""')
   })
+  it('exported', () => {
+    expect(
+      transform('class="textrgba(1,2,3,.1)!"')).toMatchInlineSnapshot('"class=\\"text-[rgba(1,2,3,.1)]!\\""')
+  })
 })
