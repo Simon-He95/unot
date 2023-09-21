@@ -48,4 +48,12 @@ describe('should', () => {
     expect(
       transform('class="textrgba(1,2,3,.1)!"')).toMatchInlineSnapshot('"class=\\"text-[rgba(1,2,3,.1)]!\\""')
   })
+  it('exported', () => {
+    expect(
+      transform(':class="[\'hcalc(100vh-104px)\']"')).toMatchInlineSnapshot('":class=\\"[\'h-[calc(100vh-104px)]\']\\""')
+  })
+  it('exported', () => {
+    expect(
+      transform('class="hcalc(100vh-104px)"')).toMatchInlineSnapshot('"class=\\"h-[calc(100vh-104px)]\\""')
+  })
 })
