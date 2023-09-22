@@ -339,6 +339,19 @@ function dfsAst(children: any, result: any[] = []) {
             end: prop.value.loc.end,
           })
         }
+        else if (prop.name === 'bind' && prop.arg && prop.arg.content === 'class') {
+          const start = {
+            column: prop.exp.loc.start.column - 1,
+            line: prop.exp.loc.start.line,
+          }
+          result.push({
+            content: prop.exp.content,
+            line: prop.exp.loc.start.line,
+            charater: prop.exp.loc.start.column,
+            start,
+            end: prop.exp.loc.end,
+          })
+        }
       }
     }
     if (children && children.length)
