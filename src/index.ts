@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import { addEventListener, copyText, createBottomBar, createCompletionItem, createRange, getConfiguration, message, registerCommand, registerCompletionItemProvider, updateText } from '@vscode-use/utils'
+import { addEventListener, copyText, createBottomBar, createRange, getConfiguration, message, registerCommand, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { rules, transformClassAttr } from './transform'
-import { getUnoCompletions } from './search'
+// import { getUnoCompletions } from './search'
 import { CssToUnocssProcess } from './process'
-import { LRUCache, getMultipedUnocssText, hasFile, parser, parserAst, unoToCssDecorationType } from './utils'
+import { LRUCache, getMultipedUnocssText, hasFile, parserAst, unoToCssDecorationType } from './utils'
 import { openDocumentation } from './openDocumentation'
 import { openPlayground } from './openPlayground'
 
@@ -165,8 +165,8 @@ export async function activate(context: vscode.ExtensionContext) {
   let hasUnoConfig: string | undefined
   const currentFolder = (vscode.workspace.workspaceFolders as any)?.[0]
   const activeTextEditorUri = vscode.window.activeTextEditor?.document?.uri?.path
-  let completions: vscode.CompletionItem[] = []
-  let unoCompletionsMap: any
+  // const completions: vscode.CompletionItem[] = []
+  // let unoCompletionsMap: any
   const statusBarItem = createBottomBar({
     text: 'uno-magic off 😞',
     command: {
@@ -250,38 +250,38 @@ export async function activate(context: vscode.ExtensionContext) {
       .then((filepath?: string) => {
         if (!filepath)
           return
-        if (!completions.length) {
-          getUnoCompletions(filepath).then((res: any) => {
-            completions = res
-            unoCompletionsMap = completions
-              .map(([content, detail]: any) => {
-                const documentation = new vscode.MarkdownString()
-                documentation.appendCodeblock(detail, 'css')
-                if (content.startsWith('animate'))
-                  return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Unit })
+        // if (!completions.length) {
+        //   getUnoCompletions(filepath).then((res: any) => {
+        //     completions = res
+        //     unoCompletionsMap = completions
+        //       .map(([content, detail]: any) => {
+        //         const documentation = new vscode.MarkdownString()
+        //         documentation.appendCodeblock(detail, 'css')
+        //         if (content.startsWith('animate'))
+        //           return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Unit })
 
-                return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Enum })
-              })
-          })
-        }
+        //         return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Enum })
+        //       })
+        //   })
+        // }
         hasUnoConfig = filepath
         statusBarItem.show()
       })
   }
-  const commonMap = ['class', 'className', 'id', 'style'].map(item => createCompletionItem({ content: item, snippet: `${item}="$1"`, type: 5 }))
+  // const commonMap = ['class', 'className', 'id', 'style'].map(item => createCompletionItem({ content: item, snippet: `${item}="$1"`, type: 5 }))
   // 如果是unocss环境下,给出一些预设提醒
-  context.subscriptions.push(registerCompletionItemProvider(['javascript', 'javascriptreact', 'svelte', 'solid', 'typescriptreact', 'html', 'vue', 'css'], (document, position) => {
-    if (!hasUnoConfig)
-      return
-    const data = parser(document.getText(), position)
+  // context.subscriptions.push(registerCompletionItemProvider(['javascript', 'javascriptreact', 'svelte', 'solid', 'typescriptreact', 'html', 'vue', 'css'], (document, position) => {
+  //   if (!hasUnoConfig)
+  //     return
+  //   const data = parser(document.getText(), position)
 
-    if (data?.type === 'props') {
-      if (data.prop && (data.prop.name === 'class' || data.prop.name === 'className'))
-        return unoCompletionsMap
-      else
-        return [...commonMap, ...unoCompletionsMap]
-    }
-  }, ['"', '\'', ' ']))
+  //   if (data?.type === 'props') {
+  //     if (data.prop && (data.prop.name === 'class' || data.prop.name === 'className'))
+  //       return unoCompletionsMap
+  //     else
+  //       return [...commonMap, ...unoCompletionsMap]
+  //   }
+  // }, ['"', '\'', ' ']))
 }
 
 export function deactivate() {
