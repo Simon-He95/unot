@@ -19,7 +19,7 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
 - maxw-100% -> max-w-[100%]
 - bg-[rgba(255, 255, 255, 0.5)] -> bg-[rgba(255,255,255,0.5)]
 - -translatex50% -> translate-x-[-50%]
-
+- hover:(text-red bg-blue) -> hover:text-red hover:bg-blue
 
 ## :coffee:
 

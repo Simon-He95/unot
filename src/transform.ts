@@ -36,6 +36,7 @@ const textMap: any = {
 }
 let classData: string[] = []
 const COMMON_REG = /(!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
+const PSEUDO_CLASS = /(hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)\(([^\)]+)\)(\s|'|$)/g
 export const rules: any = [
   [/([\s!]?)([wh])full(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}${v1}-full${v2}`],
   [/([\s!])flex1(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}flex-1${v2}`],
@@ -61,6 +62,12 @@ export const rules: any = [
       ? `${prefix}${v}-${v1}${v2}`
       : `${prefix}${v}-[${v1}${v2}]`
   }],
+  [PSEUDO_CLASS, (_: string, prefix: string, v: string, v1 = '') => v
+    .replace('flex-center', 'flex justify-center items-center')
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .map(item => `${prefix}${item}`)
+    .join(' ') + v1],
   [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-[${v2}]${v3}`],
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],

@@ -56,4 +56,12 @@ describe('should', () => {
     expect(
       transform('class="hcalc(100vh-104px)"')).toMatchInlineSnapshot('"class=\\"h-[calc(100vh-104px)]\\""')
   })
+  it('match error', () => {
+    expect(
+      transform(':class="hover:(text-white rounded)"')).toMatchInlineSnapshot('":class=\\"hover:text-white hover:rounded\\""')
+  })
+  it('match error', () => {
+    expect(
+      transform(':class="hover:(flex-center) w10"')).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w-10\\""')
+  })
 })
