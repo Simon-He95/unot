@@ -93,6 +93,7 @@ export const rules: any = [
   [/([\s'])contain(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}bg-contain${v2}`],
   [/([\s'])cover(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}bg-cover${v2}`],
   [/([\s'])line([0-9]+)(\s|'|!|$)/, (_: string, v1: string, v2: string, v3: string) => `${v1}line-clamp-${v2}${v3}`],
+  [/([\s!])\(([^\)]+)\)(\s|'|!|$)/, (_: string, v1: string, v2: string, v3: string) => v2.replace(/\s+/g, ' ').split(' ').map(item => `!${item}`).join(' ') + v3],
 ]
 
 export function transform(content: string) {
