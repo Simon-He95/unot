@@ -22,6 +22,7 @@ UnoT is short for unocss tools that is to provide a better development experienc
 - translatex--50% -> translate-x-[-50%]
 - hover:(text-red bg-blue) -> hover:text-red hover:bg-blue
 - !(text-red bg-blue) -> !text-red !bg-blue
+- h="[calc(100% - 20px)]" -> h="[calc(100%-20px)]"
 
 ## :coffee:
 

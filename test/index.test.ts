@@ -18,7 +18,7 @@ describe('should', () => {
      xx-col flex-col-x"`)).toMatchInlineSnapshot(`
        "class=\\" 
            xxmax-w
-           max-w-1
+           max-w1
             xx-col flex-col-x\\""
      `)
   })
@@ -62,14 +62,14 @@ describe('should', () => {
   })
   it('match error', () => {
     expect(
-      transform(':class="hover:(flex-center) w10"')).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w-10\\""')
+      transform(':class="hover:(flex-center) w10"')).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w10\\""')
   })
   it('match error', () => {
     expect(
-      transform(':class="hover:(flex-center) w10"')).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w-10\\""')
+      transform(':class="hover:(flex-center) w10"')).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w10\\""')
   })
   it('match error', () => {
     expect(
-      transform(':class=" w10 !(flex-center w10) w20"')).toMatchInlineSnapshot('":class=\\" w-10 !flex-center !w-10 w-20\\""')
+      transform(':class=" w10 !(flex-center w10) w20"')).toMatchInlineSnapshot('":class=\\" w10 !flex-center !w10 w20\\""')
   })
 })

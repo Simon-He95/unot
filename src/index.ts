@@ -2,11 +2,12 @@ import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
 import { addEventListener, copyText, createBottomBar, createRange, getConfiguration, message, registerCommand, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
-import { rules, transformClassAttr } from './transform'
+import { rules, transformAttrs, transformClassAttr } from './transform'
 import { CssToUnocssProcess } from './process'
 import { LRUCache, getMultipedUnocssText, hasFile, highlight, parserAst } from './utils'
 import { openDocumentation } from './openDocumentation'
 import { openPlayground } from './openPlayground'
+import type { ChangeList } from './type'
 
 const cacheMap = new LRUCache(5000)
 export let toRemFlag = false
@@ -190,7 +191,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // const completions: vscode.CompletionItem[] = []
   // let unoCompletionsMap: any
   const statusBarItem = createBottomBar({
-    text: 'uno-magic off 😞',
+    text: 'uno-magic ✅',
     command: {
       title: 'uno-magic',
       command: 'unotmagic.changeStatus',
@@ -222,7 +223,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommand('unotmagic.changeStatus', () => {
     isOpen = !isOpen
-    statusBarItem.text = `uno-magic ${isOpen ? 'off 😞' : 'on 🤩'}`
+    statusBarItem.text = `uno-magic ${isOpen ? '✅' : '❌'}`
   })
 
   context.subscriptions.push(addEventListener('text-save', (document: vscode.TextDocument) => {
@@ -231,10 +232,14 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     // 对文档保存后的内容进行处理
     const text = document.getText()
-    const classAttr = parserAst(text)
-    if (!classAttr)
-      return
-    const changeList = transformClassAttr(classAttr as any)
+    const { classAttr, attrs } = parserAst(text) as any
+    const changeList: ChangeList[] = []
+
+    if (classAttr)
+      changeList.push(...transformClassAttr(classAttr as any))
+    if (attrs)
+      changeList.push(...transformAttrs(attrs))
+
     if (changeList.length) {
       updateText((edit) => {
         changeList.forEach((change: any) => {

@@ -128,7 +128,7 @@ export function highlight(realRangeMap: vscode.Range[]) {
 }
 
 export function resetDecorationType() {
-  return vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
+  return vscode.window.activeTextEditor?.setDecorations(decorationType, [])
 }
 
 export function parserAst(code: string) {
@@ -156,41 +156,20 @@ export function transformVueAst(code: string) {
   const { ast } = template
   return jsxAstDfs(ast.children)
 }
-function jsxAstDfs(children: any, result: any[] = []) {
+function jsxAstDfs(children: any, result: { classAttr: any[]; attrs: any[] } = { classAttr: [], attrs: [] }) {
   for (const child of children) {
     const { props, children } = child
     if (props && props.length) {
       for (const prop of props) {
         if (prop.name === 'class') {
           prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
-          result.push({
+          result.classAttr.push({
             content: prop.value.content,
             line: prop.value.loc.start.line,
             charater: prop.value.loc.start.column,
             start: prop.value.loc.start,
             end: prop.value.loc.end,
-          })
-        }
-      }
-    }
-    if (children && children.length)
-      dfsAst(children, result) as any
-  }
-  return result
-}
-function dfsAst(children: any, result: any[] = []) {
-  for (const child of children) {
-    const { props, children } = child
-    if (props && props.length) {
-      for (const prop of props) {
-        if (prop.name === 'class') {
-          prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
-          result.push({
-            content: prop.value.content,
-            line: prop.value.loc.start.line,
-            charater: prop.value.loc.start.column,
-            start: prop.value.loc.start,
-            end: prop.value.loc.end,
+            attrName: prop.name,
           })
         }
         else if (prop.name === 'bind' && prop.arg && prop.arg.content === 'class') {
@@ -198,39 +177,78 @@ function dfsAst(children: any, result: any[] = []) {
             column: prop.exp.loc.start.column - 1,
             line: prop.exp.loc.start.line,
           }
-          result.push({
+          result.classAttr.push({
             content: prop.exp.content,
             line: prop.exp.loc.start.line,
             charater: prop.exp.loc.start.column,
             start,
             end: prop.exp.loc.end,
+            attrName: prop.name,
+          })
+        }
+        else if (props.name === 'bind') {
+          const start = {
+            column: prop.exp.loc.start.column - 1,
+            line: prop.exp.loc.start.line,
+          }
+          result.attrs.push({
+            content: prop.exp.content,
+            line: prop.exp.loc.start.line,
+            charater: prop.exp.loc.start.column,
+            start,
+            end: prop.exp.loc.end,
+            attrName: prop.name,
+          })
+        }
+        else if (prop.name) {
+          prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
+          result.attrs.push({
+            content: prop.value.content,
+            line: prop.value.loc.start.line,
+            charater: prop.value.loc.start.column,
+            start: prop.value.loc.start,
+            end: prop.value.loc.end,
+            attrName: prop.name,
           })
         }
       }
     }
     if (children && children.length)
-      dfsAst(children, result) as any
+      jsxAstDfs(children, result) as any
   }
   return result
 }
+
 export function parserJSXAst(code: string) {
   const ast = tsParser(code, { jsx: true, loc: true })
   return jsxDfsAst(ast.body)
 }
 
-function jsxDfsAst(children: any, result: any[] = []) {
+function jsxDfsAst(children: any, result: { classAttr: any[]; attrs: any[] } = { classAttr: [], attrs: [] }) {
   for (const child of children) {
     let { type, openingElement, body: children, argument, declaration, declarations, init } = child
 
     if (openingElement && openingElement.attributes.length) {
       for (const prop of openingElement.attributes) {
-        if (prop.name.name === 'className') {
-          prop.value.loc.start.column++
-          result.push({
-            content: prop.value.value,
-            start: prop.value.loc.start,
-            end: prop.value.loc.end,
-          })
+        if (prop.value && prop.value.type === 'Literal') {
+          if (prop.name.name === 'className') {
+            prop.value.loc.start.column++
+            result.classAttr.push({
+              content: prop.value.value,
+              start: prop.value.loc.start,
+              end: prop.value.loc.end,
+              attrName: prop.name.name,
+            })
+          }
+          else if (prop.name.name) {
+            prop.value.loc.start.column++
+            result.attrs.push({
+              content: prop.value.value,
+              start: prop.value.loc.start,
+              end: prop.value.loc.end,
+              attrName: prop.name.name,
+            })
+          }
         }
       }
     }

@@ -59,7 +59,7 @@ export const rules: any = [
       return `${prefix}${v}-${v1}`
     }
     return v2.trim() === ''
-      ? `${prefix}${v}-${v1}${v2}`
+      ? `${prefix}${v}${v1}${v2}`
       : `${prefix}${v}-[${v1}${v2}]`
   }],
   [PSEUDO_CLASS, (_: string, prefix: string, v: string, v1 = '') => v
@@ -72,7 +72,7 @@ export const rules: any = [
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
   [/-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-[${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}]${v1}`],
-  [/-?\[?\s*(hsl\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-[${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}]${v1}`],
+  [/-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-[${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}]${v1}`],
   [/-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-[${v.replace(/\s*/g, '')}]${v1}`],
   [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-[${v1}]${v2}`],
   [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => `-[${v1}${v2}]${v3}`],
@@ -190,6 +190,32 @@ export function transformClassAttr(attrs: Attr[]) {
   attrs.forEach((attr) => {
     const { content, start, end } = attr
     const newAttr = transformClass(content)
+    if (content !== newAttr) {
+      changeList.push({
+        content: newAttr,
+        start,
+        end,
+      })
+    }
+  })
+  return changeList
+}
+
+const attrRules = /(\[?\s*(rgba?\([^\)]*\))\]|\[?\s*(hsla?\([^\)]*\))\]|\[?\s*(calc\([^\)]*\))\])/g
+const attrsMap = ['w', 'h', 'gap', 'm', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'p', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'b', 'bt', 'br', 'bb', 'bl', 'lh', 'text', 'top', 'right', 'bottom', 'left', 'border-rd', 'border', 'max-w', 'max-h', 'translate-x', 'translate-y', 'duration', 'delay', 'scale-x', 'scale-y', 'scale', 'rotate', 'skew-x', 'skew-y', 'fill', 'stroke', 'invert', 'saturate', 'grayscale', 'contrast', 'brightness', 'blur', 'outline']
+
+export function transformAttrs(attrs: any[]) {
+  const changeList: ChangeList[] = []
+  attrs.forEach((attr) => {
+    const { content, start, end, attrName } = attr
+    if (!attrsMap.includes(attrName))
+      return
+    let newAttr = content
+    for (const match of content.matchAll(attrRules)) {
+      const index = match.index
+      newAttr = `${newAttr.slice(0, index)}[${match[4].replace(/\s+/g, '')}]${newAttr.slice(index + match[0].length)}`
+    }
+
     if (content !== newAttr) {
       changeList.push({
         content: newAttr,
