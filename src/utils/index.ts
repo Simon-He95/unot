@@ -161,7 +161,7 @@ function jsxAstDfs(children: any, result: { classAttr: any[]; attrs: any[] } = {
     const { props, children } = child
     if (props && props.length) {
       for (const prop of props) {
-        if (prop.name === 'class') {
+        if (prop.name === 'class' && prop.value) {
           prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
           result.classAttr.push({
             content: prop.value.content,
@@ -200,7 +200,7 @@ function jsxAstDfs(children: any, result: { classAttr: any[]; attrs: any[] } = {
             attrName: prop.name,
           })
         }
-        else if (prop.name) {
+        else if (prop.name && prop.value) {
           prop.value.loc.end.column = prop.value.loc.start.column + prop.value.loc.source.length - 1
           result.attrs.push({
             content: prop.value.content,
