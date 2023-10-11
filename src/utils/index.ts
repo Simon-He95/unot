@@ -141,142 +141,6 @@ export function resetDecorationType() {
   return vscode.window.activeTextEditor?.setDecorations(unoToCssDecorationType, [])
 }
 
-let isInTemplate = false
-// 引入vue-parser只在template中才处理一些逻辑
-export function parser(code: string, position: vscode.Position) {
-  const entry = vscode.window.activeTextEditor?.document.uri.fsPath
-  if (!entry)
-    return
-  const suffix = entry.slice(entry.lastIndexOf('.') + 1)
-  if (!suffix)
-    return
-  isInTemplate = false
-
-  if (suffix === 'vue')
-    return transformVue(code, position)
-  if (/jsx|tsx/.test(suffix))
-    return parserJSX(code, position)
-}
-
-export function transformVue(code: string, position: vscode.Position) {
-  const {
-    descriptor: { template },
-    errors,
-  } = parse(code)
-  if (errors.length || !template)
-    return
-  if (!isInPosition(template.loc, position))
-    return
-  // 在template中
-  const { ast } = template
-  return dfs(ast.children, position)
-}
-
-function dfs(children: any, position: vscode.Position) {
-  for (const child of children) {
-    const { loc, tag, props, children } = child
-    if (!isInPosition(loc, position))
-      continue
-    if (props && props.length) {
-      for (const prop of props) {
-        if (isInPosition(prop.loc, position)) {
-          return {
-            tag,
-            prop,
-            props,
-            type: 'props',
-          }
-        }
-      }
-    }
-    if (children && children.length) {
-      const result = dfs(children, position) as any
-      if (result)
-        return result
-    }
-    if (child.tag) {
-      return {
-        type: 'props',
-        tag: child.tag,
-      }
-    }
-    return {
-      type: 'text',
-      isInTemplate: true,
-    }
-  }
-}
-
-function isInPosition(loc: any, position: vscode.Position) {
-  const { start, end } = loc
-  const { line: startLine, column: startcharacter } = start
-  const { line: endLine, column: endcharacter } = end
-  const { line, character } = position
-  if (line + 1 === startLine && character < startcharacter)
-    return
-  if (line + 1 === endLine && character > endcharacter - 1)
-    return
-  if (line + 1 < startLine)
-    return
-  if (line + 1 > endLine)
-    return
-  return true
-}
-
-export function parserJSX(code: string, position: vscode.Position) {
-  const ast = tsParser(code, { jsx: true, loc: true })
-  return jsxDfs(ast.body, position)
-}
-
-function jsxDfs(children: any, position: vscode.Position) {
-  for (const child of children) {
-    let { loc, type, openingElement, body: children, argument, declarations, init } = child
-    if (!isInPosition(loc, position))
-      continue
-    if (openingElement && openingElement.attributes.length) {
-      for (const prop of openingElement.attributes) {
-        if (isInPosition(prop.loc, position)) {
-          return {
-            tag: openingElement.name.name,
-            propName: prop.name.name,
-            props: openingElement.attributes,
-            type: 'props',
-          }
-        }
-      }
-    }
-    if (type === 'JSXElement' || (type === 'ReturnStatement' && argument.type === 'JSXElement'))
-      isInTemplate = true
-
-    if (type === 'VariableDeclaration')
-      children = declarations
-    else if (type === 'VariableDeclarator')
-      children = init
-    else if (type === 'ReturnStatement')
-      children = argument
-    else if (type === 'JSXElement')
-      children = child.children
-    if (children && !Array.isArray(children))
-      children = [children]
-
-    if (children && children.length) {
-      const result = jsxDfs(children, position) as any
-      if (result)
-        return result
-    }
-    if (type === 'JSXElement') {
-      return {
-        type: 'props',
-        tag: openingElement.name.name,
-      }
-    }
-    return {
-      type: 'text',
-      isInTemplate,
-    }
-  }
-}
-
 export function parserAst(code: string) {
   const entry = vscode.window.activeTextEditor?.document.uri.fsPath
   if (!entry)
@@ -361,5 +225,45 @@ function dfsAst(children: any, result: any[] = []) {
 }
 export function parserJSXAst(code: string) {
   const ast = tsParser(code, { jsx: true, loc: true })
-  return jsxAstDfs(ast.body)
+  return jsxDfsAst(ast.body)
+}
+
+function jsxDfsAst(children: any, result: any[] = []) {
+  for (const child of children) {
+    let { type, openingElement, body: children, argument, declaration, declarations, init } = child
+
+    if (openingElement && openingElement.attributes.length) {
+      for (const prop of openingElement.attributes) {
+        if (prop.name.name === 'className') {
+          prop.value.loc.start.column++
+          result.push({
+            content: prop.value.value,
+            start: prop.value.loc.start,
+            end: prop.value.loc.end,
+          })
+        }
+      }
+    }
+
+    if (type === 'VariableDeclaration')
+      children = declarations
+    else if (type === 'VariableDeclarator')
+      children = init
+    else if (type === 'ReturnStatement')
+      children = argument
+    else if (type === 'JSXElement')
+      children = child.children
+    else if (type === 'ExportDefaultDeclaration' || (type === 'ExportNamedDeclaration' && declaration.type === 'FunctionDeclaration'))
+      children = declaration?.body?.body
+
+    else if (type === 'ExportNamedDeclaration')
+      children = declaration.declarations
+
+    if (children && !Array.isArray(children))
+      children = [children]
+
+    if (children && children.length)
+      jsxDfsAst(children, result) as any
+  }
+  return result
 }

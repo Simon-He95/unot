@@ -268,20 +268,6 @@ export async function activate(context: vscode.ExtensionContext) {
         statusBarItem.show()
       })
   }
-  // const commonMap = ['class', 'className', 'id', 'style'].map(item => createCompletionItem({ content: item, snippet: `${item}="$1"`, type: 5 }))
-  // 如果是unocss环境下,给出一些预设提醒
-  // context.subscriptions.push(registerCompletionItemProvider(['javascript', 'javascriptreact', 'svelte', 'solid', 'typescriptreact', 'html', 'vue', 'css'], (document, position) => {
-  //   if (!hasUnoConfig)
-  //     return
-  //   const data = parser(document.getText(), position)
-
-  //   if (data?.type === 'props') {
-  //     if (data.prop && (data.prop.name === 'class' || data.prop.name === 'className'))
-  //       return unoCompletionsMap
-  //     else
-  //       return [...commonMap, ...unoCompletionsMap]
-  //   }
-  // }, ['"', '\'', ' ']))
 }
 
 export function deactivate() {
