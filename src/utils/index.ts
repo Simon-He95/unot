@@ -5,7 +5,7 @@ import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
-import { toRemFlag } from '../'
+import { decorationType, toRemFlag } from '../'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
 export function getCssType(filename: string) {
@@ -94,16 +94,6 @@ export async function hasFile(source: string | string[]) {
   }))
 }
 
-export const style = {
-  dark: Object.assign({
-    textDecoration: 'underline dashed #fff',
-  }),
-  light: Object.assign({
-    textDecoration: 'underline dashed #333',
-  }),
-}
-export const unoToCssDecorationType = vscode.window.createTextEditorDecorationType(style)
-
 export const disposes: any = []
 
 let configCacheMap: any = null
@@ -134,7 +124,7 @@ export function highlight(realRangeMap: vscode.Range[]) {
   const editor = vscode.window.activeTextEditor
   if (!editor)
     return
-  editor.edit(() => editor.setDecorations(unoToCssDecorationType, realRangeMap))
+  editor.edit(() => editor.setDecorations(decorationType, realRangeMap))
 }
 
 export function resetDecorationType() {
