@@ -119,10 +119,10 @@ export const rules: any = [
   [/([\s'])cover(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}bg-cover${v2}`],
   [/([\s'])line([0-9]+)(\s|'|!|$)/, (_: string, v1: string, v2: string, v3: string) => `${v1}line-clamp-${v2}${v3}`],
   [/([\s!])\(([^\)]+)\)(\s|'|!|$)/, (_: string, v1: string, v2: string, v3: string) => v2.replace(/\s+/g, ' ').split(' ').map(item => `!${item}`).join(' ') + v3],
-]
+].filter(Boolean)
 
 export function transform(content: string) {
-  return rules.filter(Boolean).reduce((result: string, cur: [string | RegExp, string]) => {
+  return rules.reduce((result: string, cur: [string | RegExp, string]) => {
     const [reg, callback] = cur
     return result.replace(/class(Name)?="([^"]*)"/g, (_: string, name = '', value: string) => {
       let v = ` ${value}`
