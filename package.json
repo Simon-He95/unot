@@ -81,7 +81,28 @@
         "command": "UnoT.openPlayground",
         "title": "open unot playground"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "unot",
+      "properties": {
+        "unot.variantGroup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable transform hover:(x1 x2) to hover:x1 hover:x2"
+        },
+        "unot.strictVaribale": {
+          "type": "boolean",
+          "default": false,
+          "description": "if true w10px or w-10px will transform w-[10px]"
+        },
+        "unot.strictHyphen": {
+          "type": "boolean",
+          "default": false,
+          "description": "if true bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
+        }
+      }
+    }
   },
   "scripts": {
     "dev": "pnpm build --watch",

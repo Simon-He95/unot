@@ -23,6 +23,27 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
 - !(text-red bg-blue) -> !text-red !bg-blue
 - h="[calc(100% - 20px)]" -> h="[calc(100%-20px)]"
 
+## 参数配置
+- 您可以使用配置来控制一些匹配规则，例如严格拆分，或者生成的计算结果是`-[10px]`或`-10px`
+
+``` json
+  "unot.variantGroup": {
+    "type": "boolean",
+    "default": true,
+    "description": "Enable/disable transform hover:(x1 x2) to hover:x1 hover:x2"
+  },
+  "unot.strictVaribale": {
+    "type": "boolean",
+    "default": false,
+    "description": "if true w10px or w-10px will transform w-[10px]"
+  },
+  "unot.strictHyphen": {
+    "type": "boolean",
+    "default": false,
+    "description": "if true bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
+  }
+```
+
 ## :coffee:
 
 [请我喝一杯咖啡](https://github.com/Simon-He95/sponsor)

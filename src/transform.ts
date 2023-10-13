@@ -1,5 +1,7 @@
+import { getConfiguration } from '@vscode-use/utils'
 import type { Attr, ChangeList } from './type'
 
+const { variantGroup, strictVaribale, strictHyphen } = getConfiguration('unot')
 const fontMap: any = {
   100: 'thin',
   200: 'extralight',
@@ -35,14 +37,16 @@ const textMap: any = {
   128: '9xl',
 }
 let classData: string[] = []
-const COMMON_REG = /(!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
+const COMMON_REG = strictHyphen
+  ? /(!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
+  : /(!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
 const PSEUDO_CLASS = /(hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)\(([^\)]+)\)(\s|'|$)/g
 export const rules: any = [
   [/([\s!]?)([wh])full(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}${v1}-full${v2}`],
-  [/([\s!])flex1(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}flex-1${v2}`],
-  [/([\s'])maxh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-h${v2}`],
-  [/([\s'])minh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}min-h${v2}`],
-  [/([\s'])maxw([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-w${v2}`],
+  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)flex1(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}flex-1${v2}`],
+  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)maxh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-h${v2}`],
+  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)minh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}min-h${v2}`],
+  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)maxw([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-w${v2}`],
   [/([\s'])minw([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}min-w${v2}`],
   [/([\s!-])translatex([^\s']+)/, (_: string, v1 = '', v2: string) => `${v1}translate-x${v2}`],
   [/([\s!-])translatey([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}translate-y${v2}`],
@@ -53,29 +57,38 @@ export const rules: any = [
       return `${prefix}${v}`
     if (v === 'text') {
       if (v2)
-        return `${prefix}${v}-[${v1}${v2}]`
+        return strictVaribale ? `${prefix}${v}-[${v1}${v2}]` : `${prefix}${v}-${v1}${v2}`
+
       if (v1 in textMap)
         return `${prefix}${v}-${textMap[v1]}`
       return `${prefix}${v}-${v1}`
     }
     return v2.trim() === ''
       ? `${prefix}${v}${v1}${v2}`
-      : `${prefix}${v}-[${v1}${v2}]`
+      : strictVaribale
+        ? `${prefix}${v}-[${v1}${v2}]`
+        : `${prefix}${v}-${v1}${v2}`
   }],
-  [PSEUDO_CLASS, (_: string, prefix: string, v: string, v1 = '') => v
-    .replace('flex-center', 'flex justify-center items-center')
-    .replace(/\s+/g, ' ')
-    .split(' ')
-    .map(item => `${prefix}${item}`)
-    .join(' ') + v1],
-  [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-[${v2}]${v3}`],
+  variantGroup
+    ? [PSEUDO_CLASS, (_: string, prefix: string, v: string, v1 = '') => v
+        .replace('flex-center', 'flex justify-center items-center')
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .map(item => `${prefix}${item}`)
+        .join(' ') + v1]
+    : undefined,
+  strictHyphen
+    ? [/([\s'])(bg|text|border)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVaribale ? '[' : ''}${v2}${strictVaribale ? ']' : ''}${v3}`]
+    : [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVaribale ? '[' : ''}${v2}${strictVaribale ? ']' : ''}${v3}`],
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
-  [/-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-[${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}]${v1}`],
-  [/-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-[${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}]${v1}`],
-  [/-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-[${v.replace(/\s*/g, '')}]${v1}`],
-  [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-[${v1}]${v2}`],
-  [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => `-[${v1}${v2}]${v3}`],
+  [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
+  [/-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
+  [/-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVaribale ? '[' : ''}${v.replace(/\s*/g, '')}${strictVaribale ? ']' : ''}${v1}`],
+  [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-${strictVaribale ? '[' : ''}${v1}${strictVaribale ? ']' : ''}${v2}`],
+  strictHyphen
+    ? [/-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVaribale ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
+    : [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVaribale ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
   [/([\s!])x-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-x-hidden${v2}`],
   [/([\s!])y-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-y-hidden${v2}`],
   [/([\s!])justify-center(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center${v2}`],
@@ -97,7 +110,7 @@ export const rules: any = [
 ]
 
 export function transform(content: string) {
-  return rules.reduce((result: string, cur: [string | RegExp, string]) => {
+  return rules.filter(Boolean).reduce((result: string, cur: [string | RegExp, string]) => {
     const [reg, callback] = cur
     return result.replace(/class(Name)?="([^"]*)"/g, (_: string, name = '', value: string) => {
       let v = ` ${value}`
