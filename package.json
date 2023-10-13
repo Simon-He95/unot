@@ -93,7 +93,7 @@
         },
         "unot.strictVaribale": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "if true w10px or w-10px will transform w-[10px]"
         },
         "unot.strictHyphen": {

@@ -1,7 +1,13 @@
-import { getConfiguration } from '@vscode-use/utils'
 import type { Attr, ChangeList } from './type'
 
-const { variantGroup, strictVaribale, strictHyphen } = getConfiguration('unot')
+let variantGroup = true
+let strictVaribale = true
+let strictHyphen = false
+try {
+  ({ variantGroup, strictVaribale, strictHyphen } = require('@vscode-use/utils').getConfiguration('unot'))
+}
+catch (error) {
+}
 const fontMap: any = {
   100: 'thin',
   200: 'extralight',
@@ -82,9 +88,15 @@ export const rules: any = [
     : [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVaribale ? '[' : ''}${v2}${strictVaribale ? ']' : ''}${v3}`],
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
-  [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
-  [/-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
-  [/-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVaribale ? '[' : ''}${v.replace(/\s*/g, '')}${strictVaribale ? ']' : ''}${v1}`],
+  strictHyphen
+    ? [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`]
+    : [/-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
+  strictHyphen
+    ? [/-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`]
+    : [/-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
+  strictHyphen
+    ? [/-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVaribale ? '[' : ''}${v.replace(/\s*/g, '')}${strictVaribale ? ']' : ''}${v1}`]
+    : [/-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVaribale ? '[' : ''}${v.replace(/\s*/g, '')}${strictVaribale ? ']' : ''}${v1}`],
   [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-${strictVaribale ? '[' : ''}${v1}${strictVaribale ? ']' : ''}${v2}`],
   strictHyphen
     ? [/-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVaribale ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
@@ -198,6 +210,7 @@ export function transformClass(attr: string) {
     return newClass
   }, attr)
 }
+
 export function transformClassAttr(attrs: Attr[]) {
   const changeList: ChangeList[] = []
   attrs.forEach((attr) => {
