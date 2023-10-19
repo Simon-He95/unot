@@ -72,4 +72,8 @@ describe('should', () => {
     expect(
       transform(':class=" w10 !(flex-center w10) w20"')).toMatchInlineSnapshot('":class=\\" w10 !flex-center !w10 w20\\""')
   })
+  it('match error', () => {
+    expect(
+      transform(':class=" top10 gapx-1"')).toMatchInlineSnapshot('":class=\\" top-10 gap-x-1\\""')
+  })
 })
