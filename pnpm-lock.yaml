@@ -51,8 +51,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11
       '@vscode-use/utils':
-        specifier: ^0.0.35
-        version: 0.0.35
+        specifier: ^0.0.58
+        version: 0.0.58
       '@vue/compiler-sfc':
         specifier: ^3.3.4
         version: 3.3.4
@@ -81,8 +81,8 @@ importers:
         specifier: ^0.0.67
         version: 0.0.67
       transform-to-unocss-core:
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.6
+        version: 0.0.6
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(typescript@5.0.3)
@@ -878,8 +878,8 @@ packages:
     engines: {vscode: ^1.77.0}
     dev: true
 
-  /@vscode-use/utils@0.0.35:
-    resolution: {integrity: sha512-Z/uSv5iIH1wt1v7BuHHn1Xdf0lDnrbtevXlA5+IJWSoRgaA3oUCm1wkW0zKDLPDOPqKKcGmb546hxOf8wrFvEw==}
+  /@vscode-use/utils@0.0.58:
+    resolution: {integrity: sha512-CYQa9HfAmI6xhYHLf4LC8/Yc5oIA+E18fejkBE1a7W9kCiDTJzNcZ3weikFhm+xUyHGmihPdUdsy6BR1ey0YDg==}
     engines: {vscode: ^1.77.0}
     dev: true
 
@@ -4313,8 +4313,8 @@ packages:
       punycode: 2.1.1
     dev: true
 
-  /transform-to-unocss-core@0.0.4:
-    resolution: {integrity: sha512-fx9fITRAJBHx3rc4MYLQKi6H4yevwAw1v/42VVrqc3l3nZRsWyZVe/a3Tl4e0hRme3cJMJYbEXzgB4fLSl26zA==}
+  /transform-to-unocss-core@0.0.6:
+    resolution: {integrity: sha512-8ATojq8GVH9WejniNbAtS6krtKsnGkir0E7dR/92gkTvvJxzQduGr/0P0hB1nkoODaEskaLxlyEmett0xi5uKQ==}
     hasBin: true
     dev: true
 

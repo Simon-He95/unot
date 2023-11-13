@@ -24,6 +24,9 @@ UnoT is short for unocss tools that is to provide a better development experienc
 - !(text-red bg-blue) -> !text-red !bg-blue
 - h="[calc(100% - 20px)]" -> h="[calc(100%-20px)]"
 
+## Feature
+Support css in the design draft directly through the shortcut key `Mac`? `cmd+alt+v` : `ctrl+alt+v` is automatically converted to unocss, and will be automatically processed into in-line unocss format or class form according to your location.
+
 ## Configuration
 - You can use config to control some matching rules, such as strict-splicing, or the generated calculation result is `-[10px]` or `-10px`
 
@@ -33,7 +36,7 @@ UnoT is short for unocss tools that is to provide a better development experienc
       "default": true,
       "description": "Enable/disable transform hover:(x1 x2) to hover:x1 hover:x2"
     },
-    "unot.strictVaribale": {
+    "unot.strictVariable": {
       "type": "boolean",
       "default": true,
       "description": "if true w10px or w-10px will transform w-[10px]"

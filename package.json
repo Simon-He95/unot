@@ -91,7 +91,7 @@
           "default": true,
           "description": "Enable/disable transform hover:(x1 x2) to hover:x1 hover:x2"
         },
-        "unot.strictVaribale": {
+        "unot.strictVariable": {
           "type": "boolean",
           "default": true,
           "description": "if true w10px or w-10px will transform w-[10px]"
@@ -102,7 +102,19 @@
           "description": "if true bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
         }
       }
-    }
+    },
+    "keybindings": [
+      {
+        "command": "UnoT.transform",
+        "key": "cmd+alt+v",
+        "when": "isMac"
+      },
+      {
+        "command": "UnoT.transform",
+        "key": "ctrl+alt+v",
+        "when": "!isMac"
+      }
+    ]
   },
   "scripts": {
     "dev": "pnpm build --watch",
@@ -130,7 +142,7 @@
     "@unocss/transformer-directives": "^0.53.3",
     "@unocss/transformer-variant-group": "^0.53.3",
     "@vscode-use/createwebview": "^0.0.11",
-    "@vscode-use/utils": "^0.0.35",
+    "@vscode-use/utils": "^0.0.58",
     "@vue/compiler-sfc": "^3.3.4",
     "bumpp": "^9.1.0",
     "eslint": "^8.37.0",
@@ -140,7 +152,7 @@
     "prettier": "^2.8.8",
     "rimraf": "^4.4.1",
     "transform-to-unocss": "^0.0.67",
-    "transform-to-unocss-core": "^0.0.4",
+    "transform-to-unocss-core": "^0.0.6",
     "tsup": "^6.7.0",
     "typescript": "^5.0.3",
     "vitest": "^0.29.8",

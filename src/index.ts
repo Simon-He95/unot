@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, copyText, createBottomBar, createRange, getConfiguration, message, registerCommand, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createRange, getConfiguration, getCopyText, getLocale, getSelection, message, registerCommand, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
+import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
 import { rules, transformAttrs, transformClassAttr } from './transform'
 import { CssToUnocssProcess } from './process'
 import { LRUCache, getMultipedUnocssText, hasFile, highlight, parserAst } from './utils'
@@ -83,12 +84,56 @@ export async function activate(context: vscode.ExtensionContext) {
       builder.replace(selection, newSelection)
     })
   }))
+
+  // 注册快捷指令
+  context.subscriptions.push(registerCommand('UnoT.transform', async () => {
+    const { line, character, lineText } = getSelection()!
+    const copyText = (await getCopyText()).trim()
+    if (!copyText)
+      return
+    const locale = getLocale()
+    const isZh = locale.includes('zh')
+    let pre = character - 1
+    let prefixName = ''
+    while (pre > 0 && (lineText[pre] !== '"' || lineText[pre - 1] !== '=') && (lineText[pre] !== '{' || lineText[pre - 1] !== '=')) {
+      if ((lineText[pre] === '>' || lineText[pre] === '"') && lineText[pre - 1] !== '=') {
+        prefixName = ''
+        break
+      }
+      pre--
+    }
+
+    if (lineText[--pre] === '=') {
+      pre--
+      while (pre > 0 && !(/[\s'"><\/]/.test(lineText[pre]))) {
+        prefixName = `${lineText[pre]}${prefixName}`
+        pre--
+      }
+    }
+
+    let transferred = ''
+    let noTransferred = []
+    if (prefixName)
+      [transferred, noTransferred] = toUnocssClass(copyText)
+    else
+      [transferred, noTransferred] = transformStyleToUnocss(copyText)
+
+    if (noTransferred.length)
+      message.error(`${isZh ? '⚠️ 有一些属性unocss暂时还不支持转换，请自行处理：' : '⚠️ Some attributes unocss do not support conversion for the time being, please deal with them by yourself: '}${noTransferred.join('; ')}`)
+
+    updateText((builder) => {
+      builder.insert(new vscode.Position(line, character), transferred)
+    })
+
+    message.info(`${isZh ? '🎉 转换成功：' : '🎉 Successful conversion: '}${transferred}`)
+  }))
+
   context.subscriptions.push(registerCommand('UnoT.copyAttr', () => {
-    copyText(copyAttr)
+    setCopyText(copyAttr)
     message.info('copy successfully')
   }))
   context.subscriptions.push(registerCommand('UnoT.copyClass', () => {
-    copyText(copyClass)
+    setCopyText(copyClass)
     message.info('copy successfully')
   }))
 

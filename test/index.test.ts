@@ -75,7 +75,7 @@ describe('should', () => {
   it('match error', () => {
     expect(
       transform(':class=" top10 gapx-1"')).toMatchInlineSnapshot('":class=\\" top-10 gap-x-1\\""')
-      expect(
-        transform(':class=" [x?\'top10\': \'gapx1\']"')).toMatchInlineSnapshot('":class=\\" [x?\'top-10\': \'gapx-1\']\\""')
+    expect(
+      transform(':class=" [x?\'top10\': \'gapx1\']"')).toMatchInlineSnapshot('":class=\\" [x?\'top-10\': \'gapx-1\']\\""')
   })
 })

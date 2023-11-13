@@ -1,10 +1,10 @@
 import type { Attr, ChangeList } from './type'
 
 let variantGroup = true
-let strictVaribale = true
+let strictVariable = true
 let strictHyphen = false
 try {
-  ({ variantGroup, strictVaribale, strictHyphen } = require('@vscode-use/utils').getConfiguration('unot'))
+  ({ variantGroup, strictVariable, strictHyphen } = require('@vscode-use/utils').getConfiguration('unot'))
 }
 catch (error) {
 }
@@ -65,7 +65,7 @@ export const rules: any = [
       return `${prefix}${v}`
     if (v === 'text') {
       if (v2)
-        return strictVaribale ? `${prefix}${v}-[${v1}${v2}]` : `${prefix}${v}-${v1}${v2}`
+        return strictVariable ? `${prefix}${v}-[${v1}${v2}]` : `${prefix}${v}-${v1}${v2}`
 
       if (v1 in textMap)
         return `${prefix}${v}-${textMap[v1]}`
@@ -75,7 +75,7 @@ export const rules: any = [
       ? ['max-w', 'max-h', 'w', 'h', 'gap', 'gap-x', 'gap-y', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'm', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'p'].includes(v)
           ? `${prefix}${v}${v1}${v2}`
           : `${prefix}${v}-${v1}${v2}`
-      : strictVaribale
+      : strictVariable
         ? `${prefix}${v}-[${v1}${v2}]`
         : `${prefix}${v}-${v1}${v2}`
   }],
@@ -88,23 +88,23 @@ export const rules: any = [
         .join(' ') + v1]
     : undefined,
   strictHyphen
-    ? [/([\s'])(bg|text|border)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVaribale ? '[' : ''}${v2}${strictVaribale ? ']' : ''}${v3}`]
-    : [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVaribale ? '[' : ''}${v2}${strictVaribale ? ']' : ''}${v3}`],
+    ? [/([\s'])(bg|text|border)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVariable ? '[' : ''}${v2}${strictVariable ? ']' : ''}${v3}`]
+    : [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVariable ? '[' : ''}${v2}${strictVariable ? ']' : ''}${v3}`],
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
   strictHyphen
-    ? [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`]
-    : [/-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
+    ? [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`]
-    : [/-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVaribale ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVaribale ? ']' : ''}${v1}`],
+    ? [/-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVaribale ? '[' : ''}${v.replace(/\s*/g, '')}${strictVaribale ? ']' : ''}${v1}`]
-    : [/-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVaribale ? '[' : ''}${v.replace(/\s*/g, '')}${strictVaribale ? ']' : ''}${v1}`],
-  [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-${strictVaribale ? '[' : ''}${v1}${strictVaribale ? ']' : ''}${v2}`],
+    ? [/-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
+    : [/-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
+  [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
   strictHyphen
-    ? [/-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVaribale ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
-    : [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVaribale ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
+    ? [/-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVariable ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
+    : [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVariable ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
   [/([\s!])x-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-x-hidden${v2}`],
   [/([\s!])y-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-y-hidden${v2}`],
   [/([\s!])justify-center(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center${v2}`],
