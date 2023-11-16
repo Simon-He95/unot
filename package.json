@@ -80,6 +80,10 @@
       {
         "command": "UnoT.openPlayground",
         "title": "open unot playground"
+      },
+      {
+        "command": "UnoT.transform",
+        "title": "transform copied css to unocss"
       }
     ],
     "configuration": {
