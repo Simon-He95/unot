@@ -87,7 +87,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // 注册快捷指令
   context.subscriptions.push(registerCommand('UnoT.transform', async () => {
-    const { line, character, lineText } = getSelection()!
+    const selection = getSelection()
+    if (!selection)
+      return
+    const { line, character, lineText } = selection
     const copyText = (await getCopyText()).trim()
     if (!copyText)
       return
@@ -130,11 +133,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(registerCommand('UnoT.copyAttr', () => {
     setCopyText(copyAttr)
-    message.info('copy successfully')
+    message.info(`copy successfully ➡️ ${copyAttr}`)
   }))
   context.subscriptions.push(registerCommand('UnoT.copyClass', () => {
     setCopyText(copyClass)
-    message.info('copy successfully')
+    message.info(`copy successfully ➡️ ${copyClass}`)
   }))
 
   // style to unocss hover事件
