@@ -307,8 +307,7 @@ export async function activate(context: vscode.ExtensionContext) {
         statusBarItem.hide()
       else
         statusBarItem.show()
-    }),
-  ))
+    })))
 
   if (!hasUnoConfig) {
     context.subscriptions.push(addEventListener('file-create', () => {

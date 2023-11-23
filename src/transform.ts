@@ -166,8 +166,7 @@ export function transform(content: string) {
       classData = value.split(' ').map(item => item.replace(/['\[\]]/g, ''))
       const newClass = v.replace(reg, callback).slice(1)
       return `class${name}="${newClass}"`
-    },
-    )
+    })
   }, content)
 }
 

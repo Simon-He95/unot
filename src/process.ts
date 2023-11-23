@@ -3,21 +3,21 @@ import { getCssType, getMultipedUnocssText } from './utils'
 
 export class CssToUnocssProcess {
   /**
-     * transform multiple style to unocss
-     *
-     * @param {string} code origin text
-     * @return {string} transformed text
-     */
+   * transform multiple style to unocss
+   *
+   * @param {string} text origin text
+   * @return {string} transformed text
+   */
   convert(text: string) {
     return getMultipedUnocssText(text)
   }
 
   /**
-     * transform all page to unocss
-     *
-     * @param {string} code origin text
-     * @return {string} transformed text
-     */
+   * transform all page to unocss
+   *
+   * @param {string} code origin text
+   * @return {string} transformed text
+   */
   async convertAll(code: string, fileName: string): Promise<string> {
     if (!code)
       return ''

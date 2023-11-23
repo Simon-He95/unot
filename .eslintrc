@@ -1,9 +1,0 @@
-{
-  "extends": "@antfu",
-  "rules": {
-    "no-eval": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    "no-cond-assign": "off",
-    "import/no-mutable-exports": "off"
-  }
-}

@@ -5,3 +5,4 @@ pnpm-lock.yaml
 .history
 *.md
 .eslintcache
+src/search.ts
