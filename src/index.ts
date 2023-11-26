@@ -121,8 +121,10 @@ export async function activate(context: vscode.ExtensionContext) {
     else
       [transferred, noTransferred] = transformStyleToUnocss(copyText)
 
-    if (noTransferred.length)
+    if (noTransferred.length) {
       message.error(`${isZh ? '⚠️ 有一些属性unocss暂时还不支持转换，请自行处理：' : '⚠️ Some attributes unocss do not support conversion for the time being, please deal with them by yourself: '}${noTransferred.join('; ')}`)
+      return
+    }
 
     updateText((builder) => {
       builder.insert(new vscode.Position(line, character), transferred)

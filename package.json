@@ -153,14 +153,12 @@
     "esno": "^0.16.3",
     "find-up": "^6.3.0",
     "pnpm": "^8.10.5",
-    "prettier": "^2.8.8",
     "rimraf": "^4.4.1",
     "transform-to-unocss": "^0.0.71",
     "transform-to-unocss-core": "^0.0.12",
     "tsup": "^6.7.0",
     "typescript": "^5.3.2",
     "vitest": "^0.29.8",
-    "vsce": "^2.15.0",
-    "windicss": "^3.5.6"
+    "vsce": "^2.15.0"
   }
 }
