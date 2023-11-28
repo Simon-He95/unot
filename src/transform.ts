@@ -1,3 +1,5 @@
+import { isCalc, isHex, isRgb } from 'transform-to-unocss-core'
+
 import type { Attr, ChangeList } from './type'
 
 let variantGroup = true
@@ -105,6 +107,23 @@ export const rules: any = [
   strictHyphen
     ? [/-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVariable ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
     : [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVariable ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
+  [/(\w+)-?(\#[^\s'\']+)(\s|'|$)/g, (_: string, v0: string, v1: string, v2: string) => v1.endsWith(']') ? _ : `${v0}-[${v1}]${v2}`],
+  [/([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
+    if (v1 in customMap) {
+      v1 = customMap[v1]
+      if (!classData.some(c => /border-/.test(c)))
+        v3 = ` border-transparent${v3}`
+    }
+
+    if (v1 === 'border' && (isHex(v2) || isRgb(v2))) {
+      const hasBorder = !!classData.find(item => /(border$)|(border-[0-9]|(border-[bltr]($)|(-[0-9])))/.test(item))
+      const hasBorderStyle = !!classData.find(item => ['border-solid', 'border-dashed', 'border-dotted', 'border-double'].includes(item))
+      return `${v}${v1}-[${v2}]${hasBorder ? '' : ' border'}${hasBorderStyle ? '' : ' border-solid'}${v3}`
+    }
+    if (isHex(v2) || isRgb(v2) || isCalc(v2))
+      return `${v}${v1}-[${v2}]${v3}`
+    return _
+  }],
   [/([\s!])x-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-x-hidden${v2}`],
   [/([\s!])y-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-y-hidden${v2}`],
   [/([\s!])justify-center(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center${v2}`],
@@ -164,7 +183,10 @@ export function transform(content: string) {
         v = v.replace(key, map[key])
       })
       classData = value.split(' ').map(item => item.replace(/['\[\]]/g, ''))
-      const newClass = v.replace(reg, callback).slice(1)
+
+      const newClass = v
+        .replace(/\s([^!\s]+)!/g, (_, v) => ` !${v}`)
+        .replace(reg, callback).slice(1)
       return `class${name}="${newClass}"`
     })
   }, content)
