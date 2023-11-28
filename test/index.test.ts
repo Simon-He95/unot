@@ -40,17 +40,17 @@ describe('should', () => {
   it('exported', () => {
     expect(
       transform('class="-translatex50rem!"'),
-    ).toMatchInlineSnapshot('"class=\\"-translate-x-[50rem]!\\""')
+    ).toMatchInlineSnapshot('"class=\\"!-translate-x-[50rem]\\""')
   })
   it('exported', () => {
     expect(
       transform('class="text#fff!"'),
-    ).toMatchInlineSnapshot('"class=\\"text-[#fff!]\\""')
+    ).toMatchInlineSnapshot('"class=\\"!text-[#fff]\\""')
   })
   it('exported', () => {
     expect(
       transform('class="textrgba(1,2,3,.1)!"'),
-    ).toMatchInlineSnapshot('"class=\\"text-[rgba(1,2,3,.1)]!\\""')
+    ).toMatchInlineSnapshot('"class=\\"!text-[rgba(1,2,3,.1)]\\""')
   })
   it('exported', () => {
     expect(
@@ -89,5 +89,13 @@ describe('should', () => {
     expect(
       transform(':class=" [x?\'top10\': \'gapx1\']"'),
     ).toMatchInlineSnapshot('":class=\\" [x?\'top-10\': \'gapx-1\']\\""')
+  })
+  it('match error', () => {
+    expect(
+      transform(':class=" w15!"'),
+    ).toMatchInlineSnapshot('":class=\\" !w15\\""')
+    expect(
+      transform(':class=" border#fff"'),
+    ).toMatchInlineSnapshot('":class=\\" border-[#fff] border border-solid\\""')
   })
 })
