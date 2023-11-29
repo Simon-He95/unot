@@ -31,21 +31,41 @@ Support css in the design draft directly through the shortcut key `Mac`? `cmd+al
 - You can use config to control some matching rules, such as strict-splicing, or the generated calculation result is `-[10px]` or `-10px`
 
 ``` json
-   "unot.variantGroup": {
-      "type": "boolean",
-      "default": true,
-      "description": "Enable/disable transform hover:(x1 x2) to hover:x1 hover:x2"
-    },
-    "unot.strictVariable": {
-      "type": "boolean",
-      "default": true,
-      "description": "if true w10px or w-10px will transform w-[10px]"
-    },
-    "unot.strictHyphen": {
-      "type": "boolean",
-      "default": false,
-      "description": "if true bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
-    }
+  "unot.variantGroup": {
+    "type": "boolean",
+    "default": true,
+    "description": "Enable/disable transform hover:(x1 x2) to hover:x1 hover:x2"
+  },
+  "unot.strictVariable": {
+    "type": "boolean",
+    "default": true,
+    "description": "if true w10px or w-10px will transform w-[10px]"
+  },
+  "unot.strictHyphen": {
+    "type": "boolean",
+    "default": false,
+    "description": "if true bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
+  },
+  "unot.switchMagic": {
+    "type": "boolean",
+    "default": true,
+    "description": "switch magic"
+  },
+  "unot.presets": {
+    "type": "array",
+    "default": [],
+    "description": "unocss transform presets"
+  },
+  "unot.dark": {
+    "type": "object",
+    "default": {},
+    "description": "unocss dark theme style"
+  },
+  "unot.light": {
+    "type": "object",
+    "default": {},
+    "description": "unocss light theme style"
+  }
 ```
 
 ## :coffee:
