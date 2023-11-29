@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, createBottomBar, createRange, getConfiguration, getCopyText, getLocale, getSelection, message, registerCommand, setCopyText, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createRange, getConfiguration, getCopyText, getLocale, getSelection, message, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
 import { rules, transformAttrs, transformClassAttr } from './transform'
@@ -26,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return
 
   const styleReg = /style="([^"]+)"/
-  const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('UnoT')
+  const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('unot')
   const process = new CssToUnocssProcess()
   const LANS = ['html', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'svelte', 'solid', 'swan', 'react', 'js', 'ts', 'tsx', 'jsx', 'wxml', 'axml', 'css', 'wxss', 'acss', 'less', 'scss', 'sass', 'stylus', 'wxss', 'acss']
   const md = new vscode.MarkdownString()
@@ -137,6 +137,7 @@ export async function activate(context: vscode.ExtensionContext) {
     setCopyText(copyAttr)
     message.info(`copy successfully ➡️ ${copyAttr}`)
   }))
+
   context.subscriptions.push(registerCommand('UnoT.copyClass', () => {
     setCopyText(copyClass)
     message.info(`copy successfully ➡️ ${copyClass}`)
@@ -240,8 +241,11 @@ export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditorUri = vscode.window.activeTextEditor?.document?.uri?.path
   // const completions: vscode.CompletionItem[] = []
   // let unoCompletionsMap: any
+  const switchMagic = getConfiguration('unot').get('switchMagic')
+
+  let isOpen = switchMagic
   const statusBarItem = createBottomBar({
-    text: 'uno-magic ✅',
+    text: `uno-magic ${isOpen ? '✅' : '❌'}`,
     command: {
       title: 'uno-magic',
       command: 'unotmagic.changeStatus',
@@ -259,20 +263,22 @@ export async function activate(context: vscode.ExtensionContext) {
     position: 'left',
     offset: 500,
   })
+
   context.subscriptions.push(registerCommand('unotToRem.changeStatus', () => {
     toRemFlag = !toRemFlag
     bottomBar.text = `to-rem ${toRemFlag ? '✅' : '❌'}`
   }))
+
   bottomBar.show()
 
   if (currentFolder)
     await updateUnoStatus(vscode.window.activeTextEditor?.document.uri.fsPath)
   if (presets.length)
     rules.unshift(...presets)
-  let isOpen = true
 
   registerCommand('unotmagic.changeStatus', () => {
     isOpen = !isOpen
+    setConfiguration('unot.switchMagic', isOpen)
     statusBarItem.text = `uno-magic ${isOpen ? '✅' : '❌'}`
   })
 
@@ -309,7 +315,7 @@ export async function activate(context: vscode.ExtensionContext) {
         statusBarItem.hide()
       else
         statusBarItem.show()
-    })))
+    }, 200)))
 
   if (!hasUnoConfig) {
     context.subscriptions.push(addEventListener('file-create', () => {
