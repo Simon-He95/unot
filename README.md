@@ -4,14 +4,18 @@
 <p align="center"> English | <a href="./README_zh.md">简体中文</a></p>
 
 
-UnoT is short for unocss tools that is to provide a better development experience using unocss in vscode. It integrated [tounocss](https://github.com/Simon-He95/tounocss)、 [vscode uno magic](https://github.com/Simon-He95/vscode-uno-magic)
+UnoT is short for unocss tools, to provide a better development experience using unocss in vscode. It integrated [tounocss](https://github.com/Simon-He95/tounocss)、 [vscode uno magic](https://github.com/Simon-He95/vscode-uno-magic)
 
 ![demo](/assets/demo.gif)
 
->⚠️ Warning: The highlighting unocss syntax has been removed. This plug-in is made as an extension plug-in for unocss. If you need to highlight unocss, please download the official unocss.
+## 🦸🏻 Ability
 
+- Provides hover style prompt css code corresponding to UnoCss
+- Turn on uno-magic to provide the ability to automatically process spaces and brackets
+- Provides shortcut keys to automatically convert the style copied by the browser to UnoCss
+- Right-click provides a website to quickly open UnoCss documents and Unot online edited conversion results
 
-## 💡 Effects
+## 💡 Open uno-magic
 - text-\[red,hover:pink,2xl,lg:hover:3xl\] -> text-red hover:text-pink text-2xl lg:hover:text-3xl
 - class or className content like `w-calc(100% - 20px)` -> `w-[calc(100%-20px)]` [🔎detail](https://github.com/Simon-He95/vscode-uno-magic)
 - Provides code selection for unocss syntax [🔎detail](https://github.com/Simon-He95/vscode-uno-magic)
@@ -23,6 +27,10 @@ UnoT is short for unocss tools that is to provide a better development experienc
 - hover:(text-red bg-blue) -> hover:text-red hover:bg-blue
 - !(text-red bg-blue) -> !text-red !bg-blue
 - h="[calc(100% - 20px)]" -> h="[calc(100%-20px)]"
+
+## Powered by
+- [transformToUnoCSS](https://github.com/Simon-He95/transformToUnoCSS)
+- [transform-to-tailwindcss-core](https://github.com/Simon-He95/transform-to-tailwindcss-core)
 
 ## Feature
 Support css in the design draft directly through the shortcut key `Mac`? `cmd+alt+v` : `ctrl+alt+v` is automatically converted to unocss, and will be automatically processed into in-line unocss format or class form according to your location.

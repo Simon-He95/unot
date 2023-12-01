@@ -7,10 +7,13 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
 
 ![demo](/assets/demo.gif)
 
->⚠️ Warning: 移除了高亮unocss语法，本插件制作为unocss的扩展插件，如需高亮unocss，请下载官方的unocss
+## 🦸🏻 能力
+- 提供了hover style 提示对应 UnoCss 的css代码
+- 开启 uno-magic 提供自动处理空格和括号的能力
+- 提供了快捷键自动将浏览器复制的样式转换成 UnoCss
+- 右键提供了快速打开 UnoCss 的文档 和 Unot 在线编辑的转换结果网站
 
-
-## 💡 影响
+## 💡 开启uno-magic
 - text-\[red,hover:pink,2xl,lg:hover:3xl\] -> text-red hover:text-pink text-2xl lg:hover:text-3xl
 - class or className content like `w-calc(100% - 20px)` -> `w-[calc(100%-20px)]` [🔎详情](https://github.com/Simon-He95/vscode-uno-magic)
 - Provides code selection for unocss syntax [🔎详情](https://github.com/Simon-He95/vscode-uno-magic)
@@ -23,6 +26,9 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
 - !(text-red bg-blue) -> !text-red !bg-blue
 - h="[calc(100% - 20px)]" -> h="[calc(100%-20px)]"
 
+## 核心能力来源于
+- [transformToUnoCSS](https://github.com/Simon-He95/transformToUnoCSS)
+- [transform-to-tailwindcss-core](https://github.com/Simon-He95/transform-to-tailwindcss-core)
 
 ## 新特性
 支持将设计稿中的css直接通过快捷键 `Mac` ? `cmd+alt+v` : `ctrl+alt+v` 自动转换成unocss，并且会根据你的位置自动处理成行内的unocss格式还是class形式的
