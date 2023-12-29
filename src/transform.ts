@@ -28,7 +28,6 @@ const customMap: any = {
   'border-rd': 'rounded',
   'lh': 'leading',
 }
-
 let classData: string[] = []
 const COMMON_REG = strictHyphen
   ? /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
