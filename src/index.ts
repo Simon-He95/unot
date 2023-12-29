@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, createBottomBar, createRange, getConfiguration, getCopyText, getLocale, getSelection, message, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createRange, getConfiguration, getCopyText, getLocale, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
 import { rules, transformAttrs, transformClassAttr } from './transform'
@@ -301,6 +301,10 @@ export async function activate(context: vscode.ExtensionContext) {
         changeList.forEach((change: any) => {
           edit.replace(new vscode.Range(new vscode.Position(change.start.line - 1, change.start.column), new vscode.Position(change.end.line - 1, change.end.column - 1)), change.content)
         })
+      })
+      nextTick(() => {
+        // 文件已更新,调用保存
+        activeTextEditor.document.save()
       })
     }
   }))

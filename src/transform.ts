@@ -29,21 +29,6 @@ const customMap: any = {
   'lh': 'leading',
 }
 
-const textMap: any = {
-  12: 'xs',
-  14: 'sm',
-  16: 'base',
-  18: 'lg',
-  20: 'xl',
-  24: '2xl',
-  30: '3xl',
-  36: '4xl',
-  48: '5xl',
-  60: '6xl',
-  72: '7xl',
-  96: '8xl',
-  128: '9xl',
-}
 let classData: string[] = []
 const COMMON_REG = strictHyphen
   ? /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
@@ -69,8 +54,6 @@ export const rules: any = [
       if (v2)
         return strictVariable ? `${prefix}${v}-[${v1}${v2}]` : `${prefix}${v}-${v1}${v2}`
 
-      if (v1 in textMap)
-        return `${prefix}${v}-${textMap[v1]}`
       return `${prefix}${v}-${v1}`
     }
     return v2.trim() === ''
