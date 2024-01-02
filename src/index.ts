@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, createBottomBar, createRange, getConfiguration, getCopyText, getLocale, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getLineText, getLocale, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
 import { rules, transformAttrs, transformClassAttr } from './transform'
@@ -9,6 +9,7 @@ import { LRUCache, getMultipedUnocssText, hasFile, highlight, parserAst } from '
 import { openDocumentation } from './openDocumentation'
 import { openPlayground } from './openPlayground'
 import type { ChangeList } from './type'
+import { parser } from './parser'
 
 const cacheMap = new LRUCache(5000)
 export let toRemFlag = false
@@ -34,6 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
   md.supportHtml = true
   let copyClass = ''
   let copyAttr = ''
+  let copyRange: any
   const style = {
     dark: Object.assign({
       textDecoration: 'underline',
@@ -136,12 +138,72 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(registerCommand('UnoT.copyAttr', () => {
     setCopyText(copyAttr)
     message.info(`copy successfully ➡️ ${copyAttr}`)
+    replaceStyleToAttr(copyAttr, true)
   }))
 
   context.subscriptions.push(registerCommand('UnoT.copyClass', () => {
     setCopyText(copyClass)
     message.info(`copy successfully ➡️ ${copyClass}`)
+    replaceStyleToAttr(copyClass, false)
   }))
+
+  function replaceStyleToAttr(text: string, isAttr: boolean) {
+    let item: any
+    let isRemoveAfter = false
+    if (copyRange?.length) {
+      // 如果最后一位的后面跟着; 则end+1
+      const afterChar = getLineText(copyRange[0].range.end.line)![copyRange[0].range.end.character]
+      isRemoveAfter = afterChar === ';'
+      item = {
+        range: copyRange[0].range,
+      }
+    }
+    else {
+      item = {
+        range: getActiveTextEditor()!.selection,
+      }
+    }
+
+    const ast = parser(getActiveText()!, item.range.start)
+    if (ast?.tag) {
+      const propClass = ast.props?.find((i: any) => i.name === (ast.isJsx ? 'className' : 'class'))
+      if (!isAttr && propClass) {
+        updateText((edit) => {
+          edit.insert(new vscode.Position(propClass.value.loc.start.line - 1, propClass.value.loc.start.column), propClass.value.content ? `${text} ` : text)
+          edit.replace(updateRange(item.range), '')
+        })
+      }
+      else if (ast.props?.length > 1) {
+        const pos = ast.props.find((i: any) => i.name !== 'style')!.loc
+        updateText((edit) => {
+          edit.insert(new vscode.Position(pos.start.line - 1, pos.start.column - 1), isAttr ? `${text} ` : `${ast.isJsx ? 'className' : 'class'}="${text}" `)
+          edit.replace(updateRange(item.range), '')
+        })
+      }
+      else {
+        const pos = {
+          line: ast.loc.start.line,
+          column: ast.loc.start.column + ast.tag.length + 1,
+          offset: ast.loc.start.offset + ast.tag.length + 1,
+        }
+        updateText((edit) => {
+          edit.insert(new vscode.Position(pos.line - 1, pos.column), isAttr ? `${text} ` : `${ast.isJsx ? 'className' : 'class'}="${text}" `)
+          edit.replace(updateRange(item.range), '')
+        })
+      }
+    }
+    else {
+      updateText((edit) => {
+        edit.replace(updateRange(item.range), text)
+      })
+    }
+
+    function updateRange(range: any) {
+      if (!isRemoveAfter)
+        return range
+      return new vscode.Range(new vscode.Position(range.start.line, range.start.character), new vscode.Position(range.end.line, range.end.character + 1))
+    }
+  }
 
   // style to unocss hover事件
   context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
@@ -225,6 +287,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // 增加decorationType样式
     md.value = ''
     copyAttr = selectedUnocssText
+    copyRange = rangeMap
     highlight(rangeMap)
     const copyIcon = '<img width="12" height="12" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UyOWNkMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTTIwLjk5OCAxMGMtLjAxMi0yLjE3NS0uMTA4LTMuMzUzLS44NzctNC4xMjFDMTkuMjQzIDUgMTcuODI4IDUgMTUgNWgtM2MtMi44MjggMC00LjI0MyAwLTUuMTIxLjg3OUM2IDYuNzU3IDYgOC4xNzIgNiAxMXY1YzAgMi44MjggMCA0LjI0My44NzkgNS4xMjFDNy43NTcgMjIgOS4xNzIgMjIgMTIgMjJoM2MyLjgyOCAwIDQuMjQzIDAgNS4xMjEtLjg3OUMyMSAyMC4yNDMgMjEgMTguODI4IDIxIDE2di0xIi8+PHBhdGggZD0iTTMgMTB2NmEzIDMgMCAwIDAgMyAzTTE4IDVhMyAzIDAgMCAwLTMtM2gtNEM3LjIyOSAyIDUuMzQzIDIgNC4xNzIgMy4xNzJDMy41MTggMy44MjUgMy4yMjkgNC43IDMuMTAyIDYiLz48L2c+PC9zdmc+" />'
     md.appendMarkdown('<a href="https://github.com/Simon-He95/unot">To Unocss:</a>\n')
