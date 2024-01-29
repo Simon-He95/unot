@@ -23,9 +23,9 @@ export async function activate(context: vscode.ExtensionContext) {
   openDocumentation(context)
   openPlayground(context)
   const pkgs = await hasFile(['**/package.json'])
-  if (!pkgs.some(pkg => pkg.includes('unocss')))
-    return
-
+  const isNotUnocss = !pkgs.some(pkg => pkg.includes('unocss'))
+  if (isNotUnocss)
+    message.warn(getLocale().includes('zh') ? '当前环境缺少unocss依赖' : 'The current environment lacks unocss dependency')
   const styleReg = /style="([^"]+)"/
   const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('unot')
   const process = new CssToUnocssProcess()

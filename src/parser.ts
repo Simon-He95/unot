@@ -306,8 +306,8 @@ function jsxDfs(children: any, parent: any, position: vscode.Position) {
   }
 }
 
-function findJsxRefs(childrens: any, map: any = {}, refs: any = []) {
-  for (const child of childrens) {
+function findJsxRefs(children: any, map: any = {}, refs: any = []) {
+  for (const child of children) {
     let { type, openingElement, body: children, argument, declarations, init, id, expression } = child
     if (type === 'VariableDeclaration') {
       children = declarations
