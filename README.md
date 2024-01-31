@@ -39,6 +39,11 @@ Support css in the design draft directly through the shortcut key `Mac`? `cmd+al
 - You can use config to control some matching rules, such as strict-splicing, or the generated calculation result is `-[10px]` or `-10px`
 
 ``` json
+  "unot.classMode": {
+    "type": "boolean",
+    "default": true,
+    "description": "Enable/disable class mode"
+  },
   "unot.variantGroup": {
     "type": "boolean",
     "default": true,

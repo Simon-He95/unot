@@ -51,8 +51,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11
       '@vscode-use/utils':
-        specifier: ^0.0.74
-        version: 0.0.74
+        specifier: ^0.0.82
+        version: 0.0.82
       '@vue/compiler-sfc':
         specifier: ^3.3.8
         version: 3.3.8
@@ -78,8 +78,8 @@ importers:
         specifier: ^4.2.8
         version: 4.2.8
       transform-to-unocss:
-        specifier: ^0.0.71
-        version: 0.0.71
+        specifier: ^0.0.72
+        version: 0.0.72
       transform-to-unocss-core:
         specifier: ^0.0.15
         version: 0.0.15
@@ -926,8 +926,8 @@ packages:
     engines: {vscode: ^1.77.0}
     dev: true
 
-  /@vscode-use/utils@0.0.74:
-    resolution: {integrity: sha512-bwRQOabImFq79F4mRb5wUkRcolNY/+hnwSjknxdkGNbLBRpF9bzYGAFyeTgvPRjijtYcYXpcGvfBu5S64e+/GA==}
+  /@vscode-use/utils@0.0.82:
+    resolution: {integrity: sha512-qyMCBGTxz2BkFrmsvuWCb0sWfoW4oG3VjK8Yh065o5ZsZMbZZAu5Md4kJ1jKtZwLJzDhYDbDbdYCw9ChVoxm4w==}
     engines: {vscode: ^1.77.0}
     dev: true
 
@@ -4495,8 +4495,8 @@ packages:
     hasBin: true
     dev: true
 
-  /transform-to-unocss@0.0.71:
-    resolution: {integrity: sha512-iAThEMggHbm5urdBn/ZGfTrvatWcRkCioqG6bgu82Ph3Fo0KFNoP/uKOSy/5YVajAntu/K3xTioH8YyP6TbQlQ==}
+  /transform-to-unocss@0.0.72:
+    resolution: {integrity: sha512-5y4p8umjvdpEDZb/G3+xGnr1Kzwl9bV/MCvFoom/Lk8KNk1p8WgTlpIg0qjgpr9mgaCY4pTWfmGDzvrA37S4qw==}
     hasBin: true
     dependencies:
       fast-glob: 3.3.2
