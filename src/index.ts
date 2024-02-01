@@ -24,8 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
   openPlayground(context)
   const pkgs = await hasFile(['**/package.json'])
   const isNotUnocss = !pkgs.some(pkg => pkg.includes('unocss'))
-  if (isNotUnocss)
-    message.warn(getLocale().includes('zh') ? '当前环境缺少unocss依赖' : 'The current environment lacks unocss dependency')
+
   const styleReg = /style="([^"]+)"/
   const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('unot')
   const process = new CssToUnocssProcess()
@@ -204,6 +203,9 @@ export async function activate(context: vscode.ExtensionContext) {
       return new vscode.Range(new vscode.Position(range.start.line, range.start.character), new vscode.Position(range.end.line, range.end.character + 1))
     }
   }
+
+  if (isNotUnocss)
+    return
 
   // style to unocss hover事件
   context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
