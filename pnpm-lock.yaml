@@ -51,8 +51,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11
       '@vscode-use/utils':
-        specifier: ^0.0.82
-        version: 0.0.82
+        specifier: ^0.0.86
+        version: 0.0.86
       '@vue/compiler-sfc':
         specifier: ^3.3.8
         version: 3.3.8
@@ -926,8 +926,8 @@ packages:
     engines: {vscode: ^1.77.0}
     dev: true
 
-  /@vscode-use/utils@0.0.82:
-    resolution: {integrity: sha512-qyMCBGTxz2BkFrmsvuWCb0sWfoW4oG3VjK8Yh065o5ZsZMbZZAu5Md4kJ1jKtZwLJzDhYDbDbdYCw9ChVoxm4w==}
+  /@vscode-use/utils@0.0.86:
+    resolution: {integrity: sha512-w0uLUk/rUEPyigy1aIgfF0sAHmMMlRjhnjOy/ngXdZWoNp9JeJ5FPc1sy0Z+FBKsOUA9nWUBzOVdCpMrZRnVlQ==}
     engines: {vscode: ^1.77.0}
     dev: true
 

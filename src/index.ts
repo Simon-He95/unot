@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, createBottomBar, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getLineText, getLocale, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createPosition, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getCurrentFileUrl, getLineText, getLocale, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
 import { rules, transformAttrs, transformClassAttr } from './transform'
@@ -15,7 +15,7 @@ const cacheMap = new LRUCache(5000)
 export let toRemFlag = false
 export let decorationType: TextEditorDecorationType
 export async function activate(context: vscode.ExtensionContext) {
-  const activeTextEditor = vscode.window.activeTextEditor
+  const activeTextEditor = getActiveTextEditor()
   if (!activeTextEditor)
     return
 
@@ -211,17 +211,19 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
     provideHover(document, position) {
       // 获取当前选中的文本范围
-      const editor = vscode.window.activeTextEditor
+      const editor = getActiveTextEditor()
       if (!editor)
         return
       // 移除样式
-      vscode.window.activeTextEditor?.setDecorations(decorationType, [])
+      editor.setDecorations(decorationType, [])
       const selection = editor.selection
       const wordRange = new vscode.Range(selection.start, selection.end)
       let selectedText = editor.document.getText(wordRange)
       const realRangeMap: any = []
       if (!selectedText) {
         const range = document.getWordRangeAtPosition(position) as any
+        if (!range)
+          return
         let word = document.getText(range)
         if (!word)
           return
@@ -277,13 +279,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(vscode.window.onDidChangeTextEditorVisibleRanges(() => {
     // 移除装饰器
-    if (vscode.window.activeTextEditor)
-      vscode.window.activeTextEditor.setDecorations(decorationType, [])
+    getActiveTextEditor()?.setDecorations(decorationType, [])
   }))
 
-  context.subscriptions.push(addEventListener('text-change', () => vscode.window.activeTextEditor?.setDecorations(decorationType, [])))
+  context.subscriptions.push(addEventListener('text-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
 
-  context.subscriptions.push(addEventListener('selection-change', () => vscode.window.activeTextEditor?.setDecorations(decorationType, [])))
+  context.subscriptions.push(addEventListener('selection-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
 
   function setStyle(selectedUnocssText: string, rangeMap: vscode.Range[]) {
     // 增加decorationType样式
@@ -303,7 +304,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   let hasUnoConfig: string | undefined
   const currentFolder = (vscode.workspace.workspaceFolders as any)?.[0]
-  const activeTextEditorUri = vscode.window.activeTextEditor?.document?.uri?.path
+  const activeTextEditorUri = getCurrentFileUrl()
+  if (!activeTextEditorUri)
+    return
   // const completions: vscode.CompletionItem[] = []
   // let unoCompletionsMap: any
   const switchMagic = getConfiguration('unot').get('switchMagic')
@@ -337,7 +340,7 @@ export async function activate(context: vscode.ExtensionContext) {
   bottomBar.show()
 
   if (currentFolder)
-    await updateUnoStatus(vscode.window.activeTextEditor?.document.uri.fsPath)
+    await updateUnoStatus(getCurrentFileUrl())
   if (presets.length)
     rules.unshift(...presets)
 
@@ -348,7 +351,7 @@ export async function activate(context: vscode.ExtensionContext) {
   })
 
   context.subscriptions.push(addEventListener('text-save', (document: vscode.TextDocument) => {
-    const activeTextEditor = vscode.window.activeTextEditor
+    const activeTextEditor = getActiveTextEditor()
     if (!isOpen || !hasUnoConfig || !activeTextEditor)
       return
     // 对文档保存后的内容进行处理
@@ -364,7 +367,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (changeList.length) {
       updateText((edit) => {
         changeList.forEach((change: any) => {
-          edit.replace(new vscode.Range(new vscode.Position(change.start.line - 1, change.start.column), new vscode.Position(change.end.line - 1, change.end.column - 1)), change.content)
+          edit.replace(new vscode.Range(createPosition(change.start.line - 1, change.start.column), createPosition(change.end.line - 1, change.end.column - 1)), change.content)
         })
       })
       nextTick(() => {
@@ -376,7 +379,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(addEventListener('activeText-change', () =>
     setTimeout(async () => {
-      const url = vscode.window.activeTextEditor?.document.uri.fsPath
+      const url = getCurrentFileUrl()
       if (!url)
         return
       await updateUnoStatus(url)

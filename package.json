@@ -171,7 +171,7 @@
     "@unocss/transformer-directives": "^0.53.6",
     "@unocss/transformer-variant-group": "^0.53.6",
     "@vscode-use/createwebview": "^0.0.11",
-    "@vscode-use/utils": "^0.0.82",
+    "@vscode-use/utils": "^0.0.86",
     "@vue/compiler-sfc": "^3.3.8",
     "bumpp": "^9.2.0",
     "eslint": "^8.54.0",
