@@ -78,11 +78,11 @@ importers:
         specifier: ^4.2.8
         version: 4.2.8
       transform-to-unocss:
-        specifier: ^0.0.72
-        version: 0.0.72
+        specifier: ^0.0.74
+        version: 0.0.74
       transform-to-unocss-core:
-        specifier: ^0.0.15
-        version: 0.0.15
+        specifier: ^0.0.20
+        version: 0.0.20
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(typescript@5.3.2)
@@ -4490,13 +4490,13 @@ packages:
       punycode: 2.1.1
     dev: true
 
-  /transform-to-unocss-core@0.0.15:
-    resolution: {integrity: sha512-1m+O0rStCZ4r+vHJe4MUOD61HEX05VBZ36lJqnO0T9BjfQENj+L3gQxo7sDPNWmQRSGgj5QZq1bs5VB3gKtG3w==}
+  /transform-to-unocss-core@0.0.20:
+    resolution: {integrity: sha512-PxnfFOmZ51gTJFikg7shYMdzxkMrKGdZsI6EipjuBdA1aYOnBCeuhQl/3/jPRphheSodxsPROnVILhya9BCrIQ==}
     hasBin: true
     dev: true
 
-  /transform-to-unocss@0.0.72:
-    resolution: {integrity: sha512-5y4p8umjvdpEDZb/G3+xGnr1Kzwl9bV/MCvFoom/Lk8KNk1p8WgTlpIg0qjgpr9mgaCY4pTWfmGDzvrA37S4qw==}
+  /transform-to-unocss@0.0.74:
+    resolution: {integrity: sha512-LGKBTOen3EmjbYVGiCQb2XedR4e3/vKp9SLuiyM5/X14Q902zFGea5SPc1HxlUeGmqfr/qLCUILOhPbSN6XDdg==}
     hasBin: true
     dependencies:
       fast-glob: 3.3.2

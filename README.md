@@ -64,6 +64,11 @@ Support css in the design draft directly through the shortcut key `Mac`? `cmd+al
     "default": true,
     "description": "switch magic"
   },
+  "unot.useHex": {
+    "type": "boolean",
+    "default": false,
+    "description": "use hex color transform #fff to hex-fff"
+  },
   "unot.presets": {
     "type": "array",
     "default": [],

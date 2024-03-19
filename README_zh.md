@@ -62,6 +62,11 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
     "default": true,
     "description": "switch magic"
   },
+  "unot.useHex": {
+    "type": "boolean",
+    "default": false,
+    "description": "use hex color transform #fff to hex-fff"
+  },
   "unot.presets": {
     "type": "array",
     "default": [],

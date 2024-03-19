@@ -292,12 +292,13 @@ export async function activate(context: vscode.ExtensionContext) {
     copyAttr = selectedUnocssText
     copyRange = rangeMap
     highlight(rangeMap)
+    const useHex = getConfiguration('unot.useHex')
     const copyIcon = '<img width="12" height="12" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UyOWNkMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTTIwLjk5OCAxMGMtLjAxMi0yLjE3NS0uMTA4LTMuMzUzLS44NzctNC4xMjFDMTkuMjQzIDUgMTcuODI4IDUgMTUgNWgtM2MtMi44MjggMC00LjI0MyAwLTUuMTIxLjg3OUM2IDYuNzU3IDYgOC4xNzIgNiAxMXY1YzAgMi44MjggMCA0LjI0My44NzkgNS4xMjFDNy43NTcgMjIgOS4xNzIgMjIgMTIgMjJoM2MyLjgyOCAwIDQuMjQzIDAgNS4xMjEtLjg3OUMyMSAyMC4yNDMgMjEgMTguODI4IDIxIDE2di0xIi8+PHBhdGggZD0iTTMgMTB2NmEzIDMgMCAwIDAgMyAzTTE4IDVhMyAzIDAgMCAwLTMtM2gtNEM3LjIyOSAyIDUuMzQzIDIgNC4xNzIgMy4xNzJDMy41MTggMy44MjUgMy4yMjkgNC43IDMuMTAyIDYiLz48L2c+PC9zdmc+" />'
     md.appendMarkdown('<a href="https://github.com/Simon-He95/unot">To Unocss:</a>\n')
-    md.appendMarkdown(`\n<a href="command:UnoT.copyAttr">attributify: ${copyIcon} ${selectedUnocssText}</a>\n`)
+    md.appendMarkdown(`\n<a href="command:UnoT.copyAttr">attributify: ${copyIcon} ${useHex ? selectedUnocssText.replace(/#/g, 'hex-') : selectedUnocssText}</a>\n`)
     md.appendMarkdown('\n')
-    copyClass = selectedUnocssText.replace(/="([^"]+)"/g, (_, v) => `-${v}`)
-    md.appendMarkdown(`\n<a href="command:UnoT.copyClass">class: ${copyIcon} ${copyClass}</a>\n`)
+    copyClass = selectedUnocssText.replace(/([^\s\=]+)="([^"]+)"/, (_, v1, v2) => v2.split(' ').map((v: string) => `${v1}-${v}`).join(' '))
+    md.appendMarkdown(`\n<a href="command:UnoT.copyClass">class: ${copyIcon} ${useHex ? copyClass.replace(/#/g, 'hex-') : copyClass}</a>\n`)
 
     return new vscode.Hover(md)
   }
