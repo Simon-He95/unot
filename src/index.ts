@@ -130,9 +130,9 @@ export async function activate(context: vscode.ExtensionContext) {
     updateText((builder) => {
       const useHex = getConfiguration('unot.useHex')
 
-      if (useHex) {
+      if (useHex)
         transferred = transferred.replace(/\[#([a-zA-Z0-9]+)\]/ig, 'hex-$1')
-      }
+
       builder.insert(new vscode.Position(line, character), transferred)
     })
 
@@ -295,22 +295,23 @@ export async function activate(context: vscode.ExtensionContext) {
     // 增加decorationType样式
     md.value = ''
     copyAttr = selectedUnocssText
+    copyClass = selectedUnocssText
+      .replace(/([^\s\=]+)="([^"]+)"/, (_, v1, v2) =>
+        v2.split(' ').map((v: string) => `${v1}-${v}`)
+          .join(' '))
     copyRange = rangeMap
     highlight(rangeMap)
     const useHex = getConfiguration('unot.useHex')
 
     if (useHex) {
       copyAttr = copyAttr.replace(/\[#([a-zA-Z0-9]+)\]/i, 'hex-$1')
+      copyClass = copyClass.replace(/\[#([a-zA-Z0-9]+)\]/i, 'hex-$1')
     }
 
     const copyIcon = '<img width="12" height="12" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UyOWNkMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTTIwLjk5OCAxMGMtLjAxMi0yLjE3NS0uMTA4LTMuMzUzLS44NzctNC4xMjFDMTkuMjQzIDUgMTcuODI4IDUgMTUgNWgtM2MtMi44MjggMC00LjI0MyAwLTUuMTIxLjg3OUM2IDYuNzU3IDYgOC4xNzIgNiAxMXY1YzAgMi44MjggMCA0LjI0My44NzkgNS4xMjFDNy43NTcgMjIgOS4xNzIgMjIgMTIgMjJoM2MyLjgyOCAwIDQuMjQzIDAgNS4xMjEtLjg3OUMyMSAyMC4yNDMgMjEgMTguODI4IDIxIDE2di0xIi8+PHBhdGggZD0iTTMgMTB2NmEzIDMgMCAwIDAgMyAzTTE4IDVhMyAzIDAgMCAwLTMtM2gtNEM3LjIyOSAyIDUuMzQzIDIgNC4xNzIgMy4xNzJDMy41MTggMy44MjUgMy4yMjkgNC43IDMuMTAyIDYiLz48L2c+PC9zdmc+" />'
     md.appendMarkdown('<a href="https://github.com/Simon-He95/unot">To Unocss:</a>\n')
     md.appendMarkdown(`\n<a href="command:UnoT.copyAttr">attributify: ${copyIcon} ${copyAttr}</a>\n`)
     md.appendMarkdown('\n')
-    copyClass = selectedUnocssText.replace(/([^\s\=]+)="([^"]+)"/, (_, v1, v2) => v2.split(' ').map((v: string) => `${v1}-${v}`).join(' '))
-    if (useHex) {
-      copyClass = copyClass.replace(/\[#([a-zA-Z0-9]+)\]/i, 'hex-$1')
-    }
     md.appendMarkdown(`\n<a href="command:UnoT.copyClass">class: ${copyIcon} ${copyClass}</a>\n`)
 
     return new vscode.Hover(md)
