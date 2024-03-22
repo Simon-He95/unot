@@ -98,4 +98,12 @@ describe('should', () => {
       transform(':class=" border#fff"'),
     ).toMatchInlineSnapshot('":class=\\" border-[#fff] border border-solid\\""')
   })
+  it('whfull', () => {
+    expect(
+      transform(':class=" whfull!"'),
+    ).toMatchInlineSnapshot('":class=\\" !w-full !h-full\\""')
+    expect(
+      transform(':class=" wfull"'),
+    ).toMatchInlineSnapshot('":class=\\" w-full\\""')
+  })
 })
