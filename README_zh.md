@@ -37,6 +37,7 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
 - 您可以使用配置来控制一些匹配规则，例如严格拆分，或者生成的计算结果是`-[10px]`或`-10px`
 
 ``` json
+{
   "unot.classMode": {
     "type": "boolean",
     "default": true,
@@ -82,6 +83,7 @@ UnoT 是 unocss tools 的简写，它是为了在vscode中使用unocss提供更�
     "default": {},
     "description": "unocss light theme style"
   }
+}
 ```
 
 ## :coffee:

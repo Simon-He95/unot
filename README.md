@@ -3,7 +3,6 @@
 </p>
 <p align="center"> English | <a href="./README_zh.md">简体中文</a></p>
 
-
 UnoT is short for unocss tools, to provide a better development experience using unocss in vscode. It integrated [tounocss](https://github.com/Simon-He95/tounocss)、 [vscode uno magic](https://github.com/Simon-He95/vscode-uno-magic)
 
 ![demo](/assets/demo.gif)
@@ -39,6 +38,7 @@ Support css in the design draft directly through the shortcut key `Mac`? `cmd+al
 - You can use config to control some matching rules, such as strict-splicing, or the generated calculation result is `-[10px]` or `-10px`
 
 ``` json
+{
   "unot.classMode": {
     "type": "boolean",
     "default": true,
@@ -84,6 +84,7 @@ Support css in the design draft directly through the shortcut key `Mac`? `cmd+al
     "default": {},
     "description": "unocss light theme style"
   }
+}
 ```
 
 ## :coffee:

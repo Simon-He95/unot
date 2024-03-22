@@ -1,7 +1,6 @@
 import fsp from 'node:fs/promises'
 import { toUnocss } from 'transform-to-unocss-core'
 import fg from 'fast-glob'
-import { findUp } from 'find-up'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
@@ -96,30 +95,6 @@ export async function hasFile(source: string | string[]) {
 
 export const disposes: any = []
 
-let configCacheMap: any = null
-const SHORTCUTS_REG = /shortcuts:\s*(\[([\n\s]*[{[][^\}]*[\n\s]*[}\]],?)*[\n\s]*\])/
-
-export async function getShortcuts() {
-  if (configCacheMap)
-    return configCacheMap
-  const cwd = vscode.window.activeTextEditor?.document.uri.fsPath
-  return findUp(['uno.config.js', 'uno.config.ts', 'unocss.config.js', 'unocss.config.ts'], { cwd }).then(async (filepath?: string) => {
-    if (!filepath)
-      return []
-
-    configCacheMap = await findShortcuts(filepath)
-    return configCacheMap
-  })
-}
-
-async function findShortcuts(unoUri: string) {
-  const content = await fsp.readFile(unoUri, 'utf-8')
-  const matcher = content.match(SHORTCUTS_REG)
-  if (!matcher)
-    return []
-  return eval(matcher[1])
-}
-
 export function highlight(realRangeMap: vscode.Range[]) {
   const editor = vscode.window.activeTextEditor
   if (!editor)
@@ -156,7 +131,7 @@ export function transformVueAst(code: string) {
   const { ast } = template
   return jsxAstDfs(ast.children)
 }
-function jsxAstDfs(children: any, result: { classAttr: any[]; attrs: any[] } = { classAttr: [], attrs: [] }) {
+function jsxAstDfs(children: any, result: { classAttr: any[], attrs: any[] } = { classAttr: [], attrs: [] }) {
   for (const child of children) {
     const { props, children } = child
     if (props && props.length) {
@@ -224,7 +199,7 @@ export function parserJSXAst(code: string) {
   return jsxDfsAst(ast.body)
 }
 
-function jsxDfsAst(children: any, result: { classAttr: any[]; attrs: any[] } = { classAttr: [], attrs: [] }) {
+function jsxDfsAst(children: any, result: { classAttr: any[], attrs: any[] } = { classAttr: [], attrs: [] }) {
   for (const child of children) {
     let { type, openingElement, body: children, argument, declaration, declarations, init } = child
 
