@@ -106,5 +106,8 @@ describe('should', () => {
     expect(
       transform(':class=" wfull"'),
     ).toMatchInlineSnapshot('":class=\\" w-full\\""')
+    expect(
+      transform(':class="hfull"'),
+    ).toMatchInlineSnapshot('":class=\\"h-full\\""')
   })
 })

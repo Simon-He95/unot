@@ -371,12 +371,12 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     // 对文档保存后的内容进行处理
     const text = document.getText()
-    const { classAttr, attrs } = parserAst(text) as any
+    const { classAttr, attrs } = parserAst(text) || {}
     const changeList: ChangeList[] = []
 
-    if (classAttr)
+    if (classAttr?.length)
       changeList.push(...transformClassAttr(classAttr as any))
-    if (attrs)
+    if (attrs?.length)
       changeList.push(...transformAttrs(attrs))
 
     if (changeList.length) {

@@ -121,9 +121,12 @@ export function parserAst(code: string) {
 
 export function transformVueAst(code: string) {
   const {
-    descriptor: { template },
+    descriptor: { template, script, scriptSetup },
     errors,
   } = parse(code)
+
+  if ((script || scriptSetup)?.lang === 'tsx' && (script || scriptSetup)?.content)
+    return parserJSXAst((script || scriptSetup)!.content)
   if (errors.length || !template)
     return
 
@@ -202,11 +205,10 @@ export function parserJSXAst(code: string) {
 function jsxDfsAst(children: any, result: { classAttr: any[], attrs: any[] } = { classAttr: [], attrs: [] }) {
   for (const child of children) {
     let { type, openingElement, body: children, argument, declaration, declarations, init } = child
-
     if (openingElement && openingElement.attributes.length) {
       for (const prop of openingElement.attributes) {
         if (prop.value && prop.value.type === 'Literal') {
-          if (prop.name.name === 'className') {
+          if (prop.name.name === 'className' || prop.name.name === 'class') {
             prop.value.loc.start.column++
             result.classAttr.push({
               content: prop.value.value,
@@ -228,19 +230,25 @@ function jsxDfsAst(children: any, result: { classAttr: any[], attrs: any[] } = {
       }
     }
 
-    if (type === 'VariableDeclaration')
-      children = declarations
-    else if (type === 'VariableDeclarator')
-      children = init
-    else if (type === 'ReturnStatement')
-      children = argument
-    else if (type === 'JSXElement')
-      children = child.children
-    else if (type === 'ExportDefaultDeclaration' || (type === 'ExportNamedDeclaration' && declaration.type === 'FunctionDeclaration'))
-      children = declaration?.body?.body
-
-    else if (type === 'ExportNamedDeclaration')
-      children = declaration.declarations
+    if (type === 'VariableDeclaration') { children = declarations }
+    else if (type === 'VariableDeclarator') { children = init }
+    else if (type === 'ReturnStatement') { children = argument }
+    else if (type === 'JSXElement') { children = child.children }
+    else if (type === 'ExportDefaultDeclaration' || (type === 'ExportNamedDeclaration' && declaration.type === 'FunctionDeclaration')) {
+      if (declaration.callee.name === 'defineComponent') {
+        const properties = declaration.arguments[0]?.properties
+        const result = []
+        if (properties) {
+          for (const p of properties) {
+            if (p.key.name === 'setup' || p.key.name === 'render')
+              result.push(p.value)
+          }
+        }
+        children = result
+      }
+      else { children = declaration?.body?.body }
+    }
+    else if (type === 'ExportNamedDeclaration') { children = declaration.declarations }
 
     if (children && !Array.isArray(children))
       children = [children]

@@ -39,6 +39,9 @@ export function transformVue(code: string, position: vscode.Position) {
     descriptor: { template, script, scriptSetup },
     errors,
   } = parse(code)
+  if (script?.lang === 'tsx')
+    return Object.assign(parserJSX(code, position), { isJsx })
+
   if (errors.length || !template)
     return
   const _script = script || scriptSetup
