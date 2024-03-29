@@ -110,4 +110,9 @@ describe('should', () => {
       transform(':class="hfull"'),
     ).toMatchInlineSnapshot('":class=\\"h-full\\""')
   })
+  it('bb$color', () => {
+    expect(
+      transform(':class=" bb#eee"'),
+    ).toMatchInlineSnapshot('":class=\\" border-b-[#eee] border-transparent\\""')
+  })
 })
