@@ -115,4 +115,9 @@ describe('should', () => {
       transform(':class=" bb#eee"'),
     ).toMatchInlineSnapshot('":class=\\" border-b-[#eee] border-transparent\\""')
   })
+  it('shadow', () => {
+    expect(
+      transform(':class=" shadow-[0px_5px_10px_1px_rgba(1,1,1,1)] bg-rgba(1,1,1,1) bg#eee"'),
+    ).toMatchInlineSnapshot('":class=\\" shadow-[0px_5px_10px_1px_rgba(1,1,1,1)] bg-[rgba(1,1,1,1)] bg-[#eee]\\""')
+  })
 })

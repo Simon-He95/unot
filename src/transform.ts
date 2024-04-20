@@ -77,19 +77,20 @@ export const rules: any = [
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
   strictHyphen
-    ? [/-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
-    : [/-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
-    : [/-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1: string) => `-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
-    : [/-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v: string, v1 = '') => `-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
-  [/-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v1: string, v2: string) => `-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
+    ? [/([A-Za-z]+)-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1 = '') => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1 = '') => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVariable ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
-    : [/-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v1: string, v2 = '', v3 = '') => strictVariable ? `-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
-  [/(\w+)-?(\#[^\s'\']+)(\s|'|$)/g, (_: string, v0: string, v1: string, v2: string) => v1.endsWith(']') ? _ : `${v0}-[${v1}]${v2}`],
+    ? [/([A-Za-z]+)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`]
+    : [/([A-Za-z]+)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
+  strictHyphen
+    ? [/([A-Za-z]+)-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
+    : [/([A-Za-z]+)-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
   [/([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
     if (v1 in customMap) {
       v1 = customMap[v1]
