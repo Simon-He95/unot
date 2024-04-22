@@ -121,8 +121,8 @@ describe('should', () => {
     ).toMatchInlineSnapshot('":class=\\" shadow-[0px_5px_10px_1px_rgba(1,1,1,1)] bg-[rgba(1,1,1,1)] bg-[#eee]\\""')
   })
   it('magic transform strictVariable', () => {
-    expect(transform(':class=" w-1"')).toMatchInlineSnapshot('":class=\\" w-1\\""')
-    expect(transform(':class=" pt-8"')).toMatchInlineSnapshot('":class=\\" pt-8\\""')
+    expect(transform(':class=" w1"')).toMatchInlineSnapshot('":class=\\" w-1\\""')
+    expect(transform(':class=" pt8"')).toMatchInlineSnapshot('":class=\\" pt-8\\""')
     expect(transform(':class=" bgrgba(1,1,1,1)"')).toMatchInlineSnapshot('":class=\\" bg-[rgba(1,1,1,1)]\\""')
   })
 })
