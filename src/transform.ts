@@ -56,9 +56,11 @@ export const rules: any = [
       return `${prefix}${v}-${v1}`
     }
     return v2.trim() === ''
-      ? ['max-w', 'max-h', 'w', 'h', 'gap', 'gap-x', 'gap-y', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'm', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'p'].includes(v)
-          ? `${prefix}${v}${v1}${v2}`
-          : `${prefix}${v}-${v1}${v2}`
+      ? strictVariable
+        ? `${prefix}${v}-${v1}${v2}`
+        : ['max-w', 'max-h', 'w', 'h', 'gap', 'gap-x', 'gap-y', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'm', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'p'].includes(v)
+            ? `${prefix}${v}${v1}${v2}`
+            : `${prefix}${v}-${v1}${v2}`
       : strictVariable
         ? `${prefix}${v}-[${v1}${v2}]`
         : `${prefix}${v}-${v1}${v2}`

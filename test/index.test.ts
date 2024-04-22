@@ -18,7 +18,7 @@ describe('should', () => {
      xx-col flex-col-x"`)).toMatchInlineSnapshot(`
        "class=\\" 
            xxmax-w
-           max-w1
+           max-w-1
             xx-col flex-col-x\\""
      `)
   })
@@ -70,17 +70,17 @@ describe('should', () => {
   it('hover:(flex-center)', () => {
     expect(
       transform(':class="hover:(flex-center) w10"'),
-    ).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w10\\""')
+    ).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w-10\\""')
   })
   it('hover:(flex-center) w10', () => {
     expect(
       transform(':class="hover:(flex-center) w10"'),
-    ).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w10\\""')
+    ).toMatchInlineSnapshot('":class=\\"hover:flex hover:justify-center hover:items-center w-10\\""')
   })
   it('w10 !(flex-center w10) w20', () => {
     expect(
       transform(':class=" w10 !(flex-center w10) w20"'),
-    ).toMatchInlineSnapshot('":class=\\" w10 !flex-center !w10 w20\\""')
+    ).toMatchInlineSnapshot('":class=\\" w-10 !flex-center !w-10 w-20\\""')
   })
   it('top10', () => {
     expect(
@@ -93,7 +93,7 @@ describe('should', () => {
   it('w', () => {
     expect(
       transform(':class=" w15!"'),
-    ).toMatchInlineSnapshot('":class=\\" !w15\\""')
+    ).toMatchInlineSnapshot('":class=\\" !w-15\\""')
 
     expect(
       transform(':class=" border#fff"'),
@@ -119,5 +119,9 @@ describe('should', () => {
     expect(
       transform(':class=" shadow-[0px_5px_10px_1px_rgba(1,1,1,1)] bg-rgba(1,1,1,1) bg#eee"'),
     ).toMatchInlineSnapshot('":class=\\" shadow-[0px_5px_10px_1px_rgba(1,1,1,1)] bg-[rgba(1,1,1,1)] bg-[#eee]\\""')
+  })
+  it('magic transform strictHyphen', () => {
+    expect(transform(':class=" w-1"')).toMatchInlineSnapshot('":class=\\" w-1\\""')
+    expect(transform(':class=" pt-8"')).toMatchInlineSnapshot('":class=\\" pt-8\\""')
   })
 })
