@@ -93,7 +93,9 @@ export const rules: any = [
   strictHyphen
     ? [/([A-Za-z]+)-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
     : [/([A-Za-z]+)-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
-  [/([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
+  [strictHyphen
+    ? /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g
+    : /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
     if (v1 in customMap) {
       v1 = customMap[v1]
       if (!classData.some(c => /border-/.test(c)))
@@ -237,7 +239,9 @@ export function transformClassAttr(attrs: Attr[]) {
   return changeList
 }
 
-const attrRules = /(\[?\s*(rgba?\([^\)]*\))\]|\[?\s*(hsla?\([^\)]*\))\]|\[?\s*(calc\([^\)]*\))\])/g
+const attrRules = strictHyphen
+  ? /-(\[?\s*(rgba?\([^\)]*\))\]|\[?\s*(hsla?\([^\)]*\))\]|\[?\s*(calc\([^\)]*\))\])/g
+  : /-?(\[?\s*(rgba?\([^\)]*\))\]|\[?\s*(hsla?\([^\)]*\))\]|\[?\s*(calc\([^\)]*\))\])/g
 const attrsMap = ['w', 'h', 'gap', 'm', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'p', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'b', 'bt', 'br', 'bb', 'bl', 'lh', 'text', 'top', 'right', 'bottom', 'left', 'border-rd', 'border', 'max-w', 'max-h', 'translate-x', 'translate-y', 'duration', 'delay', 'scale-x', 'scale-y', 'scale', 'rotate', 'skew-x', 'skew-y', 'fill', 'stroke', 'invert', 'saturate', 'grayscale', 'contrast', 'brightness', 'blur', 'outline']
 
 export function transformAttrs(attrs: any[]) {
