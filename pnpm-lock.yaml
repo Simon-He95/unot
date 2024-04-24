@@ -78,8 +78,8 @@ importers:
         specifier: ^4.2.8
         version: 4.2.8
       transform-to-unocss:
-        specifier: ^0.0.85
-        version: 0.0.85
+        specifier: ^0.0.87
+        version: 0.0.87
       transform-to-unocss-core:
         specifier: ^0.0.29
         version: 0.0.29
@@ -4640,8 +4640,8 @@ packages:
     hasBin: true
     dev: true
 
-  /transform-to-unocss@0.0.85:
-    resolution: {integrity: sha512-xF1zUNFdscPOKZE+Xn+UrNZKELCVyOwda0Vv5WV/h/Ir2XcTVLTNefzSXvXZabnr7qvIG/jIB6hpxNg1PxEBgQ==}
+  /transform-to-unocss@0.0.87:
+    resolution: {integrity: sha512-N4BBDivJ15I/onW23liZQ3/araIIjcM2PFuIrQ1/SMitDVqAvcrGuVRfjXjomdcFRtPlW5XEQK+ihepZq85ABA==}
     hasBin: true
     dependencies:
       fast-glob: 3.3.2
