@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { transform } from '../src/transform'
+import { transform, transformClass } from '../src/transform'
 
 describe('should', () => {
   it('bg', () => {
@@ -124,5 +124,9 @@ describe('should', () => {
     expect(transform(':class=" w1"')).toMatchInlineSnapshot('":class=\\" w-1\\""')
     expect(transform(':class=" pt8"')).toMatchInlineSnapshot('":class=\\" pt-8\\""')
     expect(transform(':class=" bgrgba(1,1,1,1)"')).toMatchInlineSnapshot('":class=\\" bg-[rgba(1,1,1,1)]\\""')
+  })
+  it('magic transformClass w!', () => {
+    expect(transformClass('<div class=" w10!" >')).toMatchInlineSnapshot('"<div class=\\" w-[10]!\\" >"')
+    expect(transformClass('<div class=" minw10px!" >')).toMatchInlineSnapshot('"<div class=\\" min-w-[10px]!\\" >"')
   })
 })

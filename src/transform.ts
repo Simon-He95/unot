@@ -30,8 +30,8 @@ const customMap: any = {
 }
 let classData: string[] = []
 const COMMON_REG = strictHyphen
-  ? /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
-  : /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh||$)!?/g
+  ? /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?[0-9]+)(px|rem|em|\%|vw|vh|!||$)/g
+  : /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh|!||$)/g
 const PSEUDO_CLASS = /(hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)\(([^\)]+)\)(\s|'|$)/g
 export const rules: any = [
   [/([\s!]?)([wh][wh]?)full(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v1.split('').map(i => `${v0}${i}-full`).join(' ')}${v2}`],
@@ -62,7 +62,7 @@ export const rules: any = [
             ? `${prefix}${v}${v1}${v2}`
             : `${prefix}${v}-${v1}${v2}`
       : strictVariable
-        ? `${prefix}${v}-[${v1}${v2}]`
+        ? `${prefix}${v}-[${v1}${v2 === '!' ? '' : v2}]${v2 === '!' ? v2 : ''}`
         : `${prefix}${v}-${v1}${v2}`
   }],
   variantGroup
@@ -218,7 +218,6 @@ export function transformClass(attr: string) {
     })
     classData = result.split(' ')
     const newClass = v.replace(reg, callback).slice(1)
-
     return newClass
   }, attr)
 }
