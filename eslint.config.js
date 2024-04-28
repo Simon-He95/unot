@@ -14,6 +14,7 @@ module.exports = antfu(
       'ts/no-require-imports': 'off',
       'style/max-statements-per-line': 'off',
       'import/no-mutable-exports': 'off',
+      'no-console': 'off',
     },
   },
 )

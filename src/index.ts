@@ -12,13 +12,11 @@ import type { ChangeList } from './type'
 import { parser } from './parser'
 
 const cacheMap = new LRUCache(5000)
+const errorFlag = '[Unot Error]:'
 export let toRemFlag = false
 export let decorationType: TextEditorDecorationType
 export async function activate(context: vscode.ExtensionContext) {
-  const activeTextEditor = getActiveTextEditor()
-  if (!activeTextEditor)
-    return
-
+  console.log('Unot is now active!')
   // 注册打开文档事件
   openDocumentation(context)
   openPlayground(context)
@@ -209,8 +207,10 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  if (isNotUnocss)
+  if (isNotUnocss) {
+    console.error(`${errorFlag} is not unocss project, please install unocss first!`)
     return
+  }
 
   // style to unocss hover事件
   context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
@@ -319,11 +319,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   let hasUnoConfig: string | undefined
   const currentFolder = (vscode.workspace.workspaceFolders as any)?.[0]
-  const activeTextEditorUri = getCurrentFileUrl()
-  if (!activeTextEditorUri)
-    return
-  // const completions: vscode.CompletionItem[] = []
-  // let unoCompletionsMap: any
+
   const switchMagic = getConfiguration('unot').get('switchMagic')
 
   let isOpen = switchMagic
@@ -411,6 +407,9 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   function updateUnoStatus(cwd = currentFolder.uri.fsPath.replace(/\\/g, '/')) {
+    const activeTextEditorUri = getCurrentFileUrl()
+    if (!activeTextEditorUri)
+      return
     if (activeTextEditorUri && !prefix.includes(activeTextEditorUri.split('.').slice(-1)[0])) {
       hasUnoConfig = undefined
       return
