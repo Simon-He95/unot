@@ -252,7 +252,7 @@ export function transformAttrs(attrs: any[]) {
     let newAttr = content
     for (const match of content.matchAll(attrRules)) {
       const index = match.index
-      newAttr = `${newAttr.slice(0, index)}[${match[4].replace(/\s+/g, '')}]${newAttr.slice(index + match[0].length)}`
+      newAttr = `${newAttr.slice(0, index)}[${match[2].replace(/\s+/g, '')}]${newAttr.slice(index + match[0].length)}`
     }
 
     if (content !== newAttr) {
