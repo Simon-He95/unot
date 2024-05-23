@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, createBottomBar, createPosition, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getCurrentFileUrl, getLineText, getLocale, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createPosition, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getCurrentFileUrl, getLineText, getLocale, getPosition, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
 import { rules, transformAttrs, transformClassAttr } from './transform'
@@ -367,13 +367,28 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     // 对文档保存后的内容进行处理
     const text = document.getText()
-    const { classAttr, attrs } = parserAst(text) || {}
+    const { classAttr, attrs, styleChangeList } = parserAst(text) || {}
     const changeList: ChangeList[] = []
 
     if (classAttr?.length)
       changeList.push(...transformClassAttr(classAttr as any))
     if (attrs?.length)
       changeList.push(...transformAttrs(attrs))
+    if (styleChangeList?.length) {
+      changeList.push(...styleChangeList.map((item: any) => {
+        const start = getPosition(item.start)
+        start.line = start.line + 1
+        const end = getPosition(item.end)
+        end.line = end.line + 1
+        end.column = end.column + 1
+
+        return {
+          start,
+          end,
+          content: item.content,
+        }
+      }))
+    }
 
     if (changeList.length) {
       updateText((edit) => {

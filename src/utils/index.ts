@@ -5,6 +5,7 @@ import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
 import { decorationType, toRemFlag } from '../'
+import { transformClass } from '../transform'
 
 export type CssType = 'less' | 'scss' | 'css' | 'stylus'
 export function getCssType(filename: string) {
@@ -121,9 +122,28 @@ export function parserAst(code: string) {
 
 export function transformVueAst(code: string) {
   const {
-    descriptor: { template, script, scriptSetup },
+    descriptor: { template, script, scriptSetup, styles },
     errors,
   } = parse(code)
+
+  const styleChangeList: { content: string, start: number, end: number }[] = []
+  if (styles.length) {
+    styles.forEach((style) => {
+      for (const match of style.content.matchAll(/\s*(?:@|--at-)apply:([^;]*);/gm)) {
+        const content = match[1]
+        const newAttr = transformClass(content)
+        if (content.trim() !== newAttr.trim()) {
+          const start = style.loc.start.offset + match.index + match[0].indexOf(content)
+          const end = start + content.length
+          styleChangeList.push({
+            content: newAttr,
+            start,
+            end,
+          })
+        }
+      }
+    })
+  }
 
   if ((script || scriptSetup)?.lang === 'tsx' && (script || scriptSetup)?.content)
     return parserJSXAst((script || scriptSetup)!.content)
@@ -132,7 +152,8 @@ export function transformVueAst(code: string) {
 
   // 在template中
   const { ast } = template
-  return jsxAstDfs(ast.children)
+
+  return Object.assign({}, jsxAstDfs(ast.children), { styleChangeList })
 }
 function jsxAstDfs(children: any, result: { classAttr: any[], attrs: any[] } = { classAttr: [], attrs: [] }) {
   for (const child of children) {
