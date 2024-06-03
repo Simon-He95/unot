@@ -57,7 +57,7 @@ Support css in the design draft directly through the shortcut key `Mac`? `cmd+al
   "unot.strictHyphen": {
     "type": "boolean",
     "default": false,
-    "description": "if true bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
+    "description": "if false bg#fff or bgrgba(0,0,0,.0) will transform bg-[#fff] or bg-[rgba(0,0,0,.0)]"
   },
   "unot.switchMagic": {
     "type": "boolean",
