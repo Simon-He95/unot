@@ -176,8 +176,9 @@ function jsxAstDfs(children: any, result: { classAttr: any[], attrs: any[] } = {
             column: prop.exp.loc.start.column - 1,
             line: prop.exp.loc.start.line,
           }
+          /** #26 将 === 条件的右边拿掉 */
           result.classAttr.push({
-            content: prop.exp.content,
+            content: prop.exp.content.replace(/\s*===?\s*['"][^"']*['"]/, (_: string) => ' '.repeat(_.length)),
             line: prop.exp.loc.start.line,
             charater: prop.exp.loc.start.column,
             start,
