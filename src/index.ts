@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
-import { addEventListener, createBottomBar, createPosition, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getCurrentFileUrl, getLineText, getLocale, getPosition, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
+import { addEventListener, createBottomBar, createExtension, createPosition, createRange, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getCurrentFileUrl, getLineText, getLocale, getPosition, getSelection, message, nextTick, registerCommand, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
-import { rules, transformAttrs, transformClassAttr } from './transform'
+import { config, transformAttrs, transformClassAttr, updateConfig } from './transform'
 import { CssToUnocssProcess } from './process'
 import { LRUCache, getMultipedUnocssText, hasFile, highlight, parserAst } from './utils'
 import { openDocumentation } from './openDocumentation'
@@ -15,16 +15,16 @@ const cacheMap = new LRUCache(5000)
 const errorFlag = '[Unot Error]:'
 export let toRemFlag = false
 export let decorationType: TextEditorDecorationType
-export async function activate(context: vscode.ExtensionContext) {
+
+export const { activate, deactivate } = createExtension(async (context, disposals) => {
   console.log('Unot is now active!')
   // 注册打开文档事件
   openDocumentation(context)
   openPlayground(context)
   const pkgs = await hasFile(['**/package.json'])
   const isNotUnocss = !pkgs.some(pkg => pkg.includes('unocss'))
-
   const styleReg = /style="([^"]+)"/
-  const { presets = [], prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('unot')
+  const { prefix = ['ts', 'js', 'vue', 'tsx', 'jsx', 'svelte'], dark, light } = getConfiguration('unot')
   const process = new CssToUnocssProcess()
   const LANS = ['html', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'svelte', 'solid', 'swan', 'react', 'js', 'ts', 'tsx', 'jsx', 'wxml', 'axml', 'css', 'wxss', 'acss', 'less', 'scss', 'sass', 'stylus', 'wxss', 'acss']
   const md = new vscode.MarkdownString()
@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
   decorationType = vscode.window.createTextEditorDecorationType(style)
 
   // 注册ToUnocss命令
-  context.subscriptions.push(registerCommand('UnoT.ToUnocss', async () => {
+  disposals.push(registerCommand('UnoT.ToUnocss', async () => {
     const textEditor = vscode.window.activeTextEditor!
     const doc = textEditor.document
     const fileName = doc.fileName
@@ -66,7 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }))
 
   // 注册InlineStyleToUnocss命令
-  context.subscriptions.push(registerCommand('UnoT.InlineStyleToUnocss', async () => {
+  disposals.push(registerCommand('UnoT.InlineStyleToUnocss', async () => {
     const textEditor = vscode.window.activeTextEditor!
     const doc = textEditor.document
     let selection: vscode.Selection | vscode.Range = textEditor.selection
@@ -85,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }))
 
   // 注册快捷指令
-  context.subscriptions.push(registerCommand('UnoT.transform', async () => {
+  disposals.push(registerCommand('UnoT.transform', async () => {
     const selection = getSelection()
     if (!selection)
       return
@@ -126,9 +126,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     updateText((builder) => {
-      const useHex = getConfiguration('unot.useHex')
-
-      if (useHex)
+      if (config.useHex)
         transferred = transferred.replace(/\[#([a-zA-Z0-9]+)\]/ig, 'hex-$1')
 
       builder.insert(new vscode.Position(line, character), transferred)
@@ -137,13 +135,13 @@ export async function activate(context: vscode.ExtensionContext) {
     message.info(`${isZh ? '🎉 转换成功：' : '🎉 Successful conversion: '}${transferred}`)
   }))
 
-  context.subscriptions.push(registerCommand('UnoT.copyAttr', () => {
+  disposals.push(registerCommand('UnoT.copyAttr', () => {
     setCopyText(copyAttr)
     message.info(`copy successfully ➡️ ${copyAttr}`)
     replaceStyleToAttr(copyAttr, true)
   }))
 
-  context.subscriptions.push(registerCommand('UnoT.copyClass', () => {
+  disposals.push(registerCommand('UnoT.copyClass', () => {
     setCopyText(copyClass)
     message.info(`copy successfully ➡️ ${copyClass}`)
     replaceStyleToAttr(copyClass, false)
@@ -213,7 +211,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   // style to unocss hover事件
-  context.subscriptions.push(vscode.languages.registerHoverProvider(LANS, {
+  disposals.push(vscode.languages.registerHoverProvider(LANS, {
     provideHover(document, position) {
       // 获取当前选中的文本范围
       const editor = getActiveTextEditor()
@@ -282,14 +280,14 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   }))
 
-  context.subscriptions.push(vscode.window.onDidChangeTextEditorVisibleRanges(() => {
+  disposals.push(vscode.window.onDidChangeTextEditorVisibleRanges(() => {
     // 移除装饰器
     getActiveTextEditor()?.setDecorations(decorationType, [])
   }))
 
-  context.subscriptions.push(addEventListener('text-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
+  disposals.push(addEventListener('text-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
 
-  context.subscriptions.push(addEventListener('selection-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
+  disposals.push(addEventListener('selection-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
 
   function setStyle(selectedUnocssText: string, rangeMap: vscode.Range[]) {
     // 增加decorationType样式
@@ -301,9 +299,8 @@ export async function activate(context: vscode.ExtensionContext) {
           .join(' '))
     copyRange = rangeMap
     highlight(rangeMap)
-    const useHex = getConfiguration('unot.useHex')
 
-    if (useHex) {
+    if (config.useHex) {
       copyAttr = copyAttr.replace(/\[#([a-zA-Z0-9]+)\]/i, 'hex-$1')
       copyClass = copyClass.replace(/\[#([a-zA-Z0-9]+)\]/i, 'hex-$1')
     }
@@ -343,7 +340,7 @@ export async function activate(context: vscode.ExtensionContext) {
     offset: 500,
   })
 
-  context.subscriptions.push(registerCommand('unotToRem.changeStatus', () => {
+  disposals.push(registerCommand('unotToRem.changeStatus', () => {
     toRemFlag = !toRemFlag
     bottomBar.text = `to-rem ${toRemFlag ? '✅' : '❌'}`
   }))
@@ -352,22 +349,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
   if (currentFolder)
     await updateUnoStatus(getCurrentFileUrl())
-  if (presets.length)
-    rules.unshift(...presets)
 
-  registerCommand('unotmagic.changeStatus', () => {
+  disposals.push(registerCommand('unotmagic.changeStatus', () => {
     isOpen = !isOpen
     setConfiguration('unot.switchMagic', isOpen)
     statusBarItem.text = `uno-magic ${isOpen ? '✅' : '❌'}`
-  })
+  }))
 
-  context.subscriptions.push(addEventListener('text-save', (document: vscode.TextDocument) => {
+  disposals.push(addEventListener('config-change', updateConfig))
+  disposals.push(addEventListener('text-save', (document: vscode.TextDocument) => {
     const activeTextEditor = getActiveTextEditor()
     if (!isOpen || !hasUnoConfig || !activeTextEditor)
       return
     // 对文档保存后的内容进行处理
     const text = document.getText()
-    const { classAttr, attrs, styleChangeList } = parserAst(text) || {}
+    const { classAttr, attrs, styleChangeList } = parserAst(text) as any || {}
     const changeList: ChangeList[] = []
 
     if (classAttr?.length)
@@ -403,7 +399,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }))
 
-  context.subscriptions.push(addEventListener('activeText-change', () =>
+  disposals.push(addEventListener('activeText-change', () =>
     setTimeout(async () => {
       const url = getCurrentFileUrl()
       if (!url)
@@ -416,7 +412,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }, 200)))
 
   if (!hasUnoConfig) {
-    context.subscriptions.push(addEventListener('file-create', () => {
+    disposals.push(addEventListener('file-create', () => {
       updateUnoStatus()
     }))
   }
@@ -451,8 +447,6 @@ export async function activate(context: vscode.ExtensionContext) {
         statusBarItem.show()
       })
   }
-}
-
-export function deactivate() {
+}, () => {
   cacheMap.clear()
-}
+})
