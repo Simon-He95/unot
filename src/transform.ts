@@ -91,8 +91,8 @@ export const rules: any = [
     ? [/([A-Za-z]+)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`]
     : [/([A-Za-z]+)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
   strictHyphen
-    ? [/([A-Za-z]+)-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`]
-    : [/([A-Za-z]+)-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `-${v1}${v2}${v3}`],
+    ? [/([A-Za-z]+)-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `${v0}-${v1}${v2}${v3}`]
+    : [/([A-Za-z]+)-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `${v0}-${v1}${v2}${v3}`],
   [strictHyphen
     ? /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g
     : /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
