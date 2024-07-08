@@ -19,6 +19,13 @@
   "sponsor": {
     "url": "https://github.com/Simon-He95/sponsor"
   },
+  "keywords": [
+    "unocss",
+    "css",
+    "intellisense",
+    "autocomplete",
+    "vscode"
+  ],
   "categories": [
     "Other"
   ],
