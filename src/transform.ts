@@ -79,14 +79,14 @@ export const rules: any = [
   [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
   [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
   strictHyphen
-    ? [/([A-Za-z]+)-\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
-    : [/([A-Za-z]+)-?\[?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-(\[)?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?(\[)?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/([A-Za-z]+)-\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
-    : [/([A-Za-z]+)-?\[?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1: string) => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-(\[)?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?(\[)?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/([A-Za-z]+)-\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1 = '') => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
-    : [/([A-Za-z]+)-?\[?\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, v: string, v1 = '') => `${v0}-${strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-(\[?)\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1 = '') => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?(\[?)\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1 = '') => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
     ? [/([A-Za-z]+)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`]
     : [/([A-Za-z]+)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
@@ -172,7 +172,7 @@ export function transform(content: string) {
       classData = value.split(' ').map(item => item.replace(/['\[\]]/g, ''))
 
       const newClass = v
-        .replace(/\s([^!\s]+)!/g, (_, v) => ` !${v}`)
+        .replace(/\s([^!\s'"]+)!/g, (_, v) => ` !${v}`)
         .replace(reg, callback).slice(1)
       return `class${name}="${newClass}"`
     })
