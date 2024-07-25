@@ -4,6 +4,7 @@ import fg from 'fast-glob'
 import * as vscode from 'vscode'
 import { parse } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
+import { getActiveTextEditor } from '@vscode-use/utils'
 import { decorationType, toRemFlag } from '../'
 import { transformClass } from '../transform'
 
@@ -31,7 +32,7 @@ export function getMultipedUnocssText(text: string) {
     if (!isChanged)
       isChanged = newText !== text
     selectedNewTexts.push(toRemFlag
-      ? newText.replace(/-([0-9\.]+)px/, (_: string, v: string) => `-${+v / 4}`)
+      ? newText.replace(/-([0-9.]+)px/, (_: string, v: string) => `-${+v / 4}`)
       : newText)
   }
   // 没有存在能够转换的元素
@@ -97,18 +98,18 @@ export async function hasFile(source: string | string[]) {
 export const disposes: any = []
 
 export function highlight(realRangeMap: vscode.Range[]) {
-  const editor = vscode.window.activeTextEditor
+  const editor = getActiveTextEditor()
   if (!editor)
     return
   editor.edit(() => editor.setDecorations(decorationType, realRangeMap))
 }
 
 export function resetDecorationType() {
-  return vscode.window.activeTextEditor?.setDecorations(decorationType, [])
+  return getActiveTextEditor()?.setDecorations(decorationType, [])
 }
 
 export function parserAst(code: string) {
-  const entry = vscode.window.activeTextEditor?.document.uri.fsPath
+  const entry = getActiveTextEditor()?.document.uri.fsPath
   if (!entry)
     return
   const suffix = entry.slice(entry.lastIndexOf('.') + 1)
@@ -116,7 +117,7 @@ export function parserAst(code: string) {
     return
   if (suffix === 'vue')
     return transformVueAst(code)
-  if (/ts|js|jsx|tsx/.test(suffix))
+  if (/jsx?|tsx?/.test(suffix))
     return parserJSXAst(code)
 }
 
@@ -129,7 +130,7 @@ export function transformVueAst(code: string) {
   const styleChangeList: { content: string, start: number, end: number }[] = []
   if (styles.length) {
     styles.forEach((style) => {
-      for (const match of style.content.matchAll(/\s*(?:@|--at-)apply:([^;]*);/gm)) {
+      for (const match of style.content.matchAll(/\s*(?:@|--at-)apply:([^;]*);/g)) {
         const content = match[1]
         const newAttr = transformClass(content)
         if (content.trim() !== newAttr.trim()) {

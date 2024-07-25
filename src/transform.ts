@@ -30,15 +30,15 @@ const customMap: any = {
 }
 let classData: string[] = []
 const COMMON_REG = strictHyphen
-  ? /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|min-w|min-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?[0-9]+)(px|rem|em|\%|vw|vh|!||$)/g
-  : /(!|\s|'|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)(w|h|gapx|gapy|gap|m|mx|my|mt|mr|mb|ml|p|px|py|pt|pr|pb|pl|b|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|min-w|min-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?[0-9]+)(px|rem|em|\%|vw|vh|!||$)/g
-const PSEUDO_CLASS = /(hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)\(([^\)]+)\)(\s|'|$)/g
+  ? /([!\s']|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)([whmpb]|gapx|gapy|gap|mx|my|mt|mr|mb|ml|px|py|pt|pr|pb|pl|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|min-w|min-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-(-?\d+)(px|rem|em|%|vw|vh|!||$)/g
+  : /([!\s']|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)([whmpb]|gapx|gapy|gap|mx|my|mt|mr|mb|ml|px|py|pt|pr|pb|pl|bt|br|bb|bl|lh|text|top|right|bottom|left|border-rd|border|max-w|max-h|min-w|min-h|translate-x|translate-y|duration|delay|scale-x|scale-y|scale|rotate|skew-x|skew-y|fill|stroke|invert|saturate|grayscale|contrast|brightness|blur|outline)-?(-?\d+)(px|rem|em|%|vw|vh|!||$)/g
+const PSEUDO_CLASS = /(hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)\(([^)]+)\)(\s|'|$)/g
 export const rules: any = [
-  [/([\s!]?)([wh][wh]?)full(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v1.split('').map(i => `${v0}${i}-full`).join(' ')}${v2}`],
-  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)flex1(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}flex-1${v2}`],
-  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)maxh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-h${v2}`],
-  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)minh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}min-h${v2}`],
-  [/('|!|\s|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)maxw([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-w${v2}`],
+  [/([\s!]?)([wh][wh]?)full([\s'!]|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v1.split('').map(i => `${v0}${i}-full`).join(' ')}${v2}`],
+  [/(['!\s]|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)flex1([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}flex-1${v2}`],
+  [/(['!\s]|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)maxh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-h${v2}`],
+  [/(['!\s]|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)minh([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}min-h${v2}`],
+  [/(['!\s]|hover:|focus:|active:|disabled:|invalid:|checked:|required:|first:|last:|odd:|even:|after:|before:|placeholder:|file:|marker:|selection:|first-line:|first-letter:|backdrop:|md:|sm:|xl:|2xl:|lg:|dark:|ltr:|rtl:|group-hover:|group-focus:|group-active:)maxw([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}max-w${v2}`],
   [/([\s'])minw([^\s']+)/, (_: string, v1: string, v2: string) => `${v1}min-w${v2}`],
   [/([\s!-])translatex([^\s']+)/, (_: string, v1 = '', v2: string) => `${v1}translate-x${v2}`],
   [/([\s!-])gapx([^\s']+)/, (_: string, v1 = '', v2: string) => `${v1}gap-x${v2}`],
@@ -74,28 +74,28 @@ export const rules: any = [
         .join(' ') + v1]
     : undefined,
   strictHyphen
-    ? [/([\s'])(bg|text|border)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVariable ? '[' : ''}${v2}${strictVariable ? ']' : ''}${v3}`]
-    : [/([\s'])(bg|text|border)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVariable ? '[' : ''}${v2}${strictVariable ? ']' : ''}${v3}`],
-  [/([\s'])border-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
-  [/([\s'])content-box(\s|'|!|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
+    ? [/([\s'])(bg|text|border)-(#[^\s']+)([\s'!]|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVariable ? '[' : ''}${v2}${strictVariable ? ']' : ''}${v3}`]
+    : [/([\s'])(bg|text|border)-?(#[^\s']+)([\s'!]|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => `${v}${v1}-${strictVariable ? '[' : ''}${v2}${strictVariable ? ']' : ''}${v3}`],
+  [/([\s'])border-box([\s'!]|$)/, (_: string, v1 = '', v2: string) => `${v1}box-border${v2}`],
+  [/([\s'])content-box([\s'!]|$)/, (_: string, v1 = '', v2: string) => `${v1}box-content${v2}`],
   strictHyphen
-    ? [/([A-Za-z]+)-(\[)?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
-    : [/([A-Za-z]+)-?(\[)?\s*(rgba?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-(\[)?\s*(rgba?\([^)]*\))\]?([\s'!]|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?(\[)?\s*(rgba?\([^)]*\))\]?([\s'!]|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/([A-Za-z]+)-(\[)?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
-    : [/([A-Za-z]+)-?(\[)?\s*(hsla?\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-(\[)?\s*(hsla?\([^)]*\))\]?([\s'!]|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?(\[)?\s*(hsla?\([^)]*\))\]?([\s'!]|$)/g, (_: string, v0: string, bracket: string, v: string, v1: string) => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*\/\s*/g, ',').replace(/\s+/g, ',').replace(/,+/g, ',')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/([A-Za-z]+)-(\[?)\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1 = '') => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
-    : [/([A-Za-z]+)-?(\[?)\s*(calc\([^\)]*\))\]?(\s|'|!|$)/g, (_: string, v0: string, bracket: string, v: string, v1 = '') => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
+    ? [/([A-Za-z]+)-(\[?)\s*(calc\([^)]*\))\]?([\s'!]|$)/g, (_: string, v0: string, bracket: string, v: string, v1 = '') => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`]
+    : [/([A-Za-z]+)-?(\[?)\s*(calc\([^)]*\))\]?([\s'!]|$)/g, (_: string, v0: string, bracket: string, v: string, v1 = '') => `${v0}-${bracket || strictVariable ? '[' : ''}${v.replace(/\s*/g, '')}${strictVariable ? ']' : ''}${v1}`],
   strictHyphen
-    ? [/([A-Za-z]+)-(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`]
-    : [/([A-Za-z]+)-?(\#[^\s']+)(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
+    ? [/([A-Z]+)-(#[^\s']+)([\s'!]|$)/gi, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`]
+    : [/([A-Z]+)-?(#[^\s']+)([\s'!]|$)/gi, (_: string, v0: string, v1: string, v2: string) => `${v0}-${strictVariable ? '[' : ''}${v1}${strictVariable ? ']' : ''}${v2}`],
   strictHyphen
-    ? [/([A-Za-z]+)-([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `${v0}-${v1}${v2}${v3}`]
-    : [/([A-Za-z]+)-?([0-9]+)((?:px)|(?:vw)|(?:vh)|(?:rem)|(?:em)|(?:%))(\s|'|!|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `${v0}-${v1}${v2}${v3}`],
+    ? [/([A-Za-z]+)-(\d+)(px|vw|vh|rem|em|%)([\s'!]|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `${v0}-${v1}${v2}${v3}`]
+    : [/([A-Za-z]+)-?(\d+)(px|vw|vh|rem|em|%)([\s'!]|$)/g, (_: string, v0: string, v1: string, v2 = '', v3 = '') => strictVariable ? `${v0}-[${v1}${v2}]${v3}` : `${v0}-${v1}${v2}${v3}`],
   [strictHyphen
-    ? /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g
-    : /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?(\#?[^\s''\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
+    ? /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-\[?([^\s'\]]+)\]?(\s|'|$)/g
+    : /([\s!])(decoration|divide|ring|accent|stroke|fill|bb|bt|bl|br|bg|text|border)-?\[?([^\s'\]]+)\]?(\s|'|$)/g, (_: string, v: string, v1: string, v2: string, v3: string) => {
     if (v1 in customMap) {
       v1 = customMap[v1]
       if (!classData.some(c => /border-/.test(c)))
@@ -103,7 +103,7 @@ export const rules: any = [
     }
 
     if (v1 === 'border' && (isHex(v2) || isRgb(v2))) {
-      const hasBorder = !!classData.find(item => /(border$)|(border-[0-9]|(border-[bltr]($)|(-[0-9])))/.test(item))
+      const hasBorder = !!classData.find(item => /border$|border-\d|border-[bltr]$|-\d/.test(item))
       const hasBorderStyle = !!classData.find(item => ['border-solid', 'border-dashed', 'border-dotted', 'border-double'].includes(item))
       return `${v}${v1}-[${v2}]${hasBorder ? '' : ' border'}${hasBorderStyle ? '' : ' border-solid'}${v3}`
     }
@@ -111,24 +111,24 @@ export const rules: any = [
       return `${v}${v1}-[${v2}]${v3}`
     return _
   }],
-  [/([\s!])x-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-x-hidden${v2}`],
-  [/([\s!])y-hidden(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-y-hidden${v2}`],
-  [/([\s!])justify-center(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center${v2}`],
-  [/([\s!])align-center(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}items-center${v2}`],
+  [/([\s!])x-hidden([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-x-hidden${v2}`],
+  [/([\s!])y-hidden([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}overflow-y-hidden${v2}`],
+  [/([\s!])justify-center([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}justify-center${v2}`],
+  [/([\s!])align-center([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}items-center${v2}`],
   [/([\s'])eclipse(\s|'|$)/, (_: string, v1: string, v2: string) => `${v1}whitespace-nowrap overflow-hidden text-ellipsis${v2}`],
-  [/([\s'])font-?(100|200|300|400|500|600|700|800|900)(\s|'|!|$)/, (_: string, prefix: string, v1: string, v2: string) => `${prefix}font-${fontMap[v1]}${v2}`],
-  [/([\s'])pointer-none(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}pointer-events-none${v2}`],
-  [/([\s'])pointer(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}cursor-pointer${v2}`],
+  [/([\s'])font-?(100|200|300|400|500|600|700|800|900)([\s'!]|$)/, (_: string, prefix: string, v1: string, v2: string) => `${prefix}font-${fontMap[v1]}${v2}`],
+  [/([\s'])pointer-none([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}pointer-events-none${v2}`],
+  [/([\s'])pointer([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}cursor-pointer${v2}`],
   [/([\s'])flex-center(\s|'|$)/, (_: string, v1: string, v2: string) => `${v1}${classData.includes('flex') ? '' : 'flex '}justify-center items-center${v2}`],
   [/([\s'])col(\s|'|$)/, (_: string, v1: string, v2: string) => `${v1}${classData.includes('flex') ? '' : 'flex '}flex-col${v2}`],
   [/([\s'])position-center(\s|'|$)/, (_: string, v1: string, v2: string) => `${v1}left-0 right-0 top-0 bottom-0${v2}`],
-  [/([\s'])dashed(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}border-dashed${v2}`],
-  [/([\s'])dotted(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}border-dotted${v2}`],
-  [/([\s'])double(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}border-double${v2}`],
-  [/([\s'])contain(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}bg-contain${v2}`],
-  [/([\s'])cover(\s|'|!|$)/, (_: string, v1: string, v2: string) => `${v1}bg-cover${v2}`],
-  [/([\s'])line([0-9]+)(\s|'|!|$)/, (_: string, v1: string, v2: string, v3: string) => `${v1}line-clamp-${v2}${v3}`],
-  [/([\s!])\(([^\)]+)\)(\s|'|!|$)/, (_: string, v1: string, v2: string, v3: string) => v2.replace(/\s+/g, ' ').split(' ').map(item => `!${item}`).join(' ') + v3],
+  [/([\s'])dashed([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}border-dashed${v2}`],
+  [/([\s'])dotted([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}border-dotted${v2}`],
+  [/([\s'])double([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}border-double${v2}`],
+  [/([\s'])contain([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}bg-contain${v2}`],
+  [/([\s'])cover([\s'!]|$)/, (_: string, v1: string, v2: string) => `${v1}bg-cover${v2}`],
+  [/([\s'])line(\d+)([\s'!]|$)/, (_: string, v1: string, v2: string, v3: string) => `${v1}line-clamp-${v2}${v3}`],
+  [/([\s!])\(([^)]+)\)([\s'!]|$)/, (_: string, v1: string, v2: string, v3: string) => v2.replace(/\s+/g, ' ').split(' ').map(item => `!${item}`).join(' ') + v3],
 ].filter(Boolean)
 
 export function transform(content: string) {
@@ -146,7 +146,7 @@ export function transform(content: string) {
         return temp
       })
 
-      const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9%\s\*\/\+\-\:]+,[\(\),\w0-9%\s\*\/\+\-\:]+)+)\](\s|'|$)/)
+      const matcher = v.match(/([\s'])(\w+)-\[(([-\s\w%()*+,/:][-\s\w%()*+/:]*,[-\s\w%()*+,/:]+)+)\](\s|'|$)/)
       if (matcher && matcher[3].includes(',')) {
         try {
           v = `${matcher[1]}${matcher[3].split(',').map((item) => {
@@ -169,7 +169,7 @@ export function transform(content: string) {
       Object.keys(map).forEach((key) => {
         v = v.replace(key, map[key])
       })
-      classData = value.split(' ').map(item => item.replace(/['\[\]]/g, ''))
+      classData = value.split(' ').map(item => item.replace(/['[\]]/g, ''))
 
       const newClass = v
         .replace(/\s([^!\s'"]+)!/g, (_, v) => ` !${v}`)
@@ -193,7 +193,7 @@ export function transformClass(attr: string) {
       return temp
     })
 
-    const matcher = v.match(/([\s'])(\w+)-\[(([\(\),\w0-9%\s\*\/\+\-\:]+,[\(\),\w0-9%\s\*\/\+\-\:]+)+)\](\s|'|$)/)
+    const matcher = v.match(/([\s'])(\w+)-\[(([-\s\w%()*+,/:][-\s\w%()*+/:]*,[-\s\w%()*+,/:]+)+)\](\s|'|$)/)
     if (matcher && matcher[3].includes(',')) {
       try {
         v = `${matcher[1]}${matcher[3].split(',').map((item) => {
@@ -239,8 +239,8 @@ export function transformClassAttr(attrs: Attr[]) {
 }
 
 const attrRules = strictHyphen
-  ? /-(\[?\s*(rgba?\([^\)]*\))\]|\[?\s*(hsla?\([^\)]*\))\]|\[?\s*(calc\([^\)]*\))\])/g
-  : /-?(\[?\s*(rgba?\([^\)]*\))\]|\[?\s*(hsla?\([^\)]*\))\]|\[?\s*(calc\([^\)]*\))\])/g
+  ? /-(\[?\s*(rgba?\([^)]*\))\]|\[?\s*(hsla?\([^)]*\))\]|\[?\s*(calc\([^)]*\))\])/g
+  : /-?(\[?\s*(rgba?\([^)]*\))\]|\[?\s*(hsla?\([^)]*\))\]|\[?\s*(calc\([^)]*\))\])/g
 const attrsMap = ['w', 'h', 'gap', 'm', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'p', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'b', 'bt', 'br', 'bb', 'bl', 'lh', 'text', 'top', 'right', 'bottom', 'left', 'border-rd', 'border', 'max-w', 'max-h', 'translate-x', 'translate-y', 'duration', 'delay', 'scale-x', 'scale-y', 'scale', 'rotate', 'skew-x', 'skew-y', 'fill', 'stroke', 'invert', 'saturate', 'grayscale', 'contrast', 'brightness', 'blur', 'outline']
 
 export function transformAttrs(attrs: any[]) {
