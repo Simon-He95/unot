@@ -244,6 +244,12 @@ function jsxDfs(children: any, parent: any, position: vscode.Position) {
           child.expression.consequent,
         ].filter(Boolean)
       }
+      else if (child.expression.type === 'LogicalExpression') {
+        children = [
+          child.expression.left,
+          child.expression.right,
+        ]
+      }
       else { children = child.expression }
     }
     else if (type === 'TemplateLiteral') {
