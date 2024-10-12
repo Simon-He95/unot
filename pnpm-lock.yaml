@@ -51,8 +51,8 @@ importers:
         specifier: ^0.0.11
         version: 0.0.11
       '@vscode-use/utils':
-        specifier: ^0.1.25
-        version: 0.1.25
+        specifier: ^0.1.31
+        version: 0.1.31
       '@vue/compiler-sfc':
         specifier: 3.3.8
         version: 3.3.8
@@ -631,8 +631,8 @@ packages:
     resolution: {integrity: sha512-MWsrNgnvxWrYC3yvADk15mCBTFII1OwefRKdEi2g6NWPbxF1VWb0QFyuLkTwfLD/OduoYQlSvuI7TStxJvaWPQ==}
     engines: {vscode: ^1.77.0}
 
-  '@vscode-use/utils@0.1.25':
-    resolution: {integrity: sha512-b8m3zQtKqRApgFX1FbvPX109Y0yih5EF94YRJ9UhQIn9lVWKpAQ88qpN946cQpjJw74przoNBiF/dzFjjrIYpA==}
+  '@vscode-use/utils@0.1.31':
+    resolution: {integrity: sha512-vV52faqgJj/nyovcfDNpu5R0plrJ4F7cloYhUx4SlamyQ7Cw2k7lhMLs3SQP+kgWXwLm9n4Us5k4dez2TOBzMg==}
     engines: {vscode: ^1.92.0}
 
   '@vue/compiler-core@3.3.8':
@@ -3432,7 +3432,7 @@ snapshots:
 
   '@vscode-use/createwebview@0.0.11': {}
 
-  '@vscode-use/utils@0.1.25': {}
+  '@vscode-use/utils@0.1.31': {}
 
   '@vue/compiler-core@3.3.8':
     dependencies:

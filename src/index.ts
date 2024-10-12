@@ -285,7 +285,11 @@ export async function activate(context: vscode.ExtensionContext) {
     getActiveTextEditor()?.setDecorations(decorationType, [])
   }))
 
-  context.subscriptions.push(addEventListener('text-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
+  context.subscriptions.push(addEventListener('text-change', ({ reason, contentChanges, document }) => {
+    if (document.languageId === 'Log' || !contentChanges.length)
+      return
+    getActiveTextEditor()?.setDecorations(decorationType, [])
+  }))
 
   context.subscriptions.push(addEventListener('selection-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])))
 
@@ -401,17 +405,19 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }))
 
-  context.subscriptions.push(addEventListener('activeText-change', () =>
-    setTimeout(async () => {
-      const url = getCurrentFileUrl()
-      if (!url)
-        return
-      await updateUnoStatus(url)
-      if (!hasUnoConfig)
-        statusBarItem.hide()
-      else
-        statusBarItem.show()
-    }, 200)))
+  context.subscriptions.push(addEventListener('activeText-change', async (editor) => {
+    if (!editor || editor.document.languageId === 'Log')
+      return
+
+    const url = getCurrentFileUrl()
+    if (!url)
+      return
+    await updateUnoStatus(url)
+    if (!hasUnoConfig)
+      statusBarItem.hide()
+    else
+      statusBarItem.show()
+  }))
 
   if (!hasUnoConfig) {
     context.subscriptions.push(addEventListener('file-create', () => {
