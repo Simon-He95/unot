@@ -128,5 +128,6 @@ describe('should', () => {
   it('magic transformClass w!', () => {
     expect(transformClass('<div class=" w10!" >')).toMatchInlineSnapshot('"<div class=\\" w-[10]!\\" >"')
     expect(transformClass('<div class=" minw10px!" >')).toMatchInlineSnapshot('"<div class=\\" min-w-[10px]!\\" >"')
+    expect(transformClass('{ active: modelValue === (tab.name || index) }')).toMatchInlineSnapshot('"{ active: modelValue === (tab.name || index) }"')
   })
 })
