@@ -31,9 +31,6 @@
   ],
   "main": "./dist/index.js",
   "icon": "icon.png",
-  "files": [
-    "dist"
-  ],
   "engines": {
     "vscode": "^1.84.2"
   },
@@ -169,8 +166,8 @@
     "release": "pnpm run build && bumpp && pnpm publish"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.27.3",
-    "@types/node": "^18.19.47",
+    "@antfu/eslint-config": "^3.14.0",
+    "@types/node": "^18.19.71",
     "@types/prettier": "^2.7.3",
     "@types/vscode": "1.84.2",
     "@unocss/autocomplete": "^0.53.6",
@@ -182,11 +179,12 @@
     "@unocss/preset-wind": "^0.53.6",
     "@unocss/transformer-directives": "^0.53.6",
     "@unocss/transformer-variant-group": "^0.53.6",
-    "@vscode-use/createwebview": "^0.0.11",
-    "@vscode-use/utils": "^0.1.31",
-    "@vue/compiler-sfc": "3.3.8",
-    "bumpp": "^9.5.2",
-    "eslint": "^9.9.1",
+    "@vscode-use/createwebview": "^0.0.13",
+    "@vscode-use/utils": "^0.1.39",
+    "@vscode/vsce": "^3.2.1",
+    "@vue/compiler-sfc": "3.5.13",
+    "bumpp": "^9.10.1",
+    "eslint": "^9.18.0",
     "esno": "^0.16.3",
     "find-up": "^6.3.0",
     "pnpm": "^8.15.9",
@@ -195,8 +193,7 @@
     "transform-to-unocss": "^0.0.88",
     "transform-to-unocss-core": "^0.0.31",
     "tsup": "^6.7.0",
-    "typescript": "^5.5.4",
-    "vitest": "^0.29.8",
-    "vsce": "^2.15.0"
+    "typescript": "^5.7.3",
+    "vitest": "^0.29.8"
   }
 }

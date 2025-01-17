@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
+import { describe, expect, it } from 'vitest'
 
 describe('should', () => {
   it('toUnocssClass', () => {

@@ -1,7 +1,7 @@
 import type { ExtensionContext } from 'vscode'
-import * as vscode from 'vscode'
-import { registerCommand } from '@vscode-use/utils'
 import { CreateWebview } from '@vscode-use/createwebview'
+import { registerCommand } from '@vscode-use/utils'
+import * as vscode from 'vscode'
 
 export function openDocumentation(context: ExtensionContext) {
   // webview 文档

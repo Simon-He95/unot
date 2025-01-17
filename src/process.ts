@@ -1,5 +1,5 @@
-import { transfromCode } from 'transform-to-unocss'
 import { getConfiguration } from '@vscode-use/utils'
+import { transfromCode } from 'transform-to-unocss'
 import { getCssType, getMultipedUnocssText } from './utils'
 
 export class CssToUnocssProcess {

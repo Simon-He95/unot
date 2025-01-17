@@ -20,6 +20,7 @@ module.exports = antfu(
       'regexp/no-empty-alternative': 'off',
       'regexp/no-super-linear-backtracking': 'off',
       'regexp/no-dupe-disjunctions': 'off',
+      'perfectionist/sort-imports': 'off',
     },
   },
 )

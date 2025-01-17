@@ -1,15 +1,15 @@
-import * as vscode from 'vscode'
 import type { TextEditorDecorationType } from 'vscode'
+import type { ChangeList } from './type'
 import { addEventListener, createBottomBar, createHover, createLog, createMarkdownString, createPosition, createRange, createStyle, getActiveText, getActiveTextEditor, getConfiguration, getCopyText, getCurrentFileUrl, getLineText, getLocale, getPosition, getSelection, message, nextTick, registerCommand, registerHoverProvider, saveFile, setConfiguration, setCopyText, updateText } from '@vscode-use/utils'
 import { findUp } from 'find-up'
 import { toUnocssClass, transformStyleToUnocss } from 'transform-to-unocss-core'
-import { rules, transformAttrs, transformClassAttr } from './transform'
-import { CssToUnocssProcess } from './process'
-import { LRUCache, getMultipedUnocssText, hasFile, highlight, parserAst } from './utils'
+import * as vscode from 'vscode'
 import { openDocumentation } from './openDocumentation'
 import { openPlayground } from './openPlayground'
-import type { ChangeList } from './type'
 import { parser } from './parser'
+import { CssToUnocssProcess } from './process'
+import { rules, transformAttrs, transformClassAttr } from './transform'
+import { getMultipedUnocssText, hasFile, highlight, LRUCache, parserAst } from './utils'
 
 const cacheMap = new LRUCache(5000)
 const logger = createLog('Unot')
@@ -299,8 +299,7 @@ export async function activate(context: vscode.ExtensionContext) {
     copyAttr = selectedUnocssText
     copyClass = selectedUnocssText
       .replace(/([^\s=]+)="([^"]+)"/g, (_, v1, v2) =>
-        v2.split(' ').map((v: string) => `${v1}-${v}`)
-          .join(' '))
+        v2.split(' ').map((v: string) => `${v1}-${v}`).join(' '))
     copyRange = rangeMap
     highlight(rangeMap)
     const useHex = getConfiguration('unot.useHex')

@@ -1,8 +1,9 @@
-import * as vscode from 'vscode'
-import { parse } from '@vue/compiler-sfc'
-import type { SFCTemplateBlock } from '@vue/compiler-sfc'
+import type { SFCTemplateBlock } from '@vue/compiler-sfc/dist/compiler-sfc.esm-browser.js'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
 import { getCurrentFileUrl, getOffsetFromPosition } from '@vscode-use/utils'
+import { parse } from '@vue/compiler-sfc/dist/compiler-sfc.esm-browser.js'
+
+import * as vscode from 'vscode'
 
 const { parse: svelteParser } = require('svelte/compiler')
 

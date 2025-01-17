@@ -1,6 +1,6 @@
-import { isCalc, isHex, isRgb } from 'transform-to-unocss-core'
-
 import type { Attr, ChangeList } from './type'
+
+import { isCalc, isHex, isRgb } from 'transform-to-unocss-core'
 
 let variantGroup = true
 let strictVariable = true
@@ -179,7 +179,8 @@ export function transform(content: string) {
 
       const newClass = v
         .replace(/\s([^!\s'"]+)!/g, (_, v) => ` !${v}`)
-        .replace(reg, callback).slice(1)
+        .replace(reg, callback)
+        .slice(1)
       return `class${name}="${newClass}"`
     })
   }, content)
