@@ -168,7 +168,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.14.0",
     "@types/node": "^18.19.71",
-    "@types/prettier": "^2.7.3",
     "@types/vscode": "1.84.2",
     "@unocss/autocomplete": "^0.53.6",
     "@unocss/core": "^0.53.6",
@@ -185,10 +184,8 @@
     "@vue/compiler-sfc": "3.5.13",
     "bumpp": "^9.10.1",
     "eslint": "^9.18.0",
-    "esno": "^0.16.3",
     "find-up": "^6.3.0",
     "pnpm": "^8.15.9",
-    "rimraf": "^4.4.1",
     "svelte": "^4.2.19",
     "transform-to-unocss": "^0.0.88",
     "transform-to-unocss-core": "^0.0.31",
