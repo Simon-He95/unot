@@ -1,46 +1,88 @@
-name: Test
+name: CI
 
 on:
   push:
     branches:
-      - master
+      - main
 
   pull_request:
     branches:
-      - master
+      - main
+
+  merge_group: {}
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    timeout-minutes: 10
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.18.2
+          cache: pnpm
+
+      - name: Setup
+        run: npm i -g @antfu/ni
+
+      - name: Install
+        run: nci
+
+      - name: Lint
+        run: nr lint
+
+  test:
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        node_version: [14.x, 16.x]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+        node_version: [18.18.2, lts/*]
+        include:
+          - os: macos-latest
+            node_version: lts/*
+          - os: windows-latest
+            node_version: lts/*
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      - name: Set node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v2
+      - name: Set node ${{ matrix.node_version }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node_version }}
           cache: pnpm
 
+      - run: corepack enable
+
+      - name: Setup
+        run: npm i -g @antfu/ni
+
       - name: Install
-        run: pnpm i
+        run: nci
 
       - name: Build
-        run: pnpm run build
+        run: nr build
 
       - name: Test
-        run: pnpm run test
+        run: nr test
 
-      - name: Lint
-        run: pnpm run lint
+      - name: Typecheck
+        run: nr typecheck
