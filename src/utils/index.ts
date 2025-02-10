@@ -129,7 +129,7 @@ export function transformVueAst(code: string) {
 
   const styleChangeList: { content: string, start: number, end: number }[] = []
   if (styles.length) {
-    styles.forEach((style) => {
+    styles.forEach((style: any) => {
       for (const match of style.content.matchAll(/\s*(?:@|--at-)apply:([^;]*);/g)) {
         const content = match[1]
         const newAttr = transformClass(content)

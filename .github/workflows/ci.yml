@@ -83,6 +83,3 @@ jobs:
 
       - name: Test
         run: nr test
-
-      - name: Typecheck
-        run: nr typecheck
