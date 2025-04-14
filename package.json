@@ -4,6 +4,7 @@
   "displayName": "UnoT",
   "version": "0.0.94",
   "description": "Unocss Tools",
+  "packageManager": "pnpm@10.8.0",
   "author": "Simon He <https://github.com/Simon-He95>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Simon-He95",
@@ -31,7 +32,7 @@
   "main": "./dist/index.js",
   "icon": "icon.png",
   "engines": {
-    "vscode": "^1.84.2"
+    "vscode": "^1.77.0"
   },
   "activationEvents": [
     "onStartupFinished"
@@ -167,7 +168,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
     "@types/node": "^18.19.75",
-    "@types/vscode": "1.84.2",
+    "@types/vscode": "1.77.0",
     "@unocss/autocomplete": "^0.53.6",
     "@unocss/core": "^0.53.6",
     "@unocss/preset-attributify": "^0.53.6",
@@ -184,7 +185,6 @@
     "bumpp": "^9.11.1",
     "eslint": "^9.20.0",
     "find-up": "^6.3.0",
-    "pnpm": "^8.15.9",
     "svelte": "^4.2.19",
     "transform-to-unocss": "^0.0.88",
     "transform-to-unocss-core": "^0.0.31",
