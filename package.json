@@ -3,8 +3,8 @@
   "name": "unot",
   "displayName": "UnoT",
   "version": "0.0.94",
-  "description": "Unocss Tools",
   "packageManager": "pnpm@10.8.0",
+  "description": "Unocss Tools",
   "author": "Simon He <https://github.com/Simon-He95>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Simon-He95",
@@ -165,6 +165,9 @@
     "typecheck": "tsc --noEmit",
     "release": "pnpm run build && bumpp && pnpm publish"
   },
+  "dependencies": {
+    "transform-to-unocss": "^0.0.95"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
     "@types/node": "^18.19.75",
@@ -181,13 +184,11 @@
     "@vscode-use/createwebview": "^0.0.13",
     "@vscode-use/utils": "^0.1.45",
     "@vscode/vsce": "^3.2.2",
-    "@vue/compiler-sfc": "3.5.13",
     "bumpp": "^9.11.1",
     "eslint": "^9.20.0",
     "find-up": "^6.3.0",
     "svelte": "^4.2.19",
-    "transform-to-unocss": "^0.0.88",
-    "transform-to-unocss-core": "^0.0.31",
+    "transform-to-unocss-core": "^0.0.35",
     "tsup": "^6.7.0",
     "typescript": "^5.7.3",
     "vitest": "^0.29.8"

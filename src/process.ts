@@ -1,5 +1,5 @@
 import { getConfiguration } from '@vscode-use/utils'
-import { transfromCode } from 'transform-to-unocss'
+// import { transfromCode } from 'transform-to-unocss'
 import { getCssType, getMultipedUnocssText } from './utils'
 
 export class CssToUnocssProcess {
@@ -24,6 +24,8 @@ export class CssToUnocssProcess {
       return ''
     const type = getCssType(fileName) as any
     const isJsx = getConfiguration('unot.classMode')
-    return await transfromCode(code, { filepath: fileName, type, isJsx })
+    // return transfromCode(code, { filepath: fileName, type, isJsx })
+    // 这个函数使用打包上有问题
+    return (await import('transform-to-unocss')).transfromCode(code, { filepath: fileName, type, isJsx })
   }
 }
