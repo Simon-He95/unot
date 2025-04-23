@@ -2,7 +2,7 @@
   "publisher": "simonhe",
   "name": "unot",
   "displayName": "UnoT",
-  "version": "0.0.96",
+  "version": "0.0.97",
   "packageManager": "pnpm@10.8.0",
   "description": "Unocss Tools",
   "author": "Simon He <https://github.com/Simon-He95>",
