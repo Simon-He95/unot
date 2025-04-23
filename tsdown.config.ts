@@ -2,7 +2,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   target: 'node14',
-  format: ['cjs', 'esm'],
+  format: ['cjs'],
   external: [
     'vscode',
   ],

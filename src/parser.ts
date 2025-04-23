@@ -1,4 +1,4 @@
-import type { SFCTemplateBlock } from '@vue/compiler-sfc/dist/compiler-sfc.esm-browser.js'
+import type { SFCTemplateBlock } from '@vue/compiler-sfc'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
 import { getCurrentFileUrl, getOffsetFromPosition } from '@vscode-use/utils'
 import { parse } from '@vue/compiler-sfc/dist/compiler-sfc.esm-browser.js'
