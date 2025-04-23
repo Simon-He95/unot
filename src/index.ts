@@ -220,6 +220,8 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     // 移除样式
     editor.setDecorations(decorationType, [])
+    if (!isNotUnocss)
+      return
     const selection = editor.selection
     const wordRange = new vscode.Range(selection.start, selection.end)
     let selectedText = editor.document.getText(wordRange)
@@ -436,20 +438,6 @@ export async function activate(context: vscode.ExtensionContext) {
       .then((filepath?: string) => {
         if (!filepath)
           return
-        // if (!completions.length) {
-        //   getUnoCompletions(filepath).then((res: any) => {
-        //     completions = res
-        //     unoCompletionsMap = completions
-        //       .map(([content, detail]: any) => {
-        //         const documentation = new vscode.MarkdownString()
-        //         documentation.appendCodeblock(detail, 'css')
-        //         if (content.startsWith('animate'))
-        //           return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Unit })
-
-        //         return createCompletionItem({ content, documentation, type: vscode.CompletionItemKind.Enum })
-        //       })
-        //   })
-        // }
         hasUnoConfig = filepath
         statusBarItem.show()
       })
