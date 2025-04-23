@@ -1,7 +1,6 @@
-src
-node_modules
-test
+# node_modules
 .github
 .vscode
 assets
 test
+src
