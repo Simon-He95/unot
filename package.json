@@ -157,7 +157,7 @@
   "scripts": {
     "dev": "pnpm build --watch",
     "test": "vitest",
-    "build": "tsup src/index.ts --external vscode",
+    "build": "tsdown src/index.ts",
     "pack": "vsce package --no-dependencies",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix",
@@ -166,29 +166,21 @@
     "release": "pnpm run build && bumpp && pnpm publish"
   },
   "dependencies": {
-    "transform-to-unocss": "^0.0.95"
+    "transform-to-unocss": "^0.1.0",
+    "transform-to-unocss-core": "^0.0.46"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
     "@types/node": "^18.19.75",
     "@types/vscode": "1.77.0",
-    "@unocss/autocomplete": "^0.53.6",
-    "@unocss/core": "^0.53.6",
-    "@unocss/preset-attributify": "^0.53.6",
-    "@unocss/preset-icons": "^0.53.6",
-    "@unocss/preset-uno": "^0.53.6",
-    "@unocss/preset-web-fonts": "^0.53.6",
-    "@unocss/preset-wind": "^0.53.6",
-    "@unocss/transformer-directives": "^0.53.6",
-    "@unocss/transformer-variant-group": "^0.53.6",
     "@vscode-use/createwebview": "^0.0.13",
-    "@vscode-use/utils": "^0.1.45",
+    "@vscode-use/utils": "^0.1.52",
     "@vscode/vsce": "^3.2.2",
     "bumpp": "^9.11.1",
     "eslint": "^9.20.0",
     "find-up": "^6.3.0",
     "svelte": "^4.2.19",
-    "transform-to-unocss-core": "^0.0.35",
+    "tsdown": "^0.9.3",
     "tsup": "^6.7.0",
     "typescript": "^5.7.3",
     "vitest": "^0.29.8"
