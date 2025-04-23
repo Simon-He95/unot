@@ -1,10 +1,10 @@
 {
   "publisher": "simonhe",
   "name": "unot",
-  "displayName": "UnoT",
-  "version": "0.0.99",
+  "displayName": "UnoT - UnoCSS Tools",
+  "version": "0.1.1",
   "packageManager": "pnpm@10.8.0",
-  "description": "Unocss Tools",
+  "description": "UnoCSS Tools: VS Code extension for UnoCSS, CSS utility class autocomplete, intellisense, and style conversion.",
   "author": "Simon He <https://github.com/Simon-He95>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Simon-He95",
@@ -24,9 +24,21 @@
     "css",
     "intellisense",
     "autocomplete",
-    "vscode"
+    "vscode",
+    "utility",
+    "tailwind",
+    "style",
+    "converter",
+    "transform",
+    "web",
+    "frontend",
+    "extension",
+    "editor",
+    "snippets"
   ],
   "categories": [
+    "Linters",
+    "Snippets",
     "Other"
   ],
   "main": "./dist/index.js",
@@ -163,7 +175,7 @@
     "lint:fix": "eslint . --fix",
     "publish": "pnpx vsce publish",
     "typecheck": "tsc --noEmit",
-    "release": "pnpm run build && bumpp && pnpm publish"
+    "release": "pnpm run build --minify && bumpp && pnpm publish"
   },
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^8.31.0",

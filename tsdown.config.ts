@@ -6,7 +6,7 @@ export default defineConfig({
   external: [
     'vscode',
   ],
-  minify: true,
+  // minify: true,
   clean: true,
   platform: 'node', // 明确指定为 Node.js 平台
 })
