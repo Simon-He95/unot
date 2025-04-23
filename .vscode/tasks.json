@@ -15,8 +15,8 @@
           "base": "$tsc-watch",
           "background": {
             "activeOnStart": true,
-            "beginsPattern": "Build start",
-            "endsPattern": "Build success"
+            "beginsPattern": "tsdown config",
+            "endsPattern": "Build complete"
           }
         }
       ],
