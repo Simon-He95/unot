@@ -1,7 +1,7 @@
 import fsp from 'node:fs/promises'
 import { parse as tsParser } from '@typescript-eslint/typescript-estree'
 import { getActiveTextEditor } from '@vscode-use/utils'
-import { parse } from '@vue/compiler-sfc/dist/compiler-sfc.esm-browser.js'
+import { parse } from '@vue/compiler-sfc'
 import fg from 'fast-glob'
 import { toUnocss } from 'transform-to-unocss-core'
 import * as vscode from 'vscode'
