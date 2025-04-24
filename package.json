@@ -177,25 +177,23 @@
     "typecheck": "tsc --noEmit",
     "release": "pnpm run build --minify && bumpp && pnpm publish"
   },
-  "dependencies": {
-    "@typescript-eslint/typescript-estree": "^8.31.0",
-    "@vscode-use/createwebview": "^0.0.13",
-    "fast-glob": "^3.3.3",
-    "svelte": "^4.2.19",
-    "transform-to-unocss": "^0.1.1",
-    "transform-to-unocss-core": "^0.0.46"
-  },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
     "@types/node": "^18.19.86",
     "@types/vscode": "1.77.0",
+    "@typescript-eslint/typescript-estree": "^8.31.0",
+    "@vscode-use/createwebview": "^0.0.13",
     "@vscode-use/utils": "^0.1.53",
     "@vscode/vsce": "^3.3.2",
     "@vue/compiler-sfc": "^3.5.13",
     "bumpp": "^9.11.1",
     "eslint": "^9.25.1",
+    "fast-glob": "^3.3.3",
     "find-up": "^7.0.0",
-    "tsdown": "^0.9.5",
+    "svelte": "^4.2.19",
+    "transform-to-unocss": "^0.1.1",
+    "transform-to-unocss-core": "^0.0.46",
+    "tsdown": "^0.9.6",
     "tsup": "^6.7.0",
     "typescript": "^5.8.3",
     "vitest": "^0.29.8"
