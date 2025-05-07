@@ -2,7 +2,7 @@
   "publisher": "simonhe",
   "name": "unot",
   "displayName": "UnoT - UnoCSS Tools",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "packageManager": "pnpm@10.10.0",
   "description": "UnoCSS Tools: VS Code extension for UnoCSS, CSS utility class autocomplete, intellisense, and style conversion.",
   "author": "Simon He <https://github.com/Simon-He95>",
