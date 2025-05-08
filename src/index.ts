@@ -21,7 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
   openDocumentation(context)
   openPlayground(context)
   const pkgs = await hasFile(['**/package.json'])
-  const hasUnoDep = (json: any) => json.devDependencies && 'unocss' in json.devDependencies || json.dependencies && 'unocss' in json.dependencies
+  const hasUnoDep = (json: any) => (json.devDependencies && 'unocss' in json.devDependencies) || (json.dependencies && 'unocss' in json.dependencies)
   const isNotUnocss = !pkgs.some(pkg => hasUnoDep(JSON.parse(pkg)))
 
   const styleReg = /style="([^"]+)"/

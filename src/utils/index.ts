@@ -16,8 +16,11 @@ export function getCssType(filename: string) {
   return result as CssType
 }
 
+function hyphenate(str: string) {
+  return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}
 export function getMultipedUnocssText(text: string) {
-  const match = text.match(/style="([^"]+)"/)
+  const match = text.match(/style=(["{])(.*?)\1/)
   if (match)
     text = match[1]
 
@@ -25,7 +28,9 @@ export function getMultipedUnocssText(text: string) {
   let isChanged = false
   const selectedNewTexts = []
   for (let i = 0; i < selectedTexts.length; i++) {
-    const text = selectedTexts[i]
+    const text = hyphenate(selectedTexts[i])
+    // 要将驼峰转换为短横线
+    // 例如：fontSize => font-size
     const newText = toUnocss(text) ?? text
     if (!newText)
       continue
