@@ -20,7 +20,7 @@ function hyphenate(str: string) {
   return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 export function getMultipedUnocssText(text: string) {
-  const match = text.match(/style=(["{])(.*?)\1/)
+  const match = text.match(/style="([^"]+)"/) || text.match(/style=\{\{?([^}]+)\}?\}/)
   if (match)
     text = match[1]
 
@@ -28,9 +28,12 @@ export function getMultipedUnocssText(text: string) {
   let isChanged = false
   const selectedNewTexts = []
   for (let i = 0; i < selectedTexts.length; i++) {
-    const text = hyphenate(selectedTexts[i])
+    let text = hyphenate(selectedTexts[i])
     // 要将驼峰转换为短横线
     // 例如：fontSize => font-size
+    if (/:\s*["'].*["']/.test(text)) {
+      text = text.replace(/:\s*(["'])(.*)\1/g, (all, _, v) => `:${v}`)
+    }
     const newText = toUnocss(text) ?? text
     if (!newText)
       continue
