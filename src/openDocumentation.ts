@@ -7,7 +7,7 @@ export function openDocumentation(context: ExtensionContext) {
   // webview 文档
   context.subscriptions.push(registerCommand('UnoT.openDocumentation', () => {
     const title = 'unocss documentation'
-    const provider = new CreateWebview(context.extensionUri, {
+    const provider = new CreateWebview(context, {
       title,
       scripts: ['main.js'],
       viewColumn: vscode.ViewColumn.Beside,

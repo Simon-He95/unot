@@ -10,6 +10,8 @@ import { parser } from './parser'
 import { CssToUnocssProcess } from './process'
 import { rules, transformAttrs, transformClassAttr } from './transform'
 import { getMultipedUnocssText, hasFile, highlight, LRUCache, parserAst } from './utils'
+import path from 'node:path'
+import { existsSync } from 'node:fs'
 
 const cacheMap = new LRUCache(5000)
 const logger = createLog('Unot')
@@ -435,12 +437,20 @@ export async function activate(context: vscode.ExtensionContext) {
       hasUnoConfig = undefined
       return
     }
-    return findUp(['uno.config.js', 'uno.config.ts', 'unocss.config.js', 'unocss.config.ts'], { cwd })
+    return findUp(['package.json'], { cwd })
       .then((filepath?: string) => {
         if (!filepath)
           return
-        hasUnoConfig = filepath
-        statusBarItem.show()
+        for (const _unoSuffix of ['uno.config.js', 'uno.config.ts', 'unocss.config.js', 'unocss.config.ts']) {
+          const configPath = path.resolve(filepath, '..', _unoSuffix)
+          if (existsSync(configPath)) {
+            hasUnoConfig = configPath
+            statusBarItem.show()
+            return
+          }
+        }
+        hasUnoConfig = undefined
+        statusBarItem.hide()
       })
   }
 }

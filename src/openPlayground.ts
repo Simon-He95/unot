@@ -7,7 +7,7 @@ export function openPlayground(context: ExtensionContext) {
   // webview 文档
   context.subscriptions.push(registerCommand('UnoT.openPlayground', () => {
     const title = 'unocss documentation'
-    const provider = new CreateWebview(context.extensionUri, {
+    const provider = new CreateWebview(context, {
       title,
       scripts: ['main.js'],
       viewColumn: vscode.ViewColumn.Beside,
