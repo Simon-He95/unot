@@ -1,3 +1,5 @@
 packages:
   - playground
   - examples/*
+patchedDependencies:
+  '@vue/compiler-core': patches/@vue__compiler-core.patch
