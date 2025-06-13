@@ -182,8 +182,8 @@
     "@vscode-use/createwebview": "^0.0.13",
     "fast-glob": "^3.3.3",
     "svelte": "^4.2.20",
-    "transform-to-unocss": "^0.1.10",
-    "transform-to-unocss-core": "^0.0.64"
+    "transform-to-unocss": "^0.1.12",
+    "transform-to-unocss-core": "^0.0.66"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
