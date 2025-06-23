@@ -182,7 +182,7 @@
     "@vscode-use/createwebview": "^0.0.13",
     "fast-glob": "^3.3.3",
     "svelte": "^4.2.20",
-    "transform-to-unocss": "^0.1.15",
+    "transform-to-unocss": "^0.1.16",
     "transform-to-unocss-core": "^0.0.68"
   },
   "devDependencies": {
