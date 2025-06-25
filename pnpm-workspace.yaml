@@ -1,7 +1,3 @@
 packages:
   - playground
   - examples/*
-
-patchedDependencies:
-  '@vue/compiler-core': patches/@vue__compiler-core.patch
-  '@vue/compiler-sfc': patches/@vue__compiler-sfc.patch
