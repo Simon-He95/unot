@@ -3,7 +3,7 @@
   "name": "unot",
   "displayName": "UnoT - UnoCSS Tools",
   "version": "0.1.13",
-  "packageManager": "pnpm@10.12.2",
+  "packageManager": "pnpm@10.14.0",
   "description": "UnoCSS Tools: VS Code extension for UnoCSS, CSS utility class autocomplete, intellisense, and style conversion.",
   "author": "Simon He <https://github.com/Simon-He95>",
   "license": "MIT",
@@ -178,25 +178,25 @@
     "release": "pnpm run build --minify && bumpp && pnpm publish"
   },
   "dependencies": {
-    "@typescript-eslint/typescript-estree": "^8.34.1",
+    "@typescript-eslint/typescript-estree": "^8.39.0",
     "@vscode-use/createwebview": "^0.0.13",
     "fast-glob": "^3.3.3",
     "svelte": "^4.2.20",
-    "transform-to-unocss": "^0.1.17",
-    "transform-to-unocss-core": "^0.0.68"
+    "transform-to-unocss": "^0.1.20",
+    "transform-to-unocss-core": "^0.0.69"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
-    "@types/node": "^18.19.112",
+    "@types/node": "^18.19.121",
     "@types/vscode": "1.77.0",
     "@vscode-use/utils": "^0.1.59",
-    "@vscode/vsce": "^3.5.0",
-    "@vue/compiler-sfc": "^3.5.17",
+    "@vscode/vsce": "^3.6.0",
+    "@vue/compiler-sfc": "^3.5.18",
     "bumpp": "^9.11.1",
-    "eslint": "^9.29.0",
+    "eslint": "^9.32.0",
     "find-up": "^7.0.0",
     "tsdown": "^0.9.9",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vitest": "^0.29.8"
   }
 }
