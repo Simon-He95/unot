@@ -236,7 +236,10 @@ export async function activate(context: vscode.ExtensionContext) {
       let word = document.getText(range)
       if (!word)
         return
-      const line = range.c.c
+      // safer: prefer standard Range.start.line, fallback to legacy internal shape or position.line
+      const line = (typeof (range as any).start?.line === 'number')
+        ? (range as any).start.line
+        : (typeof (range as any).c?.c === 'number' ? (range as any).c.c : position.line)
       const lineNumber = position.line
       const lineText = document.lineAt(lineNumber).text
       const styleMatch = word.match(styleReg)
@@ -254,10 +257,16 @@ export async function activate(context: vscode.ExtensionContext) {
         if (lineText.indexOf(':') < 1)
           return
         const wholeReg = new RegExp(`([\\w\\-]+\\s*:\\s)?([\\w\\-\\[\\(\\!]+)?${word}(:*\\s*[^:"}{\`;>]+)?`, 'g')
+        // helper to safely get the end character index from possibly different Range shapes
+        const getRangeEndChar = (r: any) => (
+          typeof r?.end?.character === 'number'
+            ? r.end.character
+            : (typeof r?.c?.e === 'number' ? r.c.e : position.character)
+        )
         for (const match of lineText.matchAll(wholeReg)) {
           const { index } = match
           const pos = index! + match[0].indexOf(word)
-          if (pos === range?.c?.e) {
+          if (pos === getRangeEndChar(range)) {
             word = match[0]
             realRangeMap.push({
               content: match[0],
@@ -373,7 +382,7 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     // 对文档保存后的内容进行处理
     const text = document.getText()
-    const { classAttr, attrs, styleChangeList } = parserAst(text) || {}
+    const { classAttr, attrs, styleChangeList } = parserAst(text) as any || {}
     const changeList: ChangeList[] = []
 
     if (classAttr?.length)
