@@ -2,5 +2,6 @@
 .github
 .vscode
 assets
+scripts
 test
 src

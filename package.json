@@ -170,10 +170,10 @@
     "dev": "pnpm build --watch",
     "test": "vitest",
     "build": "tsdown src/index.ts",
-    "pack": "vsce package",
+    "pack": "pnpm build && node ./scripts/package-vsix.mjs",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix",
-    "publish": "pnpx vsce publish",
+    "publish": "pnpm build && node ./scripts/package-vsix.mjs publish",
     "typecheck": "tsc --noEmit",
     "release": "pnpm run build --minify && bumpp && pnpm publish"
   },
