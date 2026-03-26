@@ -9,7 +9,8 @@ const packageJson = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8
 const stageDir = mkdtempSync(join(tmpdir(), 'unot-vsce-'))
 const distDir = join(rootDir, 'dist')
 const outputFile = join(rootDir, `${packageJson.name}-${packageJson.version}.vsix`)
-const [mode = 'package', ...vsceArgs] = process.argv.slice(2)
+const [mode = 'package', ...rawVsceArgs] = process.argv.slice(2)
+const vsceArgs = rawVsceArgs[0] === '--' ? rawVsceArgs.slice(1) : rawVsceArgs
 const vsceBin = join(
   rootDir,
   'node_modules',
@@ -25,6 +26,11 @@ function run(command, args, cwd = rootDir) {
 
   if (result.status !== 0)
     process.exit(result.status ?? 1)
+}
+
+if (mode === 'publish' && vsceArgs[0] && !vsceArgs[0].startsWith('-')) {
+  console.error('Positional version arguments are not supported by this publish helper. Bump package.json first, then run publish again.')
+  process.exit(1)
 }
 
 try {
