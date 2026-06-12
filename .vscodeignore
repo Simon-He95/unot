@@ -1,7 +1,17 @@
-# node_modules
+node_modules
 .github
 .vscode
 assets
 scripts
 test
 src
+.DS_Store
+.eslintcache
+.npmrc
+eslint.config.mjs
+pnpm-lock.yaml
+pnpm-workspace.yaml
+tsconfig.json
+tsdown.config.ts
+*.tgz
+*.vsix
